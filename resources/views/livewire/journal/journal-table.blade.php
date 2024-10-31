@@ -37,8 +37,7 @@
                     </li>
                     <li class="py-2 px-4 hover:bg-slate-100 transition border-b">
                         <x-modal modalName="deposit" modalTitle="Form Penjualan Deposit">
-                            {{--
-                            <livewire:journal.create-deposit /> --}}
+                            <livewire:journal.create-deposit />
                         </x-modal>
                         <button x-data x-on:click="$dispatch('open-modal', {'modalName': 'deposit'})"
                             class="w-full text-left">
@@ -46,11 +45,11 @@
                         </button>
                     </li>
                     <li class="py-2 px-4 hover:bg-slate-100 transition">
-                        <x-modal modalName="deposit" modalTitle="Form Penjualan Deposit">
+                        <x-modal modalName="salesValue" modalTitle="Form Penjualan (Value)">
                             {{--
-                            <livewire:journal.create-deposit /> --}}
+                            <livewire:journal.create-salesValue /> --}}
                         </x-modal>
-                        <button x-data x-on:click="$dispatch('open-modal', {'modalName': 'deposit'})"
+                        <button x-data x-on:click="$dispatch('open-modal', {'modalName': 'salesValue'})"
                             class="w-full text-left">
                             Penjualan (Value)
                         </button>

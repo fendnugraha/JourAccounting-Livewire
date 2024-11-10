@@ -4,6 +4,7 @@ use App\Livewire\Setting\Setting;
 use Illuminate\Support\Facades\Route;
 use App\Livewire\Setting\User\EditUser;
 use App\Livewire\Setting\User\UserTable;
+use App\Livewire\Transaction\Transaction;
 use App\Livewire\Setting\Account\EditAccount;
 use App\Livewire\Setting\Contact\EditContact;
 use App\Livewire\Setting\Product\EditProduct;
@@ -45,6 +46,8 @@ Route::group(['middleware' => ['auth']], function () {
     //Product
     Route::get('/product', ProductTable::class)->name('product');
     Route::get('/product/{product_id}/edit', EditProduct::class)->name('product.edit');
+
+    Route::get('/transaction', Transaction::class)->name('transaction');
 });
 
 require __DIR__ . '/auth.php';

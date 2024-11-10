@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('purchases', function (Blueprint $table) {
+        Schema::create('transactions', function (Blueprint $table) {
             $table->id(); // ID utama untuk transaksi
             $table->dateTime('date_issued')->index(); // Tanggal transaksi, diindex
             $table->string('invoice', 60)->index(); // Nomor invoice, diindex untuk pencarian cepat
@@ -22,6 +22,9 @@ return new class extends Migration
 
             // Kolom harga dan biaya, lebih baik menggunakan decimal untuk akurasi
             $table->decimal('price', 15, 2); // Harga per unit, menggunakan decimal
+            $table->decimal('cost', 15, 2);  // Biaya per unit, menggunakan decimal
+
+            $table->string('transaction_type', 30); // Jenis transaksi (misal: penjualan, pembelian)
 
             // Kolom yang berhubungan dengan warehouse dan user, menggunakan foreign key
             $table->foreignId('warehouse_id')->constrained('warehouses')->onDelete('restrict'); // Foreign key untuk warehouses
@@ -37,6 +40,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('purchases');
+        Schema::dropIfExists('transactions');
     }
 };

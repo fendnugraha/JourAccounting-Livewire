@@ -37,7 +37,7 @@ new class extends Component
                         wire:navigate>
                         {{ __('Journal') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('dashboard')" :active="request()->is('transaction', 'transaction/*')"
+                    <x-nav-link :href="route('transaction')" :active="request()->is('transaction', 'transaction/*')"
                         wire:navigate>
                         {{ __('Transaction') }}
                     </x-nav-link>

@@ -47,7 +47,10 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/product', ProductTable::class)->name('product');
     Route::get('/product/{product_id}/edit', EditProduct::class)->name('product.edit');
 
+    //Transaction
     Route::get('/transaction', Transaction::class)->name('transaction');
+    Route::get('/transaction/purchases', App\Livewire\Transaction\Purchases::class)->name('transaction.purchases');
+    Route::get('/transaction/sales', App\Livewire\Transaction\Sales::class)->name('transaction.sales');
 });
 
 require __DIR__ . '/auth.php';

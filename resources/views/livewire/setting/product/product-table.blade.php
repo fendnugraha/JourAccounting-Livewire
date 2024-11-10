@@ -100,7 +100,8 @@
                             @endif
                             <tr class="border border-slate-100 hover:bg-yellow-100 odd:bg-white even:bg-blue-50">
                                 <td class="p-3 text-center">{{ $product->id }}</td>
-                                <td>{{ $product->code }} <span class="font-bold text-md">{{ $product->name }}</span>
+                                <td>{{ $product->code }} <span class="font-bold text-md text-blue-950">{{ $product->name
+                                        }}</span>
                                     <br>
                                     <span class="text-slate-600">{{ ucwords($product->category) }} | {{
                                         number_format($product->sold) }} terjual</span>

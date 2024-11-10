@@ -8,10 +8,10 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <x-sub-navlinks :links="[
-    ['href' => route('transaction'), 'route' => 'transaction', 'text' => 'Summary'],
-    ['href' => route('transaction'), 'route' => 'journal/sales', 'text' => 'Sales'],
-    ['href' => route('transaction'), 'route' => 'journal/purchases', 'text' => 'Purchases']
-]" />
+                        ['href' => route('transaction'), 'route' => 'transaction', 'text' => 'Summary'],
+                        ['href' => route('transaction.sales'), 'route' => 'transaction/sales', 'text' => 'Sales'],
+                        ['href' => route('transaction.purchases'), 'route' => 'transaction/purchases', 'text' => 'Purchases']
+                    ]" />
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
                     {{ __("You're logged in!") }}

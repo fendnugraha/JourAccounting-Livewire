@@ -11,7 +11,7 @@ class Product extends Model
 
     public function sale()
     {
-        return $this->hasMany(Sale::class);
+        return $this->hasMany(Transaction::class);
     }
 
     public function newCode($category)

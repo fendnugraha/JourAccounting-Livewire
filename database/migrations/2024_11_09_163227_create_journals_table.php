@@ -52,6 +52,11 @@ return new class extends Migration
                 ->onDelete('restrict')
                 ->name('journals_sales_invoice_foreign'); // Nama constraint unik
 
+            $table->foreign('invoice')
+                ->references('invoice')->on('purchases')
+                ->onDelete('restrict')
+                ->name('journals_purchases_invoice_foreign');
+
             $table->timestamps();
         });
     }

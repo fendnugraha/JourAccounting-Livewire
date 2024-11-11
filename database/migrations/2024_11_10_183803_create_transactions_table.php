@@ -25,6 +25,7 @@ return new class extends Migration
             $table->decimal('cost', 15, 2);  // Biaya per unit, menggunakan decimal
 
             $table->string('transaction_type', 30); // Jenis transaksi (misal: penjualan, pembelian)
+            $table->foreignId('contact_id')->constrained('contacts')->onDelete('restrict');
 
             // Kolom yang berhubungan dengan warehouse dan user, menggunakan foreign key
             $table->foreignId('warehouse_id')->constrained('warehouses')->onDelete('restrict'); // Foreign key untuk warehouses

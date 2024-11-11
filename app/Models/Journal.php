@@ -119,13 +119,13 @@ class Journal extends Model
 
     public function sales_journal()
     {
-        return $this->generate_invoice_journal('SO.BK', 'transactions');
+        return $this->generate_invoice_journal('SO.BK', 'transactions', [['transaction_type', '=', 'Sales']]);
     }
 
     public function purchase_journal()
     {
         // Untuk purchase journal, kita menambahkan kondisi agar hanya mengembalikan yang quantity > 0
-        return $this->generate_invoice_journal('PO.BK', 'transactions', [['quantity', '>', 0]]);
+        return $this->generate_invoice_journal('PO.BK', 'transactions', [['quantity', '>', 0], ['transaction_type', '=', 'Purchases']]);
     }
 
 

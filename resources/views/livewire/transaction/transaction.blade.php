@@ -33,7 +33,8 @@
                         <tbody>
                             @foreach ($transactions as $transaction)
                             <tr class="border-b hover:bg-slate-100">
-                                <td class="p-2"><span class="block text-slate-500">{{ $transaction->date_issued }} | {{
+                                <td class="p-2"><span class="block text-slate-500 text-xs">{{ $transaction->date_issued
+                                        }} | {{
                                         $transaction->invoice }}</span>{{ $transaction->contact->name
                                     }}</td>
                                 <td>{{ number_format($transaction->total, 2) }}</td>

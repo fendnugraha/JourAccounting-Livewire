@@ -41,7 +41,6 @@ class Purchases extends Component
                 'id' => $product->id,
                 'name' => $product->name,
                 'cost' => $product->cost,
-                'cost' => $product->cost,
                 'qty' => $this->qty,
             ];
         }

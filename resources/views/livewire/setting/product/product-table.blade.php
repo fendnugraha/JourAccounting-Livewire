@@ -107,8 +107,8 @@
                                         $product->end_stock . ' Pcs' }} &nbsp;&nbsp;{{
                                         number_format($product->sold) }} terjual</span>
                                 </td>
-                                <td class="text-right p-3">{{ number_format($product->cost, 2) }}</td>
-                                <td class="text-right p-3">{{ number_format($product->price, 2) }}</td>
+                                <td class="text-right p-3 text-xs">{{ number_format($product->cost, 2) }}</td>
+                                <td class="text-right p-3 text-xs">{{ number_format($product->price, 2) }}</td>
                                 <td class="text-center">
                                     <a wire:navigate href="{{ route('product.edit', $product->id) }}"
                                         class="text-slate-800 font-bold bg-yellow-400 py-1 px-3 rounded-lg hover:bg-yellow-300"><i

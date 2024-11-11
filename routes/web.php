@@ -1,8 +1,15 @@
 <?php
 
+use App\Livewire\Report\Report;
+use App\Livewire\Report\Cashflow;
 use App\Livewire\Setting\Setting;
+use App\Livewire\Report\ProfitLoss;
+use App\Livewire\Transaction\Sales;
+use App\Livewire\Report\BalanceSheet;
 use Illuminate\Support\Facades\Route;
+use App\Livewire\Report\GeneralLedger;
 use App\Livewire\Setting\User\EditUser;
+use App\Livewire\Transaction\Purchases;
 use App\Livewire\Setting\User\UserTable;
 use App\Livewire\Transaction\Transaction;
 use App\Livewire\Setting\Account\EditAccount;
@@ -51,6 +58,13 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/transaction', Transaction::class)->name('transaction');
     Route::get('/transaction/purchases', App\Livewire\Transaction\Purchases::class)->name('transaction.purchases');
     Route::get('/transaction/sales', App\Livewire\Transaction\Sales::class)->name('transaction.sales');
+
+    // Report
+    Route::get('/report', App\Livewire\Report\Report::class)->name('report');
+    Route::get('/report/cashflow', Cashflow::class)->name('cashflow');
+    Route::get('/report/balance-sheet', BalanceSheet::class)->name('balance-sheet');
+    Route::get('/report/profit-loss', ProfitLoss::class)->name('profit-loss');
+    Route::get('/report/general-ledger', GeneralLedger::class)->name('general-ledger');
 });
 
 require __DIR__ . '/auth.php';

@@ -17,9 +17,9 @@ return new class extends Migration
             $table->string('name', 160)->unique();
             $table->decimal('cost', 10, 2);
             $table->decimal('price', 10, 2);
-            $table->unsignedInteger('sold')->default(0);
-            $table->unsignedInteger('init_stock')->default(0);
-            $table->unsignedInteger('end_stock')->default(0);
+            $table->integer('sold')->default(0);
+            $table->integer('init_stock')->default(0);
+            $table->integer('end_stock')->default(0);
             $table->string('category', 60)->nullable();
             $table->timestamps();
         });

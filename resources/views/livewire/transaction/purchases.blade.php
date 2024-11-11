@@ -42,7 +42,7 @@
 
 
                         <!-- Display search results only when `showResults` is true -->
-                        <div class="absolute top-14 left-0 w-full sm:w-1/2 bg-white border border-gray-200 rounded-lg shadow-lg"
+                        <div class="absolute top-18 left-0 w-full sm:w-3/4 bg-white border border-gray-200 rounded-lg shadow-lg"
                             x-show="showResults" x-transition x-on:click.away="showResults = false">
                             <table class="table-auto text-sm w-full">
                                 <tbody>

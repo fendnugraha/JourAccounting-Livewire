@@ -24,6 +24,7 @@
 
             <div class="grid sm:grid-cols-4 grid-cols-1 gap-2">
                 <div class="bg-white p-3 text-gray-900 shadow-sm sm:rounded-lg col-span-3">
+                    <h1 class="text-lg font-bold mb-3">{{ __('Purchase Order') }}</h1>
                     <div class="relative z-50" x-data="{ showResults: false }">
                         <div class="mb-2">
                             <label class="block" for="contact_id">Supplier</label>

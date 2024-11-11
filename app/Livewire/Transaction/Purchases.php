@@ -94,7 +94,7 @@ class Purchases extends Component
             'payment' => 'required|numeric',
         ]);
 
-        $invoice = (new Journal())->sales_journal();
+        $invoice = (new Journal())->purchase_journal();
 
         try {
             DB::beginTransaction();

@@ -58,6 +58,12 @@ class Sales extends Component
         $this->discount = $value === null || $value === '' ? 0 : $value;
     }
 
+    public function updatedserviceFee($value)
+    {
+        // Set discount to 0 if the input is null or empty
+        $this->serviceFee = $value === null || $value === '' ? 0 : $value;
+    }
+
     public function removeFromCart($productId)
     {
         unset($this->salesCart[$productId]);
@@ -130,7 +136,7 @@ class Sales extends Component
                     continue; // Skip if the product is not found
                 }
 
-                $jual = $item['price'] * $item['qty'];
+                $jual = ($item['price'] * $item['qty']) - $this->discount;
                 $modal = $product->cost * $item['qty'];
                 $initial_stock = $product->end_stock;
                 $initial_cost = $product->price;
@@ -172,11 +178,21 @@ class Sales extends Component
                 }
             }
 
+            if ($this->discount > 0) {
+                $this->addToJournal($invoice, "60111-001", "40100-001", $this->discount);
+            }
+
+            if ($this->serviceFee > 0) {
+                $this->addToJournal($invoice, $this->account, "40100-001", $this->serviceFee);
+            }
+
             DB::commit();
             session()->flash('success', 'Penjualan berhasil ditambahkan');
             $this->clearCart();
             $this->reset('account', 'contact_id', 'payment');
             $this->total = 0;
+            $this->discount = 0;
+            $this->serviceFee = 0;
         } catch (\Exception $e) {
             DB::rollBack();
             session()->flash('error', $e->getMessage());

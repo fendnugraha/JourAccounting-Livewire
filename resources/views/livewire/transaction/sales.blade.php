@@ -138,12 +138,22 @@
                                 <td class="text-start">Subtotal</td>
                                 <td class="text-end">{{ number_format($total, 2) }}</td>
                             </tr>
+                            @if ($serviceFee)
+                            <tr>
+                                <td class="text-start">Service Fee</td>
+                                <td class="text-end"
+                                    x-text="$wire.serviceFee ? new Intl.NumberFormat().format($wire.serviceFee) : ''">
+                                </td>
+                            </tr>
+                            @endif
+                            @if ($discount)
                             <tr>
                                 <td class="text-start">Discount</td>
                                 <td class="text-end text-red-600"
                                     x-text="$wire.discount ? '-' + new Intl.NumberFormat().format($wire.discount) : ''">
                                 </td>
                             </tr>
+                            @endif
                         </thead>
                     </table>
                     <div class="border-b mb-3 py-3" x-data>
@@ -154,20 +164,31 @@
 
                     <div class="bg-slate-100 p-2 rounded-lg">
                         <h4 class="font-bold text-slate-600">Total</h4>
-                        <h1 class="font-bold text-2xl text-end"><sup>Rp</sup> {{ number_format($total - $discount, 2) }}
+                        <h1 class="font-bold text-2xl text-end"><sup>Rp</sup> {{ number_format($total + $serviceFee -
+                            $discount, 2) }}
                         </h1>
                     </div>
-                    <label for="account">Pembayaran</label>
-                    <select class="w-full text-sm border rounded-lg p-2 mb-3" wire:model.live="account" id="account">
-                        <option value="">--Pilih Pembayaran--</option>
-                        @foreach ($accounts as $account)
-                        <option value="{{ $account->acc_code }}">{{ $account->acc_name }}</option>
-                        @endforeach
-                    </select>
-                    <div class="flex justify-end gap-2">
-                        <button class="text-white font-bold bg-red-400 py-1 px-3 rounded-lg hover:bg-red-300"
+                    <div class="mb-2">
+                        <label class="font-bold">Jasa Service</label>
+                        <input class="w-full text-end text-sm border rounded-lg p-2" type="number" name="serviceFee"
+                            wire:model.live.defer="serviceFee"
+                            x-on:input="$wire.set('serviceFee', $event.target.value)">
+                    </div>
+                    <div class="mb-3 ">
+                        <label for="account">Pembayaran</label>
+                        <select class="w-full text-sm border rounded-lg p-2 @error('account') border-red-500 
+                    @enderror" wire:model.live="account" id="account">
+                            <option value="">--Pilih Account--</option>
+                            @foreach ($accounts as $account)
+                            <option value="{{ $account->acc_code }}">{{ $account->acc_name }}</option>
+                            @endforeach
+                        </select>
+                        @error('account') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button class="text-white font-bold bg-red-400 py-2 px-3 rounded-2xl hover:bg-red-300"
                             wire:click="clearCart">Clear Cart</button>
-                        <button class="text-white font-bold bg-blue-400 py-1 px-3 rounded-lg hover:bg-blue-300"
+                        <button class="text-white font-bold bg-gray-700 py-2 px-3 rounded-2xl hover:bg-gray-600"
                             wire:click="storeCart">
                             Checkout
                         </button>
@@ -177,6 +198,8 @@
             </div>
         </div>
     </div>
+
+    {{-- Mobile --}}
     <div class="fixed sm:hidden bottom-0 w-full p-4 z-[99]" x-data="{ showCart: false }">
         @if (count($salesCart) > 0)
         <!-- Cart Details Section -->
@@ -206,19 +229,24 @@
                 <input class="w-full text-end text-sm border rounded-lg p-2" type="number" name="serviceFee"
                     wire:model.live="serviceFee">
             </div>
-            <label for="account">Pembayaran</label>
-            <select class="w-full text-sm border rounded-lg p-2 mb-3" wire:model.live="account" id="account">
-                <option value="">--Pilih Account--</option>
-                @foreach ($accounts as $account)
-                <option value="{{ $account->acc_code }}">{{ $account->acc_name }}</option>
-                @endforeach
-            </select>
+            <div class="mb-3 ">
+                <label for="account">Pembayaran</label>
+                <select class="w-full text-sm border rounded-lg p-2 @error('account') border-red-500 
+            @enderror" wire:model.live="account" id="account">
+                    <option value="">--Pilih Account--</option>
+                    @foreach ($accounts as $account)
+                    <option value="{{ $account->acc_code }}">{{ $account->acc_name }}</option>
+                    @endforeach
+                </select>
+                @error('account') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+            </div>
             <div class="grid grid-cols-2 gap-2">
                 <button class="text-white font-bold bg-red-400 py-3 px-3 rounded-2xl hover:bg-red-300"
-                    wire:click="clearCart" wire:confirm="Apakah anda yakin menghapus data ini?">Clear Cart</button>
+                    wire:click="clearCart" wire:confirm="Apakah anda yakin menghapus data ini?"><i
+                        class="fa fa-trash"></i> Clear Cart</button>
                 <button class="text-white font-bold bg-gray-700 py-3 px-3 rounded-2xl hover:bg-gray-600"
                     wire:click="storeCart">
-                    Checkout
+                    <i class="fa fa-check"></i> Checkout
                 </button>
             </div>
         </div>
@@ -238,5 +266,5 @@
             </div>
         </div>
     </div>
-
+    {{-- End Mobile --}}
 </div>

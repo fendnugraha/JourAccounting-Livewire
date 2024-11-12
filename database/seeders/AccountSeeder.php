@@ -20,7 +20,7 @@ class AccountSeeder extends Seeder
             ['code' => '10400', 'name' => 'Piutang', 'status' => 'D', 'type' => 'Assets'],
             ['code' => '10500', 'name' => 'Piutang Lainnya', 'status' => 'D', 'type' => 'Assets'],
             ['code' => '10600', 'name' => 'Persediaan', 'status' => 'D', 'type' => 'Assets'],
-            ['code' => '10700', 'name' => 'Persediaan Wip', 'status' => 'D', 'type' => 'Assets'],
+            ['code' => '10700', 'name' => 'Persediaan WIP', 'status' => 'D', 'type' => 'Assets'],
             ['code' => '10800', 'name' => 'Pembayaran Dimuka', 'status' => 'D', 'type' => 'Assets'],
             ['code' => '10900', 'name' => 'Pajak Dibayar Dimuka', 'status' => 'D', 'type' => 'Assets'],
             ['code' => '11100', 'name' => 'Investasi Jangka Pendek', 'status' => 'D', 'type' => 'Assets'],
@@ -41,7 +41,7 @@ class AccountSeeder extends Seeder
             ['code' => '20700', 'name' => 'Utang Imbalan Kerja Jangka Panjang (Psak 24)', 'status' => 'K', 'type' => 'Liabilities'],
             ['code' => '30100', 'name' => 'Ekuitas', 'status' => 'K', 'type' => 'Ekuitas'],
             ['code' => '40100', 'name' => 'Penjualan Barang Dan Jasa', 'status' => 'K', 'type' => 'Pendapatan'],
-            ['code' => '40200', 'name' => 'Potongan Penjualan', 'status' => 'K', 'type' => 'Pendapatan'],
+            ['code' => '40200', 'name' => 'Potongan Pembelian', 'status' => 'K', 'type' => 'Pendapatan'],
             ['code' => '40300', 'name' => 'Pendapatan Lainnya', 'status' => 'K', 'type' => 'Pendapatan'],
             ['code' => '40400', 'name' => 'Retur Penjualan & Penalti', 'status' => 'K', 'type' => 'Pendapatan'],
             ['code' => '50100', 'name' => 'Beban Pemakaian Bahan Baku', 'status' => 'D', 'type' => 'Harga Pokok Produksi'],
@@ -56,7 +56,7 @@ class AccountSeeder extends Seeder
             ['code' => '60108', 'name' => 'Beban Keselamatan Kerja', 'status' => 'D', 'type' => 'Biaya'],
             ['code' => '60109', 'name' => 'Beban Pemeliharaan Dan Perbaikan Aset Tetap', 'status' => 'D', 'type' => 'Biaya'],
             ['code' => '60110', 'name' => 'Beban Lain-Lain', 'status' => 'D', 'type' => 'Biaya'],
-            ['code' => '60111', 'name' => 'Pengurangan Pembelian', 'status' => 'D', 'type' => 'Biaya'],
+            ['code' => '60111', 'name' => 'Pengurangan Penjualan', 'status' => 'D', 'type' => 'Biaya'],
             ['code' => '60112', 'name' => 'Beban Board Of Director (Bod)', 'status' => 'D', 'type' => 'Biaya'],
             ['code' => '60113', 'name' => 'Beban Lain-Lain Corporate', 'status' => 'D', 'type' => 'Biaya']
         ];

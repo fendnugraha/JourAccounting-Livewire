@@ -25,9 +25,10 @@
                     <div class="grid grid-cols-2 gap-2 mb-4">
                         <div class="">
                             @foreach ($revenue as $accountGroup)
-                            <table class="table-auto w-full text-sm mb-2 bg-white">
+                            <table class="table-auto w-full text-sm mb-2 bg-white" {{ $accountGroup->sum('balance') !==
+                                0 ? '' : 'hidden' }}>
                                 <thead>
-                                    <tr class="border-b" {{ $accountGroup->sum('balance') !== 0 ? '' : 'hidden' }}>
+                                    <tr class="border-b">
                                         <th class="p-3 text-start">{{ $accountGroup->first()->account->name }}</th>
                                         <th class="text-end p-3">{{ number_format(intval($accountGroup->sum('balance')))
                                             }}</th>
@@ -44,9 +45,10 @@
                             </table>
                             @endforeach
                             @foreach ($cost as $accountGroup)
-                            <table class="table-auto w-full text-sm mb-2 bg-white">
+                            <table class="table-auto w-full text-sm mb-2 bg-white" {{ $accountGroup->sum('balance') !==
+                                0 ? '' : 'hidden' }}>
                                 <thead>
-                                    <tr class="border-b" {{ $accountGroup->sum('balance') !== 0 ? '' : 'hidden' }}>
+                                    <tr class="border-b">
                                         <th class="p-3 text-start">{{ $accountGroup->first()->account->name }}</th>
                                         <th class="text-end p-3">{{ number_format(intval($accountGroup->sum('balance')))
                                             }}</th>
@@ -65,9 +67,10 @@
                         </div>
                         <div class="">
                             @foreach ($expense as $accountGroup)
-                            <table class="table-auto w-full text-sm mb-2 bg-white">
+                            <table class="table-auto w-full text-sm mb-2 bg-white" {{ $accountGroup->sum('balance') !==
+                                0 ? '' : 'hidden' }}>
                                 <thead>
-                                    <tr class="border-b" {{ $accountGroup->sum('balance') !== 0 ? '' : 'hidden' }}>
+                                    <tr class="border-b">
                                         <th class="p-3 text-start">{{ $accountGroup->first()->account->name }}</th>
                                         <th class="text-end p-3">{{ number_format(intval($accountGroup->sum('balance')))
                                             }}</th>

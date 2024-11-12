@@ -21,7 +21,7 @@
                         <input type="datetime-local" wire:model.live="endDate"
                             class="text-sm border rounded-lg p-2 w-full">
                     </div>
-                    <table class="w-full text-sm">
+                    <table class="w-full text-sm mb-4">
                         <thead>
                             <tr class="border-b">
                                 <th class="p-4">Customer / Supplier</th>
@@ -37,7 +37,9 @@
                                         }} | {{
                                         $transaction->invoice }}</span>{{ $transaction->contact->name
                                     }}</td>
-                                <td>{{ number_format($transaction->total, 2) }}</td>
+                                <td>{{ $transaction->transaction_type == 'Sales' ?
+                                    number_format($transaction->totalPrice, 2) :
+                                    number_format($transaction->totalCost, 2) }}</td>
                                 <td class="text-center"><span
                                         class="text-white {{ $transaction->transaction_type == 'Sales' ? 'bg-red-500' : 'bg-green-500' }} py-1 px-2 rounded-lg text-center">{{
                                         $transaction->transaction_type

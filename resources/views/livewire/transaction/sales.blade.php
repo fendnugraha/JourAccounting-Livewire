@@ -1,4 +1,4 @@
-<div>
+<div class="">
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             {{ $title ?? __('Dashboard') }}
@@ -6,12 +6,17 @@
     </x-slot>
     @if(session('success'))
     <x-notification class="bg-green-500 text-white mb-3">
-        <strong><i class="fas fa-check-circle"></i> Success!!</strong>
+        <div>
+            <strong class="text-sm"><i class="fas fa-check-circle"></i> Success!!</strong>
+            <h4 class="text-xs">{{ session('success') ?? 'Input berhasil ditambahkan' }}</h4>
+        </div>
     </x-notification>
     @elseif (session('error'))
     <x-notification class="bg-red-500 text-white mb-3">
-        <strong>Error!!</strong> {{
-        session('error') }}
+        <div>
+            <strong class="text-sm"><i class="fas fa-times-circle"></i> Error!!</strong>
+            <h4 class="text-xs">{{ session('error') ?? 'Terjadi kesalahan, silahkan coba lagi' }}</h4>
+        </div>
     </x-notification>
     @endif
     <div class="py-12">
@@ -22,24 +27,23 @@
                 ['href' => route('transaction.purchases'), 'route' => 'transaction.purchases', 'text' => 'Purchases']
             ]" />
 
-            <div class="grid sm:grid-cols-4 grid-cols-1 gap-2">
+            <div class="grid sm:grid-cols-4 grid-cols-1 gap-2 pb-10 sm:pb-0">
                 <div class="bg-white p-3 text-gray-900 shadow-sm sm:rounded-lg col-span-3">
-                    <h1 class="text-lg font-bold mb-3">{{ __('Sales Order') }}</h1>
+                    {{-- <h1 class="text-lg font-bold mb-3">{{ __('Sales Order') }}</h1> --}}
                     <div class="relative z-50" x-data="{ showResults: false }">
                         <div class="mb-2">
-                            <label class="block" for="contact_id">Supplier</label>
+                            <label class="block" for="contact_id">Customer</label>
                             <select class="w-full sm:w-1/2 text-sm border rounded-lg p-2" wire:model="contact_id"
                                 id="contact_id">
-                                <option value="">--Pilih Supplier--</option>
+                                <option value="">--Pilih Customer--</option>
                                 @foreach ($contacts as $contact)
                                 <option value="{{ $contact->id }}">{{ $contact->name }}</option>
                                 @endforeach
                             </select>
                         </div>
                         <input type="search" class="w-full text-sm border rounded-lg p-2 mb-2"
-                            wire:model.live.debounce.500ms="search"
-                            x-on:input="showResults = $event.target.value.length > 0" placeholder="Search ..">
-
+                            wire:model.live.debounce.500ms="search" x-on:click="showResults = true"
+                            placeholder="Search ..">
 
                         <!-- Display search results only when `showResults` is true -->
                         <div class="absolute top-18 left-0 w-full sm:w-3/4 bg-white border border-gray-200 rounded-lg shadow-lg"
@@ -49,12 +53,12 @@
                                     @foreach ($products as $product)
                                     <tr class="border-b hover:bg-yellow-100">
                                         <td class="p-2">{{ $product->name }}</td>
-                                        <td>{{ number_format($product->cost, 2) }}</td>
+                                        <td>{{ number_format($product->price, 2) }}</td>
                                         <td>
-                                            <button
+                                            <button type="button"
                                                 class="text-white font-bold bg-green-400 py-1 px-3 rounded-lg hover:bg-green-300"
                                                 wire:click="addToCart({{ $product->id }})">
-                                                Add to cart
+                                                <i class="fa fa-plus-circle"></i>
                                             </button>
                                         </td>
                                     </tr>
@@ -64,16 +68,14 @@
                         </div>
                     </div>
                     @if (session('salesCart'))
-                    <table class="table-auto w-full text-xs mb-2">
-                        <thead class="bg-white text-blue-950">
+                    <table class="table-auto w-full text-xs my-2">
+                        {{-- <thead class="bg-white text-blue-950">
                             <tr>
-                                <th class="p-3">Product</th>
-                                <th class="text-center">Quantity</th>
-                                <th class="text-center">Cost</th>
-                                <th class="text-center">Subtotal</th>
+                                <th class="text-start">Quantity</th>
+                                <th class="text-center">Price</th>
                                 <th class="text-center">Action</th>
                             </tr>
-                        </thead>
+                        </thead> --}}
                         <tbody class="bg-white">
                             @php
                             $total = 0;
@@ -85,44 +87,46 @@
                             // Add to the total
                             $total += $subtotal;
                             @endphp
-                            <tr class="border-b border-slate-100 odd:bg-white even:bg-blue-50">
-                                <td class="p-3">{{ $item['name'] }}</td>
+                            <tr>
+                                <td colspan="2" class="text-sm py-2">{{ $item['name'] }}</td>
+                                <td class="text-end py-2">
+                                    <button
+                                        class="text-white font-bold bg-red-400 py-1 px-3 rounded-lg hover:bg-red-300"
+                                        wire:click="removeFromCart({{ $item['id'] }})">
+                                        <i class="fa-solid fa-minus"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr class="border-b border-slate-200">
                                 <td>
                                     <input type="number"
                                         class="w-full text-end text-xs rounded-lg bg-slate-300 border-0"
                                         wire:change="updateQty({{ $item['id'] }}, $event.target.value)"
                                         wire:model="salesCart.{{ $item['id'] }}.qty">
+                                    <span class="font-bold text-blue-900 text-sm">Qty</span>
                                 </td>
-                                <td class="text-end p-3">
+                                <td colspan="2" class="text-end">
                                     <input type="number"
                                         class="w-full text-end text-xs rounded-lg bg-slate-300 border-0"
                                         wire:change="updateCost({{ $item['id'] }}, $event.target.value)"
                                         wire:model="salesCart.{{ $item['id'] }}.price">
-                                </td>
-                                <td class="text-end p-3">
-                                    {{ number_format($subtotal, 2) }}
-                                </td>
-                                <td class="text-center p-3">
-                                    <button
-                                        class="text-white font-bold bg-red-400 py-1 px-3 rounded-lg hover:bg-red-300"
-                                        wire:click="removeFromCart({{ $item['id'] }})">
-                                        Remove
-                                    </button>
+                                    Subtotal: <span class="font-bold text-blue-900 text-sm">{{ number_format($subtotal,
+                                        2)
+                                        }}</span>
                                 </td>
                             </tr>
                             @endforeach
                         </tbody>
                         <tfoot class="bg-gray-100">
                             <tr>
-                                <td colspan="3" class="text-end font-bold p-3">Total:</td>
-                                <td class="text-end font-bold p-3">{{ number_format($total, 2) }}</td>
-                                <td></td>
+                                <td class="text-end font-bold p-3">Total:</td>
+                                <td colspan="2" class="text-end font-bold p-3">{{ number_format($total, 2) }}</td>
                             </tr>
                         </tfoot>
                     </table>
                     @endif
                 </div>
-                <div class="bg-white p-3 text-gray-900 shadow-sm sm:rounded-lg">
+                <div class="bg-white p-3 text-gray-900 shadow-sm sm:rounded-lg hidden sm:block">
                     <h1 class="text-lg font-bold mb-3"><i class="fa fa-shopping-cart"></i> Cart ({{ count($salesCart) ==
                         0 ?
                         'Empty' : count($salesCart) . ' Items' }})
@@ -173,4 +177,66 @@
             </div>
         </div>
     </div>
+    <div class="fixed sm:hidden bottom-0 w-full p-4 z-[99]" x-data="{ showCart: false }">
+        @if (count($salesCart) > 0)
+        <!-- Cart Details Section -->
+        <div class="bg-yellow-200 p-3 text-gray-900 shadow-sm mb-3 rounded-2xl" x-show="showCart" x-transition
+            x-on:click.away="showCart = false">
+            <table class="table-auto w-full mb-2">
+                <thead>
+                    <tr>
+                        <td class="text-start">Subtotal</td>
+                        <td class="text-end">{{ number_format($total, 2) }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-start">Discount</td>
+                        <td class="text-end text-red-600"
+                            x-text="$wire.discount ? '-' + new Intl.NumberFormat().format($wire.discount) : ''">
+                        </td>
+                    </tr>
+                </thead>
+            </table>
+            <div class="border-b border-yellow-300 mb-3 py-3">
+                <label class="font-bold">Discount (Rp)</label>
+                <input class="w-full text-end text-sm border rounded-lg p-2" type="number" name="discount"
+                    wire:model.live="discount">
+            </div>
+            <div class="mb-2">
+                <label class="font-bold">Jasa Service</label>
+                <input class="w-full text-end text-sm border rounded-lg p-2" type="number" name="serviceFee"
+                    wire:model.live="serviceFee">
+            </div>
+            <label for="account">Pembayaran</label>
+            <select class="w-full text-sm border rounded-lg p-2 mb-3" wire:model.live="account" id="account">
+                <option value="">--Pilih Account--</option>
+                @foreach ($accounts as $account)
+                <option value="{{ $account->acc_code }}">{{ $account->acc_name }}</option>
+                @endforeach
+            </select>
+            <div class="grid grid-cols-2 gap-2">
+                <button class="text-white font-bold bg-red-400 py-3 px-3 rounded-2xl hover:bg-red-300"
+                    wire:click="clearCart" wire:confirm="Apakah anda yakin menghapus data ini?">Clear Cart</button>
+                <button class="text-white font-bold bg-gray-700 py-3 px-3 rounded-2xl hover:bg-gray-600"
+                    wire:click="storeCart">
+                    Checkout
+                </button>
+            </div>
+        </div>
+        @endif
+
+        <!-- Toggle Cart Section -->
+        <div class="bg-gray-800 hover:bg-gray-700 text-white p-3 shadow-sm rounded-2xl flex justify-between items-center cursor-pointer"
+            x-on:click="showCart = !showCart">
+            <h1 class="text-xl">
+                <i class="fa fa-shopping-cart"></i>
+                {!! count($salesCart) === 0 ? 'Empty' : '<span class="font-bold text-yellow-400">' . count($salesCart) .
+                    '</span> Items' !!}
+            </h1>
+            <div>
+                <h4 class="text-xs">Total</h4>
+                <h4 class="font-bold text-xl">{{ number_format($total - $discount, 2) }}</h4>
+            </div>
+        </div>
+    </div>
+
 </div>

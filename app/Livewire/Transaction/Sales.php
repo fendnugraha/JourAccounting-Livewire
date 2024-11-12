@@ -23,6 +23,7 @@ class Sales extends Component
     public $payment = 0;
     public $account;
     public $discount = 0;
+    public $serviceFee = 0;
     public $contact_id = 1;
 
     public function mount()
@@ -49,6 +50,12 @@ class Sales extends Component
         $this->dispatch('cartUpdated');
 
         $this->updateSession();
+    }
+
+    public function updatedDiscount($value)
+    {
+        // Set discount to 0 if the input is null or empty
+        $this->discount = $value === null || $value === '' ? 0 : $value;
     }
 
     public function removeFromCart($productId)
@@ -166,8 +173,10 @@ class Sales extends Component
             }
 
             DB::commit();
-            session()->flash('success', 'Penjualan Berhasil');
+            session()->flash('success', 'Penjualan berhasil ditambahkan');
             $this->clearCart();
+            $this->reset('account', 'contact_id', 'payment');
+            $this->total = 0;
         } catch (\Exception $e) {
             DB::rollBack();
             session()->flash('error', $e->getMessage());

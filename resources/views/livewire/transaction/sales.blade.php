@@ -19,7 +19,7 @@
         </div>
     </x-notification>
     @endif
-    <div class="py-12">
+    <div class="py-6 sm:py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <x-sub-navlinks :links="[
                 ['href' => route('transaction'), 'route' => 'transaction', 'text' => 'Summary'],
@@ -43,7 +43,7 @@
                         </div>
                         <input type="search" class="w-full text-sm border rounded-lg p-2 mb-2"
                             wire:model.live.debounce.500ms="search" x-on:click="showResults = true"
-                            placeholder="Search ..">
+                            placeholder="Search item..">
 
                         <!-- Display search results only when `showResults` is true -->
                         <div class="absolute top-18 left-0 w-full sm:w-3/4 bg-white border border-gray-200 rounded-lg shadow-lg"
@@ -88,7 +88,7 @@
                             $total += $subtotal;
                             @endphp
                             <tr>
-                                <td colspan="2" class="text-sm py-2">{{ $item['name'] }}</td>
+                                <td colspan="2" class="text-lg py-2">{{ $item['name'] }}</td>
                                 <td class="text-end py-2">
                                     <button
                                         class="text-white font-bold bg-red-400 py-1 px-3 rounded-lg hover:bg-red-300"
@@ -211,12 +211,22 @@
                         <td class="text-start">Subtotal</td>
                         <td class="text-end">{{ number_format($total, 2) }}</td>
                     </tr>
+                    @if ($serviceFee)
+                    <tr>
+                        <td class="text-start">Service Fee</td>
+                        <td class="text-end"
+                            x-text="$wire.serviceFee ? new Intl.NumberFormat().format($wire.serviceFee) : ''">
+                        </td>
+                    </tr>
+                    @endif
+                    @if ($discount)
                     <tr>
                         <td class="text-start">Discount</td>
                         <td class="text-end text-red-600"
                             x-text="$wire.discount ? '-' + new Intl.NumberFormat().format($wire.discount) : ''">
                         </td>
                     </tr>
+                    @endif
                 </thead>
             </table>
             <div class="border-b border-yellow-300 mb-3 py-3">
@@ -262,7 +272,7 @@
             </h1>
             <div>
                 <h4 class="text-xs">Total</h4>
-                <h4 class="font-bold text-xl">{{ number_format($total - $discount, 2) }}</h4>
+                <h4 class="font-bold text-xl">{{ number_format($total + $serviceFee - $discount, 2) }}</h4>
             </div>
         </div>
     </div>

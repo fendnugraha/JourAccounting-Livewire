@@ -7,6 +7,7 @@ use App\Models\Role;
 use App\Models\User;
 use App\Models\Contact;
 use App\Models\Warehouse;
+use Database\Factories\ProductFactory;
 use Illuminate\Database\Seeder;
 use Database\Seeders\AccountSeeder;
 use Database\Seeders\ChartOfAccountSeeder;
@@ -23,6 +24,7 @@ class DatabaseSeeder extends Seeder
         User::factory()->create([
             'name' => 'fend',
             'email' => 'fend@jour.com',
+            'password' => 'user123'
         ]);
 
         User::factory()->create([
@@ -59,5 +61,7 @@ class DatabaseSeeder extends Seeder
             AccountSeeder::class,
             ChartOfAccountSeeder::class
         ]);
+
+        ProductFactory::new()->count(10)->create();
     }
 }

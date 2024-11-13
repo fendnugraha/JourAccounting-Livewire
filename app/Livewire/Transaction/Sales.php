@@ -99,7 +99,7 @@ class Sales extends Component
         session()->forget('salesCart'); // Remove the cart data from the session
     }
 
-    private function addToJournal($invoice, $debt, $cred, $amount)
+    private function addToJournal($invoice, $debt, $cred, $amount, $description = 'Penjualan Barang')
     {
         $journal = new Journal();
         $journal->date_issued = date('Y-m-d H:i');
@@ -108,7 +108,7 @@ class Sales extends Component
         $journal->cred_code = $cred;
         $journal->amount = $amount; // Ensure $jual is defined
         $journal->fee_amount = 0; // Ensure $fee is defined
-        $journal->description = "Penjualan Barang";
+        $journal->description = $description;
         $journal->trx_type = 'Sales';
         $journal->user_id = Auth::user()->id;
         $journal->warehouse_id = Auth::user()->role->warehouse_id;
@@ -166,24 +166,24 @@ class Sales extends Component
 
                 $updateWarehouseStock = WarehouseStock::where('warehouse_id', Auth::user()->role->warehouse_id)->where('product_id', $product->id)->first();
                 if ($updateWarehouseStock) {
-                    $updateWarehouseStock->current_stock += $item['qty'];
+                    $updateWarehouseStock->current_stock -= $item['qty'];
                     $updateWarehouseStock->save();
                 } else {
                     $warehouseStock = new WarehouseStock();
                     $warehouseStock->warehouse_id = Auth::user()->role->warehouse_id;
                     $warehouseStock->product_id = $product->id;
-                    $warehouseStock->init_stock = $item['qty'];
-                    $warehouseStock->current_stock = $item['qty'];
+                    $warehouseStock->init_stock = 0;
+                    $warehouseStock->current_stock = -$item['qty'];
                     $warehouseStock->save();
                 }
             }
 
             if ($this->discount > 0) {
-                $this->addToJournal($invoice, "60111-001", "40100-001", $this->discount);
+                $this->addToJournal($invoice, "60111-001", "40100-001", $this->discount, 'Potongan Penjualan');
             }
 
             if ($this->serviceFee > 0) {
-                $this->addToJournal($invoice, $this->account, "40100-001", $this->serviceFee);
+                $this->addToJournal($invoice, $this->account, "40100-001", $this->serviceFee, 'Jasa Service');
             }
 
             DB::commit();
@@ -206,7 +206,7 @@ class Sales extends Component
     {
         return view('livewire.transaction.sales', [
             'title' => 'Sales',
-            'products' => Product::where('name', 'like', '%' . $this->search . '%')->paginate(10),
+            'products' => Product::where('name', 'like', '%' . $this->search . '%')->paginate(5),
             'accounts' => ChartOfAccount::whereIn('account_id', [1, 2])->get(),
             'contacts' => Contact::all()
         ]);

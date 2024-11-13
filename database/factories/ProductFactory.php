@@ -25,9 +25,9 @@ class ProductFactory extends Factory
             'cost' => $cost,
             'price' => $price,
             'category' => $this->faker->randomElement(['Charger', 'LCD', 'Board', 'Battery']),
-            'init_stock' => $this->faker->numberBetween(0, 100),
-            'sold' => $this->faker->numberBetween(0, 100),
-            'end_stock' => $this->faker->numberBetween(0, 100),
+            'init_stock' => 0,
+            'sold' => 0,
+            'end_stock' => 0,
         ];
     }
 }

@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Auth;
 class Purchases extends Component
 {
     public $search = '';
-    public $cart = [];
+    public $purchaseCart = [];
     public $total = 0;
     public $qty = 1;
     public $product_id;
@@ -28,16 +28,16 @@ class Purchases extends Component
     public function mount()
     {
         // Load the cart from the session when the component is mounted
-        $this->cart = session()->get('cart', []);
-        $this->payment = collect($this->cart)->sum(fn($item) => $item['cost'] * $item['qty']);
+        $this->purchaseCart = session()->get('purchaseCart', []);
+        $this->payment = collect($this->purchaseCart)->sum(fn($item) => $item['cost'] * $item['qty']);
     }
     public function addToCart($product_id)
     {
-        if (isset($this->cart[$product_id])) {
-            $this->cart[$product_id]['qty'] += $this->qty;
+        if (isset($this->purchaseCart[$product_id])) {
+            $this->purchaseCart[$product_id]['qty'] += $this->qty;
         } else {
             $product = Product::find($product_id);
-            $this->cart[$product_id] = [
+            $this->purchaseCart[$product_id] = [
                 'id' => $product->id,
                 'name' => $product->name,
                 'cost' => $product->cost,
@@ -45,7 +45,7 @@ class Purchases extends Component
             ];
         }
 
-        $this->total += $this->cart[$product_id]['cost'] * $this->cart[$product_id]['qty'];
+        $this->total += $this->purchaseCart[$product_id]['cost'] * $this->purchaseCart[$product_id]['qty'];
         $this->dispatch('cartUpdated');
 
         $this->updateSession();
@@ -53,14 +53,14 @@ class Purchases extends Component
 
     public function removeFromCart($productId)
     {
-        unset($this->cart[$productId]);
+        unset($this->purchaseCart[$productId]);
         $this->updateSession();
     }
 
     public function updateQty($productId, $qty)
     {
         if ($qty > 0) {
-            $this->cart[$productId]['qty'] = $qty;
+            $this->purchaseCart[$productId]['qty'] = $qty;
         } else {
             $this->removeFromCart($productId);
         }
@@ -70,20 +70,38 @@ class Purchases extends Component
 
     public function updateCost($productId, $cost)
     {
-        $this->cart[$productId]['cost'] = $cost;
+        $this->purchaseCart[$productId]['cost'] = $cost;
         $this->updateSession();
     }
 
     private function updateSession()
     {
         // Save the cart back to the session
-        session()->put('cart', $this->cart);
+        session()->put('purchaseCart', $this->purchaseCart);
     }
 
     public function clearCart()
     {
-        $this->cart = []; // Clear the cart array
-        session()->forget('cart'); // Remove the cart data from the session
+        $this->purchaseCart = []; // Clear the cart array
+        session()->forget('purchaseCart'); // Remove the cart data from the session
+    }
+
+    private function addToJournal($invoice, $debt, $cred, $amount, $description = 'Pembelian Barang')
+    {
+        $journal = new Journal();
+        $journal->date_issued = date('Y-m-d H:i');
+        $journal->invoice = $invoice; // Ensure $invoice is defined
+        $journal->debt_code = $debt;
+        $journal->cred_code = $cred;
+        $journal->amount = $amount; // Ensure $jual is defined
+        $journal->fee_amount = 0; // Ensure $fee is defined
+        $journal->description = $description;
+        $journal->trx_type = 'Purchase';
+        $journal->user_id = Auth::user()->id;
+        $journal->warehouse_id = Auth::user()->role->warehouse_id;
+        $journal->save();
+
+        return $journal;
     }
 
     public function storeCart()
@@ -98,7 +116,7 @@ class Purchases extends Component
         try {
             DB::beginTransaction();
 
-            foreach ($this->cart as $item) {
+            foreach ($this->purchaseCart as $item) {
                 // dd($item, $this->account, $this->payment);
                 $product = Product::find($item['id']);
                 if (!$product) {
@@ -110,18 +128,7 @@ class Purchases extends Component
                 $initial_cost = $product->cost;
                 $initTotal = $initial_stock * $initial_cost;
 
-                $journal = new Journal();
-                $journal->date_issued = date('Y-m-d H:i');
-                $journal->invoice = $invoice; // Ensure $invoice is defined
-                $journal->debt_code = "10600-001";
-                $journal->cred_code = $this->account;
-                $journal->amount = $modal; // Ensure $modal is defined
-                $journal->fee_amount = 0; // Ensure $fee is defined
-                $journal->description = "Penjualan Barang";
-                $journal->trx_type = 'Accessories';
-                $journal->user_id = Auth::user()->id;
-                $journal->warehouse_id = Auth::user()->role->warehouse_id;
-                $journal->save();
+                $this->addToJournal($invoice, "10600-001", $this->account, $modal);
 
                 $transaction = new Transaction();
                 $transaction->date_issued = date('Y-m-d H:i');
@@ -130,7 +137,7 @@ class Purchases extends Component
                 $transaction->quantity = $item['qty'];
                 $transaction->price = 0;
                 $transaction->cost = $item['cost'];
-                $transaction->transaction_type = 'Purchases';
+                $transaction->transaction_type = 'Purchase';
                 $transaction->contact_id = $this->contact_id;
                 $transaction->warehouse_id = Auth::user()->id;
                 $transaction->user_id = Auth::user()->role->warehouse_id;;
@@ -157,9 +164,13 @@ class Purchases extends Component
                     $warehouseStock = new WarehouseStock();
                     $warehouseStock->warehouse_id = Auth::user()->role->warehouse_id;
                     $warehouseStock->product_id = $product->id;
-                    $warehouseStock->init_stock = $item['qty'];
+                    $warehouseStock->init_stock = 0;
                     $warehouseStock->current_stock = $item['qty'];
                     $warehouseStock->save();
+                }
+
+                if ($this->discount > 0) {
+                    $this->addToJournal($invoice, "10600-001", "40200-001", $this->discount, 'Diskon Pembelian Barang');
                 }
             }
 
@@ -171,7 +182,7 @@ class Purchases extends Component
             session()->flash('error', $e->getMessage());
         }
 
-        $this->dispatch('PurchaseCreated', $this->cart);
+        $this->dispatch('PurchaseCreated', $this->purchaseCart);
     }
 
 
@@ -179,8 +190,8 @@ class Purchases extends Component
     public function render()
     {
         return view('livewire.transaction.purchases', [
-            'title' => 'Purchases',
-            'products' => Product::where('name', 'like', '%' . $this->search . '%')->paginate(10),
+            'title' => 'Purchase Order',
+            'products' => Product::where('name', 'like', '%' . $this->search . '%')->paginate(5),
             'accounts' => ChartOfAccount::whereIn('account_id', [1, 2])->get(),
             'contacts' => Contact::all()
         ]);

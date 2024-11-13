@@ -91,6 +91,7 @@ class Sales extends Component
     {
         // Save the cart back to the session
         session()->put('salesCart', $this->salesCart);
+        $this->payment = collect($this->salesCart)->sum(fn($item) => $item['price'] * $item['qty']);
     }
 
     public function clearCart()
@@ -205,7 +206,7 @@ class Sales extends Component
     public function render()
     {
         return view('livewire.transaction.sales', [
-            'title' => 'Sales',
+            'title' => 'Sales Order',
             'products' => Product::where('name', 'like', '%' . $this->search . '%')->paginate(5),
             'accounts' => ChartOfAccount::whereIn('account_id', [1, 2])->get(),
             'contacts' => Contact::all()

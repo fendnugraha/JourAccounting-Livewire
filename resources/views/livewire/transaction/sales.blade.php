@@ -31,10 +31,10 @@
                 <div class="bg-white p-3 text-gray-900 shadow-sm sm:rounded-lg col-span-3">
                     {{-- <h1 class="text-lg font-bold mb-3">{{ __('Sales Order') }}</h1> --}}
                     <div class="relative z-50" x-data="{ showResults: false }">
-                        <div class="mb-2">
-                            <label class="block" for="contact_id">Customer</label>
-                            <select class="w-full sm:w-1/2 text-sm border rounded-lg p-2" wire:model="contact_id"
-                                id="contact_id">
+                        <div class="mb-2 grid grid-cols-4 gap-2 items-center">
+                            <label class="" for="contact_id">Customer</label>
+                            <select class="w-full sm:w-1/2 text-sm border rounded-lg p-2 col-span-3"
+                                wire:model="contact_id" id="contact_id">
                                 <option value="">--Pilih Customer--</option>
                                 @foreach ($contacts as $contact)
                                 <option value="{{ $contact->id }}">{{ $contact->name }}</option>
@@ -105,7 +105,7 @@
                                         wire:model="salesCart.{{ $item['id'] }}.qty">
                                     <span class="font-bold text-blue-900 text-sm">Qty</span>
                                 </td>
-                                <td colspan="2" class="text-end">
+                                <td colspan="2" class="ps-2 text-end">
                                     <input type="number"
                                         class="w-full text-end text-xs rounded-lg bg-slate-300 border-0"
                                         wire:change="updateCost({{ $item['id'] }}, $event.target.value)"
@@ -200,8 +200,8 @@
     </div>
 
     {{-- Mobile --}}
+    @if (count($salesCart) > 0)
     <div class="fixed sm:hidden bottom-0 w-full p-4 z-[99]" x-data="{ showCart: false }">
-        @if (count($salesCart) > 0)
         <!-- Cart Details Section -->
         <div class="bg-yellow-200 p-3 text-gray-900 shadow-sm mb-3 rounded-2xl" x-show="showCart" x-transition
             x-on:click.away="showCart = false">
@@ -260,7 +260,6 @@
                 </button>
             </div>
         </div>
-        @endif
 
         <!-- Toggle Cart Section -->
         <div class="bg-gray-800 hover:bg-gray-700 text-white p-3 shadow-sm rounded-2xl flex justify-between items-center cursor-pointer"
@@ -276,5 +275,7 @@
             </div>
         </div>
     </div>
+    @endif
+
     {{-- End Mobile --}}
 </div>

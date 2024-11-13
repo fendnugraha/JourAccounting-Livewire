@@ -11,12 +11,13 @@ use Livewire\Attributes\Layout;
 class BalanceSheet extends Component
 {
     public $endDate;
+    public $profitLossData;
 
     public function mount()
     {
         $journal = new Journal();
         $this->endDate = Carbon::now()->endOfMonth()->format('Y-m-d H:i');
-        $journal->profitLossCount('0000-00-00', $this->endDate);
+        $this->profitLossData = $journal->profitLossCount('0000-00-00', $this->endDate);
     }
 
     #[Layout('layouts.app')]

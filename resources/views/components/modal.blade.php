@@ -10,8 +10,8 @@
     <div x-on:click="isModalOpen = false" class="fixed inset-0 bg-gray-500/75
     "></div>
     <div
-        class="bg-blue-300/90 backdrop-blur-md rounded-lg m-auto fixed inset-0 w-full sm:w-3/4 lg:w-1/2 overflow-y-auto h-fit">
-        <div class="flex justify-between items-center p-4 border-b">
+        class="bg-white backdrop-blur-md rounded-2xl m-auto fixed inset-0 w-full sm:w-3/4 lg:w-1/2 overflow-y-auto h-fit">
+        <div class="flex justify-between items-center p-5 border-b">
             <h5 class="font-bold text-lg">{{ $modalTitle }}</h5>
             <button x-on:click="isModalOpen = false" class="text-gray-500 hover:text-gray-700 focus:outline-none">
                 <svg class="h-6 w-6 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -20,7 +20,7 @@
                 </svg>
             </button>
         </div>
-        <div class="p-3">
+        <div class="p-5">
             {{ $slot }}
         </div>
     </div>

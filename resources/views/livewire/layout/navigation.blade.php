@@ -33,8 +33,7 @@ new class extends Component
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" wire:navigate>
                         {{ __('Dashboard') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('dashboard')" :active="request()->is('journal', 'journal/*')"
-                        wire:navigate>
+                    <x-nav-link :href="route('journal')" :active="request()->is('journal', 'journal/*')" wire:navigate>
                         {{ __('Journal') }}
                     </x-nav-link>
                     <x-nav-link :href="route('transaction')" :active="request()->is('transaction', 'transaction/*')"
@@ -107,7 +106,7 @@ new class extends Component
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" wire:navigate>
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->is('journal', 'journal/*')"
+            <x-responsive-nav-link :href="route('journal')" :active="request()->is('journal', 'journal/*')"
                 wire:navigate>
                 {{ __('Journal') }}
             </x-responsive-nav-link>

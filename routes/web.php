@@ -65,6 +65,10 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/report/balance-sheet', BalanceSheet::class)->name('balance-sheet');
     Route::get('/report/profit-loss', ProfitLoss::class)->name('profit-loss');
     Route::get('/report/general-ledger', GeneralLedger::class)->name('general-ledger');
+
+    //Journal
+    Route::get('/journal', App\Livewire\Journal\Journal::class)->name('journal');
+    Route::get('/journal/{journal_id}/edit', App\Livewire\Journal\EditJournal::class)->name('journal.edit');
 });
 
 require __DIR__ . '/auth.php';

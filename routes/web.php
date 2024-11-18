@@ -15,11 +15,13 @@ use App\Livewire\Transaction\Transaction;
 use App\Livewire\Setting\Account\EditAccount;
 use App\Livewire\Setting\Contact\EditContact;
 use App\Livewire\Setting\Product\EditProduct;
+use App\Livewire\Finance\Payable\PayableTable;
 use App\Livewire\Setting\Account\AccountTable;
 use App\Livewire\Setting\Contact\ContactTable;
 use App\Livewire\Setting\Product\ProductTable;
 use App\Livewire\Setting\Warehouse\EditWarehouse;
 use App\Livewire\Setting\Warehouse\WarehouseTable;
+use App\Livewire\Finance\Receivable\ReceivableTable;
 
 Route::view('/', 'welcome');
 
@@ -69,6 +71,10 @@ Route::group(['middleware' => ['auth']], function () {
     //Journal
     Route::get('/journal', App\Livewire\Journal\Journal::class)->name('journal');
     Route::get('/journal/{journal_id}/edit', App\Livewire\Journal\EditJournal::class)->name('journal.edit');
+
+    //Finance
+    Route::get('/finance/payable', PayableTable::class)->name('finance.payable');
+    Route::get('/finance/receivable', ReceivableTable::class)->name('finance.receivable');
 });
 
 require __DIR__ . '/auth.php';

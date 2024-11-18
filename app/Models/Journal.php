@@ -86,11 +86,13 @@ class Journal extends Model
         return $this->belongsTo(Transaction::class, 'invoice', 'invoice');
     }
 
-    public function invoice_journal()
+    public static function invoice_journal()
     {
         // Ambil nilai MAX(RIGHT(invoice, 7)) untuk user saat ini dan hari ini
         $lastInvoice = DB::table('journals')
             ->where('user_id', Auth::user()->id)
+            ->where('trx_type', '!=', 'Sales')
+            ->where('trx_type', '!=', 'Purchase')
             ->whereDate('created_at', today())
             ->max(DB::raw('RIGHT(invoice, 7)')); // Gunakan max langsung
 
@@ -101,7 +103,7 @@ class Journal extends Model
         return 'JR.BK.' . now()->format('dmY') . '.' . Auth::user()->id . '.' . str_pad($kd, 7, '0', STR_PAD_LEFT);
     }
 
-    public function generate_invoice_journal($prefix, $table, $condition = [])
+    public static function generate_invoice_journal($prefix, $table, $condition = [])
     {
         // Ambil nilai MAX(RIGHT(invoice, 7)) berdasarkan kondisi user dan tanggal
         $lastInvoice = DB::table($table)
@@ -126,6 +128,11 @@ class Journal extends Model
     {
         // Untuk purchase journal, kita menambahkan kondisi agar hanya mengembalikan yang quantity > 0
         return $this->generate_invoice_journal('PO.BK', 'transactions', [['quantity', '>', 0], ['transaction_type', '=', 'Purchases']]);
+    }
+
+    public static function payable_invoice($contact_id)
+    {
+        return self::generate_invoice_journal('PY.BK' . $contact_id . '.', 'transactions', [['transaction_type', '=', 'Payable'], ['contact_id', '=', $contact_id]]);
     }
 
 

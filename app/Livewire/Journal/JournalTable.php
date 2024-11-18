@@ -53,8 +53,14 @@ class JournalTable extends Component
         $this->dispatch('TransferCreated', $journal->id);
     }
 
-    #[On('TransferCreated')]
-    public function render()
+    #[On('JournalCreated')]
+    public function updateData()
+    {
+        // Perbarui data yang diperlukan ketika event terjadi
+        $this->resetPage('journalPage'); // Reset pagination jika diperlukan
+    }
+
+    public function getData()
     {
         $startDate = Carbon::parse($this->startDate)->startOfDay();
         $endDate = Carbon::parse($this->endDate)->endOfDay();
@@ -80,7 +86,7 @@ class JournalTable extends Component
         $debt_total = $this->account == "" ? 0 : $transaction->where('debt_code', $this->account)->sum('amount');
         $cred_total = $this->account == "" ? 0 : $transaction->where('cred_code', $this->account)->sum('amount');
 
-        return view('livewire.journal.journal-table', [
+        return [
             'journals' => $transaction,
             'cash' => $warehouse->ChartOfAccount->acc_code,
             'warehouses' => Warehouse::all(),
@@ -89,6 +95,11 @@ class JournalTable extends Component
             'cred_total' => $cred_total,
             'initBalance' => $this->account == "" ? 0 : $Journal->endBalanceBetweenDate($this->account, '0000-00-00', $initBalanceDate),
             'endBalance' => $this->account == "" ? 0 : $Journal->endBalanceBetweenDate($this->account, '0000-00-00', $endDate),
-        ]);
+        ];
+    }
+
+    public function render()
+    {
+        return view('livewire.journal.journal-table', $this->getData());
     }
 }

@@ -64,9 +64,8 @@
         <table class="table-auto w-full text-xs mb-2">
             <thead class="bg-white text-blue-950">
                 <tr class="border-b-2">
-                    <th>Keterangan</th>
-                    <th>Jumlah</th>
-                    <th class="p-4 hidden sm:table-cell">Fee admin</th>
+                    <th class="p-4">Keterangan</th>
+                    <th class="p-4 text-center">Jumlah</th>
                 </tr>
             </thead>
 
@@ -121,17 +120,10 @@
                         </div>
                     </td>
                     <td
-                        class="text-right {{ $account == $journal->cred_code ? 'text-red-500' : ($account == $journal->debt_code ? 'text-green-500' : '') }} font-bold p-2">
+                        class="p-4 text-md text-right {{ $account == $journal->cred_code ? 'text-red-500' : ($account == $journal->debt_code ? 'text-green-500' : '') }} font-bold p-2">
                         <span class="text-sm sm:text-md">{{ number_format($journal->amount)
                             }}</span>
-                        <br>
-                        <span class="sm:hidden text-sky-600">{{ number_format($journal->fee_amount)
-                            }}
-                        </span>
                     </td>
-                    <td
-                        class="text-right hidden sm:table-cell {{ $account == $journal->cred_code ? 'text-red-500' : ($account == $journal->debt_code ? 'text-green-500' : '') }} font-bold p-2">
-                        {{ number_format($journal->fee_amount) }}</td>
                 </tr>
                 @endforeach
             </tbody>

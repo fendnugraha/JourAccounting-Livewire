@@ -66,6 +66,7 @@ class CreatePayable extends Component
                 'payment_status' => 0,
                 'payment_nth' => 0,
                 'contact_id' => $this->contact,
+                'user_id' => $user->id,
                 'account_code' => $this->cred_code
             ]);
 
@@ -100,11 +101,12 @@ class CreatePayable extends Component
         }
     }
 
+    #[On('ContactCreated')]
     public function render()
     {
         return view('livewire.finance.payable.create-payable', [
             'credits' => ChartOfAccount::whereIn('account_id', [1, 2])->get(),
-            'contacts' => Contact::all(),
+            'contacts' => Contact::orderBy('name')->get(),
             'payable_accounts' => ChartOfAccount::whereIn('account_id', [19, 25])->get(),
         ]);
     }

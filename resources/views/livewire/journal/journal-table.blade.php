@@ -1,7 +1,7 @@
 <div>
     <div class="absolute inset-0 flex items-center justify-center" wire:loading>
         <!-- Container for the loading message -->
-        <div class="bg-slate-50/10 backdrop-blur-sm h-full w-full flex items-center justify-center gap-2">
+        <div class="bg-slate-50/10 backdrop-blur-sm h-screen w-screen flex items-center justify-center gap-2">
             <!-- Loading text -->
             <i class="fa-solid fa-spinner animate-spin text-blue-950 text-3xl"></i>
             <p class="text-blue-950 text-sm font-bold">

@@ -51,12 +51,12 @@
                             class="bg-sky-700 text-white min-w-36 sm:py-2 sm:px-8 p-6 text-xl sm:text-sm shadow-md flex justify-center items-center rounded-xl hover:bg-sky-800 transition duration-300 ease-out">
                             <div>
                                 <ul class="text-sm flex flex-col">
-                                    <a href="{{ route('finance.receivable') }}">
+                                    <a href="{{ route('finance.receivable') }}" wire:navigate>
                                         <li class="py-2 px-4 hover:bg-slate-100 transition border-b">
                                             Piutang
                                         </li>
                                     </a>
-                                    <a href="{{ route('finance.payable') }}">
+                                    <a href="{{ route('finance.payable') }}" wire:navigate>
                                         <li class="py-2 px-4 hover:bg-slate-100 transition border-b">
                                             Hutang
                                         </li>

@@ -15,7 +15,7 @@
                 <label class="" for="contact">Contact</label>
                 <div class="col-span-2">
                     <select class="w-full border rounded-lg p-2 text-sm @error('contact') border-red-500 @enderror"
-                        name="contact" wire:model="contact">
+                        name="contact" wire:model.live="contact">
                         <option value="">--Pilih Contact--</option>
                         @foreach ($contacts as $c)
                         <option value="{{ $c->id }}">{{ $c->name }}</option>
@@ -29,16 +29,17 @@
         </div>
         <div class="mb-4">
             <div class="grid grid-cols-3 gap-4 items-center">
-                <label class="" for="cred_code">Category Hutang</label>
+                <label class="" for="invoice">No Invoice</label>
                 <div class="col-span-2">
-                    <select class="w-full border rounded-lg p-2 text-sm @error('cred_code') border-red-500 @enderror"
-                        name="cred_code" wire:model="cred_code">
-                        <option value="">--Pilih akun hutang--</option>
-                        @foreach ($payable_accounts as $i)
-                        <option value="{{ $i->acc_code }}">{{ $i->acc_name }}</option>
+                    <select class="w-full border rounded-lg p-2 text-sm @error('invoice') border-red-500 @enderror"
+                        name="invoice" wire:model="invoice">
+                        <option value="">--Pilih no invoice--</option>
+                        @foreach ($payables->where('contact_id', $contact) as $i)
+                        <option value="{{ $i->invoice }}">{{ $i->invoice }} -> Rp. {{ number_format($i->total) }}
+                        </option>
                         @endforeach
                     </select>
-                    @error('cred_code')
+                    @error('invoice')
                     <span class="text-red-500 text-xs">{{ $message }}</span>
                     @enderror
                 </div>
@@ -46,16 +47,16 @@
         </div>
         <div class="mb-4">
             <div class="grid grid-cols-3 gap-4 items-center">
-                <label class="" for="debt_code">Sumber Dana</label>
+                <label class="" for="cred_code">Sumber Dana</label>
                 <div class="col-span-2">
-                    <select class="w-full border rounded-lg p-2 text-sm @error('debt_code') border-red-500 @enderror"
-                        name="debt_code" wire:model="debt_code">
+                    <select class="w-full border rounded-lg p-2 text-sm @error('cred_code') border-red-500 @enderror"
+                        name="cred_code" wire:model="cred_code">
                         <option value="">--Pilih sumber dana--</option>
                         @foreach ($credits as $account)
                         <option value="{{ $account->acc_code }}">{{ $account->acc_name }}</option>
                         @endforeach
                     </select>
-                    @error('debt_code')
+                    @error('cred_code')
                     <span class="text-red-500 text-xs">{{ $message }}</span>
                     @enderror
                 </div>

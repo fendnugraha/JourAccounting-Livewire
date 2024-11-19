@@ -132,7 +132,7 @@ class Journal extends Model
 
     public static function payable_invoice($contact_id)
     {
-        return self::generate_invoice_journal('PY.BK' . $contact_id . '.', 'transactions', [['transaction_type', '=', 'Payable'], ['contact_id', '=', $contact_id]]);
+        return self::generate_invoice_journal('PY.BK.' . $contact_id, 'payables', [['contact_id', '=', $contact_id], ['payment_nth', '=', 0]]);
     }
 
 

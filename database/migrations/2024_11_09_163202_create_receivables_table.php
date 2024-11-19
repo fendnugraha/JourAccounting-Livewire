@@ -24,6 +24,7 @@ return new class extends Migration
 
             // Relasi dengan tabel contacts (misalnya kontak pelanggan)
             $table->foreignId('contact_id')->constrained('contacts')->onDelete('restrict');
+            $table->foreignId('user_id')->constrained('users')->onDelete('restrict');
 
             // Kolom untuk account_code, yang mengacu pada chart_of_accounts
             $table->string('account_code', 10)->index(); // Mengacu pada akun terkait, diindeks

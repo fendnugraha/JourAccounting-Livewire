@@ -50,7 +50,7 @@ class CreatePayable extends Component
             $contact = Contact::findOrFail($this->contact);
         } catch (\Exception $e) {
             session()->flash('error', 'Contact Not Found');
-            return redirect()->route('finance.payable.index');
+            return redirect()->route('finance.payable');
         }
 
         try {

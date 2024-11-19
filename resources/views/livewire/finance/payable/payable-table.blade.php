@@ -41,6 +41,11 @@
                             <input type="search" class="w-full p-2 border rounded-xl"
                                 placeholder="Search invoice number .." wire:model.live.debounce.500ms="searchInvoice">
                         </div>
+                        @if(session('success'))
+                        <span>{{ session('success') }}</span>
+                        @elseif (session('error'))
+                        <span>{{ session('error') }}</span>
+                        @endif
                         <table class="table-auto w-full text-sm">
                             <thead>
                                 <tr class="border-b">
@@ -80,7 +85,7 @@
                                         {{ number_format($p->bill_amount > 0 ? $p->bill_amount : $p->payment_amount) }}
                                     </td>
                                     <td class="text-center">
-                                        <button type="button"
+                                        <button type="button" wire:click="delete({{ $p->id }})"
                                             class="px-3 py-2 rounded-xl bg-red-300 hover:bg-red-400 text-white text-xs"
                                             wire:confirm="are you sure?">Delete</button>
                                     </td>
@@ -125,9 +130,4 @@
             </div>
         </div>
     </div>
-    @if(session('success'))
-    <span>{{ session('success') }}</span>
-    @elseif (session('error'))
-    <span>{{ session('error') }}</span>
-    @endif
 </div>

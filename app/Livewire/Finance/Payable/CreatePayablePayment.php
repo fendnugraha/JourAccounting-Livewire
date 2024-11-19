@@ -57,7 +57,7 @@ class CreatePayablePayment extends Component
         }
 
         $debt_code = $payable->account_code;
-        $payment_nth = $payable->payment_nth + 1;
+        $payment_nth = Payable::getLastPayment($this->invoice) + 1;
         if ($sisa == $this->amount) {
             $payment_status = 1;
         } else {
@@ -105,6 +105,12 @@ class CreatePayablePayment extends Component
             ]);
 
             $journal->save();
+
+            if ($sisa == $this->amount) {
+                Payable::where('invoice', $this->invoice)->where('contact_id', $this->contact)->update([
+                    'payment_status' => 1,
+                ]);
+            }
 
             DB::commit();
 

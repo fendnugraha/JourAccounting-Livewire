@@ -7,6 +7,7 @@ use App\Models\Role;
 use App\Models\User;
 use App\Models\Contact;
 use App\Models\Warehouse;
+use Database\Factories\ContactFactory;
 use Database\Factories\ProductFactory;
 use Illuminate\Database\Seeder;
 use Database\Seeders\AccountSeeder;
@@ -63,5 +64,6 @@ class DatabaseSeeder extends Seeder
         ]);
 
         ProductFactory::new()->count(10)->create();
+        ContactFactory::new()->count(10)->create();
     }
 }

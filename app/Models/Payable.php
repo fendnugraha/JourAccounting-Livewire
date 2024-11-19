@@ -12,4 +12,9 @@ class Payable extends Model
     {
         return $this->belongsTo(Contact::class);
     }
+
+    public static function getLastPayment($invoice)
+    {
+        return self::where('invoice', $invoice)->max('payment_nth');
+    }
 }

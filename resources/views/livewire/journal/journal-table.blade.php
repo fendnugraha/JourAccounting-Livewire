@@ -72,14 +72,11 @@
             <tbody class="">
                 @foreach ($journals as $journal)
                 @php
-                $hidden = ($journal->trx_type == 'Accessories' || $journal->trx_type ==
-                'Pengeluaran' ||
-                $journal->trx_type == 'Mutasi Kas' ||
-                $journal->trx_type == 'Purchase' || $journal->trx_type == 'Sales') ||
-                ($journal->trx_type == null)
-                ? 'hidden' : '';
-                $hide_pay = ($journal->trx_type == null || $journal->trx_type == 'Purchase' || $journal->trx_type ==
-                'Sales') ? 'hidden' : '';
+                $hidden = in_array($journal->trx_type, [null, 'Mutasi Kas', 'Accessories', 'Pengeluaran', 'Purchase',
+                'Sales', 'Payable', 'Receivable']) ?
+                'hidden' : '';
+                $hide_pay = in_array($journal->trx_type, [null, 'Purchase', 'Sales', 'Payable', 'Receivable']) ?
+                'hidden' : '';
 
                 @endphp
                 <tr

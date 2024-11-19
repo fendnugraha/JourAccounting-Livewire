@@ -14,6 +14,7 @@
     <x-modal modalName="createPayable" modalTitle="Form Input Hutang">
         <livewire:finance.payable.create-payable />
     </x-modal>
+
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="overflow-hidden shadow-sm sm:rounded-lg">
@@ -67,7 +68,7 @@
                                 @endphp
                                 <tr class="border-b">
                                     <td class="p-2">
-                                        <span class="text-sm font-bold">{{ $p->date_issued }} | {{ $p->invoice }}</span>
+                                        <span class="text-xs font-bold">{{ $p->date_issued }} | {{ $p->invoice }}</span>
                                         <br>
                                         <span class="text-xs text-slate-700 font-bold">Contact: {{ $p->contact->name
                                             }}</span>
@@ -81,7 +82,7 @@
 
                                     </td>
                                     <td
-                                        class="text-end p-2 font-bold text-lg {{ $p->bill_amount > 0 ? 'text-green-500' : 'text-red-500' }}">
+                                        class="text-end p-2 font-bold text-md {{ $p->bill_amount > 0 ? 'text-green-500' : 'text-red-500' }}">
                                         {{ number_format($p->bill_amount > 0 ? $p->bill_amount : $p->payment_amount) }}
                                     </td>
                                     <td class="text-center">

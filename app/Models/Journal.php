@@ -217,4 +217,9 @@ class Journal extends Model
 
         return $result;
     }
+
+    public function payable()
+    {
+        return $this->belongsTo(Payable::class, 'invoice', 'invoice');
+    }
 }

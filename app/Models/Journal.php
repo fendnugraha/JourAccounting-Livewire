@@ -135,6 +135,10 @@ class Journal extends Model
         return self::generate_invoice_journal('PY.BK.' . $contact_id, 'payables', [['contact_id', '=', $contact_id], ['payment_nth', '=', 0]]);
     }
 
+    public static function receivable_invoice($contact_id)
+    {
+        return self::generate_invoice_journal('RC.BK.' . $contact_id, 'receivables', [['contact_id', '=', $contact_id], ['payment_nth', '=', 0]]);
+    }
 
     public function endBalanceBetweenDate($account_code, $start_date, $end_date)
     {
@@ -221,5 +225,10 @@ class Journal extends Model
     public function payable()
     {
         return $this->belongsTo(Payable::class, 'invoice', 'invoice');
+    }
+
+    public function receivable()
+    {
+        return $this->belongsTo(Receivable::class, 'invoice', 'invoice');
     }
 }

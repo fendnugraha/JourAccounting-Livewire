@@ -53,6 +53,7 @@
                                     @foreach ($products as $product)
                                     <tr class="border-b hover:bg-yellow-100">
                                         <td class="p-2">{{ $product->name }}</td>
+                                        <td class="p-2">{{ $product->end_stock }} <sup>Pcs</sup></td>
                                         <td>{{ number_format($product->cost, 2) }}</td>
                                         <td>
                                             <button type="button"

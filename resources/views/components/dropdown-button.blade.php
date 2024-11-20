@@ -6,8 +6,8 @@
             {{ $dropdownTitle }} &nbsp;<i class="fa-solid fa-caret-down"></i>
         </button>
     </div>
-    <div x-show="isDropdownOpen" x-transition.origin.top.left class="absolute sm:top-10 sm:w-60 w-full z-10">
-        <div class="bg-white rounded-md shadow-lg">
+    <div x-show="isDropdownOpen" x-transition.origin.top.bottom class="absolute sm:top-12 sm:w-60 w-full z-10">
+        <div class="bg-white rounded-md shadow-lg border">
             {{ $slot }}
         </div>
     </div>

@@ -52,7 +52,7 @@
                                 <tr class="border-b">
                                     <th class="p-4 text-start">Description</th>
                                     <th class="p-4">Amount</th>
-                                    <td class="text-center">Action</td>
+                                    <th class="text-center">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -66,11 +66,11 @@
 
                                 $diff = round($today->diffInDays($dueDate));
                                 @endphp
-                                <tr class="border-b">
+                                <tr class="border-b hover:bg-slate-50 hover:border-white">
                                     <td class="p-2">
                                         <span class="text-xs font-bold">{{ $p->date_issued }} | {{ $p->invoice }}</span>
                                         <br>
-                                        <span class="text-xs text-slate-700 font-bold">Contact: {{ $p->contact->name
+                                        Contact: <span class="text-sm text-blue-600 font-bold">{{ $p->contact->name
                                             }}</span>
                                         <br>
                                         Note: {{ $p->description }}
@@ -118,13 +118,16 @@
                                 </thead>
                                 <tbody>
                                     @foreach ($payableContact as $pc)
-                                    <tr class="border-b">
+                                    <tr class="border-b hover:bg-slate-50">
                                         <td class="-p2">{{ $pc->contact->name }}</td>
                                         <td class="text-end p-2 font-bold">{{ number_format($pc->total) }}</td>
                                     </tr>
                                     @endforeach
                                 </tbody>
                             </table>
+                            <div class="mt-3">
+                                {{ $payableContact->links() }}
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -9,10 +9,11 @@ use Livewire\Attributes\On;
 use Livewire\WithPagination;
 use Livewire\Attributes\Layout;
 use Illuminate\Support\Facades\DB;
+use Livewire\WithoutUrlPagination;
 
 class PayableTable extends Component
 {
-    use WithPagination;
+    use WithPagination, WithoutUrlPagination;
 
     public $search;
     public $searchInvoice;
@@ -25,7 +26,14 @@ class PayableTable extends Component
 
     public function getData()
     {
-        $payables = Payable::with('contact')->where('invoice', 'like', '%' . $this->searchInvoice . '%')->latest()->paginate(5, ['*'], 'payables');
+        $payables = Payable::with('contact')
+            ->where('invoice', 'like', '%' . $this->searchInvoice . '%')
+            ->orWhereHas('contact', function ($query) {
+                $query->where('name', 'like', '%' . $this->searchInvoice . '%');
+            })
+            ->latest()
+            ->paginate(5, ['*'], 'payables');
+
         $payableContact = Payable::with('contact')
             ->selectRaw('sum(bill_amount-payment_amount) as total, contact_id')
             ->whereHas('contact', function ($query) {
@@ -33,7 +41,7 @@ class PayableTable extends Component
             })
             ->groupBy('contact_id')
             ->having('total', '>', 0)
-            ->paginate(5, ['*'], 'payableContact');
+            ->simplePaginate(5, ['*'], 'payableContact');
         $total = Payable::selectRaw('SUM(bill_amount - payment_amount) as total')->value('total');
 
         return [

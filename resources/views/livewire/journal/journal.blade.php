@@ -11,7 +11,7 @@
                 <div class="p-6 text-gray-900">
                     <div class="mb-6 flex gap-2">
                         <x-dropdown-button dropdownTitle="Input Jurnal" dropdownName="report"
-                            class="bg-sky-700 text-white min-w-36 sm:py-2 sm:px-8 p-6 text-xl sm:text-sm shadow-md flex justify-center items-center rounded-xl hover:bg-sky-800 transition duration-300 ease-out">
+                            class="bg-blue-500 text-white min-w-36 sm:py-3 sm:px-8 p-6 text-xl sm:text-sm hover:shadow-md flex justify-center items-center rounded-xl hover:bg-blue-600 transition duration-300 ease-out">
                             <div>
                                 <ul class="text-sm flex flex-col">
                                     <li class="py-2 px-4 hover:bg-slate-100 transition border-b">
@@ -48,7 +48,7 @@
                             </div>
                         </x-dropdown-button>
                         <x-dropdown-button dropdownTitle="Finance" dropdownName="report"
-                            class="bg-sky-700 text-white min-w-36 sm:py-2 sm:px-8 p-6 text-xl sm:text-sm shadow-md flex justify-center items-center rounded-xl hover:bg-sky-800 transition duration-300 ease-out">
+                            class="bg-blue-500 text-white min-w-36 sm:py-3 sm:px-8 p-6 text-xl sm:text-sm hover:shadow-md flex justify-center items-center rounded-xl hover:bg-blue-600 transition duration-300 ease-out">
                             <div>
                                 <ul class="text-sm flex flex-col">
                                     <a href="{{ route('finance.receivable') }}" wire:navigate>

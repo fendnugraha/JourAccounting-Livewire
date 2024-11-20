@@ -1,22 +1,22 @@
 <?php
 
-namespace App\Livewire\Finance\Payable;
+namespace App\Livewire\Finance\Receivable;
 
 use Carbon\Carbon;
 use App\Models\Contact;
 use App\Models\Journal;
-use App\Models\Payable;
 use Livewire\Component;
+use App\Models\Receivable;
 use Livewire\Attributes\On;
 use App\Models\ChartOfAccount;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
-class CreatePayablePayment extends Component
+class CreateReceivablePayment extends Component
 {
     public $date_issued;
     public $invoice;
-    public $cred_code;
+    public $debt_code;
     public $amount;
     public $description;
     public $contact;
@@ -37,27 +37,27 @@ class CreatePayablePayment extends Component
         $this->validate([
             'date_issued' => 'required',
             'invoice' => 'required',
-            'cred_code' => 'required',
+            'debt_code' => 'required',
             'amount' => 'required|numeric',
             'contact' => 'required'
         ]);
 
         $user = Auth::user();
         $dateIssued = Carbon::parse($this->date_issued);
-        $payable = Payable::where('invoice', $this->invoice)->where('contact_id', $this->contact)->where('payment_nth', 0)->first();
+        $receivable = Receivable::where('invoice', $this->invoice)->where('contact_id', $this->contact)->where('payment_nth', 0)->first();
 
-        $sisa = Payable::selectRaw('sum(bill_amount - payment_amount) as total')
+        $sisa = Receivable::selectRaw('sum(bill_amount - payment_amount) as total')
             ->where('invoice', $this->invoice)
             ->where('contact_id', $this->contact)
             ->value('total');
 
         if ($sisa < $this->amount) {
             session()->flash('error', 'Jumlah Pembayaran Tidak Sesuai');
-            return redirect()->route('finance.payable');
+            return redirect()->route('finance.receivable');
         }
 
-        $debt_code = $payable->account_code;
-        $payment_nth = Payable::getLastPayment($this->invoice) + 1;
+        $cred_code = $receivable->account_code;
+        $payment_nth = Receivable::getLastPayment($this->invoice) + 1;
         if ($sisa == $this->amount) {
             $payment_status = 1;
         } else {
@@ -68,38 +68,38 @@ class CreatePayablePayment extends Component
             $contact = Contact::findOrFail($this->contact);
         } catch (\Exception $e) {
             session()->flash('error', 'Contact Not Found');
-            return redirect()->route('finance.payable');
+            return redirect()->route('finance.receivable');
         }
 
         try {
             DB::beginTransaction();
 
-            Payable::create([
+            Receivable::create([
                 'date_issued' => $dateIssued,
-                'due_date' => $payable->due_date,
+                'due_date' => $receivable->due_date,
                 'invoice' => $this->invoice,
-                'description' => $this->description ?? 'Pembayaran hutang usaha',
+                'description' => $this->description ?? 'Pembayaran piutang usaha',
                 'bill_amount' => 0,
                 'payment_amount' => $this->amount,
                 'payment_status' => $payment_status,
                 'payment_nth' => $payment_nth,
                 'contact_id' => $this->contact,
                 'user_id' => $user->id,
-                'account_code' => $this->cred_code
+                'account_code' => $this->debt_code
             ]);
 
             $journal = new Journal([
                 'invoice' => $this->invoice,
                 'date_issued' => $this->date_issued,
-                'debt_code' => $debt_code,
-                'cred_code' => $this->cred_code,
+                'debt_code' => $this->debt_code,
+                'cred_code' => $cred_code,
                 'amount' => $this->amount,
                 'fee_amount' => 0,
-                'trx_type' => 'Payable',
-                'rcv_pay' => 'Payable',
+                'trx_type' => 'receivable',
+                'rcv_pay' => 'receivable',
                 'payment_status' => $payment_status,
                 'payment_nth' => $payment_nth,
-                'description' => $this->description ?? 'Pembayaran hutang usaha',
+                'description' => $this->description ?? 'Pembayaran piutang usaha',
                 'user_id' => $user->id,
                 'warehouse_id' => 1
             ]);
@@ -107,7 +107,7 @@ class CreatePayablePayment extends Component
             $journal->save();
 
             if ($sisa == $this->amount) {
-                Payable::where('invoice', $this->invoice)->where('contact_id', $this->contact)->update([
+                Receivable::where('invoice', $this->invoice)->where('contact_id', $this->contact)->update([
                     'payment_status' => 1,
                 ]);
             }
@@ -128,22 +128,19 @@ class CreatePayablePayment extends Component
     #[On('ContactCreated')]
     public function render()
     {
-        $payables = Payable::selectRaw('sum(bill_amount-payment_amount) as total, invoice, contact_id')
+        $receivables = Receivable::selectRaw('sum(bill_amount-payment_amount) as total, invoice, contact_id')
             ->groupBy('invoice', 'contact_id')
             ->having('total', '>', 0)
             ->get();
 
-        $contacts = Contact::whereHas('payables', function ($query) {
+        $contacts = Contact::whereHas('receivables', function ($query) {
             $query->where('payment_status', 0);
-        })->with('payables')->get();
+        })->with('receivables')->get();
 
-        return view(
-            'livewire.finance.payable.create-payable-payment',
-            [
-                'credits' => ChartOfAccount::whereIn('account_id', [1, 2])->get(),
-                'contacts' => $contacts,
-                'payables' => $payables,
-            ]
-        );
+        return view('livewire.finance.receivable.create-receivable-payment', [
+            'credits' => ChartOfAccount::whereIn('account_id', [1, 2])->get(),
+            'contacts' => $contacts,
+            'receivables' => $receivables,
+        ]);
     }
 }

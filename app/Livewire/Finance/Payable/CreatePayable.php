@@ -20,10 +20,12 @@ class CreatePayable extends Component
     public $amount;
     public $description;
     public $contact;
+    public int $dueDate = 30;
 
     public function mount()
     {
         $this->date_issued = date('Y-m-d H:i');
+        $this->dueDate = 30;
     }
 
     #[On('JournalCreated')]
@@ -40,10 +42,18 @@ class CreatePayable extends Component
 
         $this->validate([
             'date_issued' => 'required',
+            'dueDate' => 'required|numeric',
             'debt_code' => 'required',
             'cred_code' => 'required',
             'amount' => 'required|numeric',
             'contact' => 'required'
+        ], [
+            'contact.required' => 'Contact harus diisi.',
+            'cred_code.required' => 'Category Hutang harus diisi.',
+            'debt_code.required' => 'Sumber Dana harus diisi.',
+            'dueDate.required' => 'Jatuh Tempo harus diisi.',
+            'dueDate.numeric' => 'Jatuh Tempo harus berupa angka.',
+            'amount.required' => 'Jumlah Hutang harus diisi.',
         ]);
 
         try {
@@ -58,7 +68,7 @@ class CreatePayable extends Component
 
             Payable::create([
                 'date_issued' => $dateIssued,
-                'due_date' => $dateIssued->copy()->addDays(30),
+                'due_date' => $dateIssued->copy()->addDays($this->dueDate),
                 'invoice' => $invoice_number,
                 'description' => $this->description ?? 'Hutang Usaha',
                 'bill_amount' => $this->amount,

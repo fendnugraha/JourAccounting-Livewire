@@ -22,8 +22,8 @@ class ProductFactory extends Factory
         return [
             'code' => $this->faker->unique()->ean13(),
             'name' => $this->faker->name(),
-            'cost' => $cost,
-            'price' => $price,
+            'cost' => $cost * 1000,
+            'price' => $price * 1000,
             'category' => $this->faker->randomElement(['Charger', 'LCD', 'Board', 'Battery']),
             'init_stock' => 0,
             'sold' => 0,

@@ -45,8 +45,12 @@
                                     number_format($transaction->totalPrice, 2) :
                                     number_format($transaction->totalCost, 2) }}</td>
                                 <td class="text-center p-2">
-                                    <a href="{{ route('transaction.view', $transaction->invoice) }}"
-                                        class="text-white text-sm font-bold bg-amber-400 py-1 px-3 rounded-lg hover:bg-blue-300">
+                                    <a href="{{ route('transaction.edit', $transaction->serial_number) }}"
+                                        class="text-white text-sm mr-2 font-bold bg-blue-400 py-1 px-3 rounded-lg hover:bg-blue-300">
+                                        <i class="fa fa-pen-to-square"></i>
+                                    </a>
+                                    <a href="{{ route('transaction.view', $transaction->serial_number) }}"
+                                        class="text-white text-sm font-bold bg-amber-400 py-1 px-3 rounded-lg hover:bg-amber-300">
                                         <i class="fa fa-eye"></i>
                                     </a>
                                 </td>

@@ -9,18 +9,21 @@ use Livewire\Attributes\Layout;
 
 class ViewTransaction extends Component
 {
+    public $serial;
     public $invoice;
 
     public function mount()
     {
-        $transaction = Transaction::where('invoice', $this->invoice)->get();
+        $transaction = Transaction::where('serial_number', $this->serial)->get();
+
+        $this->invoice = $transaction->first()->invoice ?? null;
     }
 
     public function checkDiscountAndFee()
     {
-        $journal = Journal::where('invoice', $this->invoice)
+        $journal = Journal::where('serial_number', $this->serial)
             ->where('debt_code', '60111-001')
-            ->orWhere('invoice', $this->invoice)
+            ->orWhere('serial_number', $this->serial)
             ->where('cred_code', '40200-001')->get();
 
         return $journal;
@@ -32,7 +35,7 @@ class ViewTransaction extends Component
         // dd($this->checkDiscountAndFee());
         return view('livewire.transaction.view-transaction', [
             'title' => 'View Transaction ' . $this->invoice,
-            'transaction' => Transaction::where('invoice', $this->invoice)->get(),
+            'transaction' => Transaction::where('serial_number', $this->serial)->get(),
             'discountAndFee' => $this->checkDiscountAndFee()->first()->amount ?? 0
         ]);
     }

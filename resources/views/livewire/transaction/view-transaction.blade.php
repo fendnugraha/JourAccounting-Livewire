@@ -14,6 +14,7 @@
                         <div>
                             <h1 class="text-3xl font-bold text-blue-600">Invoice</h1>
                             <p class="text-gray-500">Invoice #: {{ $transaction->first()->invoice }}</p>
+                            <p class="text-gray-500">Serial #: {{ $transaction->first()->serial_number }}</p>
                         </div>
                         <div class="text-right">
                             <p class="text-lg font-semibold">{{ $transaction->first()->warehouse->name }}</p>
@@ -56,9 +57,9 @@
                             @endphp
                             <tr class="border-b">
                                 <td class="py-2 px-4">{{ $t->product->name }}</td>
-                                <td class="py-2 px-4 text-center">{{ number_format($quantity, 2) }}</td>
-                                <td class="py-2 px-4 text-center">{{ number_format($amount, 2) }}</td>
-                                <td class="py-2 px-4 text-center">{{ number_format($amount * $quantity, 2) }}</td>
+                                <td class="py-2 px-4 text-center">{{ number_format($quantity) }}</td>
+                                <td class="py-2 px-4 text-center">{{ number_format($amount) }}</td>
+                                <td class="py-2 px-4 text-center">{{ number_format($amount * $quantity) }}</td>
                                 <td class="py-2 px-4 text-center"><button
                                         wire:confirm="Apakah anda yakin menghapus data ini?"
                                         wire:click="delete({{ $t->id }})"><i class="fa fa-trash"></i></button></td>
@@ -76,9 +77,9 @@
                                 <p class="font-semibold text-xl">Total:</p>
                             </div>
                             <div class="border-t pt-2">
-                                <p class="font-semibold text-lg"><sup>Rp</sup> {{ number_format($total, 2) }}</p>
+                                <p class="font-semibold text-lg"><sup>Rp</sup> {{ number_format($total) }}</p>
                                 <p class="font-semibold text-red-400 text-lg">{{ $discountAndFee > 0 ?
-                                    '-' . number_format($discountAndFee, 2) : 0 }}</p>
+                                    '-' . number_format($discountAndFee) : 0 }}</p>
                                 </p>
                                 <p class="font-bold text-2xl text-blue-600"><sup>Rp</sup> {{ number_format($total -
                                     $discountAndFee,

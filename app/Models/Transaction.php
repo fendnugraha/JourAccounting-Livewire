@@ -27,4 +27,9 @@ class Transaction extends Model
     {
         return $this->belongsTo(Warehouse::class);
     }
+
+    public static function generateSerialNumber($prefix, $user_id)
+    {
+        return $prefix . '-' . $user_id . '-' . strtoupper(uniqid(rand() + time(), false));
+    }
 }

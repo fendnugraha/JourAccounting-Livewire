@@ -31,6 +31,7 @@ return new class extends Migration
             // Relasi dengan tabel users dan warehouses
             $table->foreignId('user_id')->index();
             $table->foreignId('warehouse_id')->index();
+            $table->string('serial_number', 255)->nullable();
 
             // Menambahkan foreign key untuk user_id dan warehouse_id dengan restrict on delete
             $table->foreign('user_id')->references('id')->on('users')->onDelete('restrict');

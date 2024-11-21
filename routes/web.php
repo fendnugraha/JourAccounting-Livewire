@@ -15,6 +15,8 @@ use App\Livewire\Transaction\Transaction;
 use App\Livewire\Setting\Account\EditAccount;
 use App\Livewire\Setting\Contact\EditContact;
 use App\Livewire\Setting\Product\EditProduct;
+use App\Livewire\Transaction\EditTransaction;
+use App\Livewire\Transaction\ViewTransaction;
 use App\Livewire\Finance\Payable\PayableTable;
 use App\Livewire\Setting\Account\AccountTable;
 use App\Livewire\Setting\Contact\ContactTable;
@@ -22,7 +24,6 @@ use App\Livewire\Setting\Product\ProductTable;
 use App\Livewire\Setting\Warehouse\EditWarehouse;
 use App\Livewire\Setting\Warehouse\WarehouseTable;
 use App\Livewire\Finance\Receivable\ReceivableTable;
-use App\Livewire\Transaction\ViewTransaction;
 
 Route::view('/', 'welcome');
 
@@ -61,7 +62,9 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/transaction', Transaction::class)->name('transaction');
     Route::get('/transaction/purchases', Purchases::class)->name('transaction.purchases');
     Route::get('/transaction/sales', Sales::class)->name('transaction.sales');
-    Route::get('/transaction/{invoice}/view', ViewTransaction::class)->name('transaction.view');
+    Route::get('/transaction/{serial}/edit', EditTransaction::class)
+        ->name('transaction.edit');
+    Route::get('/transaction/{serial}/view', ViewTransaction::class)->name('transaction.view');
 
     // Report
     Route::get('/report', App\Livewire\Report\Report::class)->name('report');

@@ -22,10 +22,10 @@ class Transaction extends Component
     #[Layout('layouts.app')]
     public function render()
     {
-        $transactions = ModelsTransaction::selectRaw('invoice, warehouse_id, MAX(date_issued) as date_issued, SUM(cost * ABS(quantity)) as totalCost, SUM(price * ABS(quantity)) as totalPrice, max(transaction_type) as transaction_type, MAX(contact_id) as contact_id')
+        $transactions = ModelsTransaction::selectRaw('invoice, serial_number, warehouse_id, MAX(date_issued) as date_issued, SUM(cost * ABS(quantity)) as totalCost, SUM(price * ABS(quantity)) as totalPrice, max(transaction_type) as transaction_type, MAX(contact_id) as contact_id')
             ->whereBetween('date_issued', [Carbon::parse($this->startDate)->startOfMonth(), Carbon::parse($this->endDate)->endOfMonth()])
             ->where('invoice', 'like', '%' . $this->search . '%')
-            ->groupBy('invoice', 'warehouse_id')
+            ->groupBy('invoice', 'warehouse_id', 'serial_number')
             ->orderBy('date_issued', 'desc')
             ->paginate(5);
 

@@ -86,19 +86,22 @@ class Purchases extends Component
         session()->forget('purchaseCart'); // Remove the cart data from the session
     }
 
-    private function addToJournal($invoice, $debt, $cred, $amount, $description = 'Pembelian Barang')
+    private function addToJournal($invoice, $debt, $cred, $amount, $description = 'Pembelian Barang', $serial = null)
     {
-        $journal = new Journal();
-        $journal->date_issued = date('Y-m-d H:i');
-        $journal->invoice = $invoice; // Ensure $invoice is defined
-        $journal->debt_code = $debt;
-        $journal->cred_code = $cred;
-        $journal->amount = $amount; // Ensure $jual is defined
-        $journal->fee_amount = 0; // Ensure $fee is defined
-        $journal->description = $description;
-        $journal->trx_type = 'Purchase';
-        $journal->user_id = Auth::user()->id;
-        $journal->warehouse_id = Auth::user()->role->warehouse_id;
+        $journal = new Journal([
+            'date_issued' => date('Y-m-d H:i'),
+            'invoice' => $invoice, // Ensure $invoice is defined
+            'debt_code' => $debt,
+            'cred_code' => $cred,
+            'amount' => $amount, // Ensure $jual is defined
+            'fee_amount' => 0, // Ensure $fee is defined
+            'description' => $description,
+            'trx_type' => 'Purchase',
+            'user_id' => Auth::user()->id,
+            'warehouse_id' => Auth::user()->role->warehouse_id,
+            'serial_number' => $serial,
+        ]);
+
         $journal->save();
 
         return $journal;
@@ -112,6 +115,7 @@ class Purchases extends Component
         ]);
 
         $invoice = (new Journal())->purchase_journal();
+        $serial = Transaction::generateSerialNumber('PO', Auth::user()->id);
 
         try {
             DB::beginTransaction();
@@ -128,19 +132,22 @@ class Purchases extends Component
                 $initial_cost = $product->cost;
                 $initTotal = $initial_stock * $initial_cost;
 
-                $this->addToJournal($invoice, "10600-001", $this->account, $modal);
+                $this->addToJournal($invoice, "10600-001", $this->account, $modal, 'Pembelian Barang (Code:' . $product->code . ') ' . $product->name . ' (' . $item['qty'] . 'Pcs)', $serial);
 
-                $transaction = new Transaction();
-                $transaction->date_issued = date('Y-m-d H:i');
-                $transaction->invoice = $invoice; // Ensure $invoice is defined
-                $transaction->product_id = $product->id;
-                $transaction->quantity = $item['qty'];
-                $transaction->price = 0;
-                $transaction->cost = $item['cost'];
-                $transaction->transaction_type = 'Purchase';
-                $transaction->contact_id = $this->contact_id;
-                $transaction->warehouse_id = Auth::user()->id;
-                $transaction->user_id = Auth::user()->role->warehouse_id;;
+                $transaction = new Transaction([
+                    'date_issued' => date('Y-m-d H:i'),
+                    'invoice' => $invoice, // Ensure $invoice is defined
+                    'product_id' => $product->id,
+                    'quantity' => $item['qty'],
+                    'price' => 0,
+                    'cost' => $item['cost'],
+                    'transaction_type' => 'Purchase',
+                    'contact_id' => $this->contact_id,
+                    'warehouse_id' => Auth::user()->id,
+                    'user_id' => Auth::user()->role->warehouse_id,
+                    'serial_number' => $serial,
+                ]);
+
                 $transaction->save();
 
                 $newStock = $item['qty'];

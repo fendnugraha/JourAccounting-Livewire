@@ -32,6 +32,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->onDelete('restrict'); // Foreign key untuk users
 
             $table->integer('status')->default(1); // Status penjualan (misal: 1 untuk aktif, 0 untuk dibatalkan)
+            $table->string('serial_number', 255)->nullable(); // Nomor seri barang, boleh kosong
             $table->timestamps();
         });
     }

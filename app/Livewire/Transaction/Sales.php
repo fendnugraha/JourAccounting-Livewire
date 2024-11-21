@@ -143,9 +143,9 @@ class Sales extends Component
 
                 $jual = ($item['price'] * $item['qty']) - $this->discount;
                 $modal = $product->cost * $item['qty'];
-                $initial_stock = $product->end_stock;
-                $initial_cost = $product->price;
-                $initTotal = $initial_stock * $initial_cost;
+                // $initial_stock = $product->end_stock;
+                // $initial_cost = $product->price;
+                // $initTotal = $initial_stock * $initial_cost;
 
                 $this->addToJournal($invoice, $this->account, "40100-001", $jual, 'Penjualan Barang (Code:' . $product->code . ') ' . $product->name . ' (' . -$item['qty'] . 'Pcs)', $serial);
                 $this->addToJournal($invoice, "50100-001", "10600-001", $modal, 'Pembelian Barang (Code:' . $product->code . ') ' . $product->name . ' (' . -$item['qty'] . 'Pcs)', $serial);
@@ -170,18 +170,20 @@ class Sales extends Component
                 $end_Stock = $product->stock + $product_log;
                 Product::where('id', $product->id)->update([
                     'end_Stock' => $end_Stock,
+                    'price' => $item['price'],
                 ]);
 
                 $updateWarehouseStock = WarehouseStock::where('warehouse_id', Auth::user()->role->warehouse_id)->where('product_id', $product->id)->first();
+                $updateCurrentStock = $transaction->where('product_id', $product->id)->where('warehouse_id', Auth::user()->role->warehouse_id)->sum('quantity');
                 if ($updateWarehouseStock) {
-                    $updateWarehouseStock->current_stock -= $item['qty'];
+                    $updateWarehouseStock->current_stock = $updateCurrentStock;
                     $updateWarehouseStock->save();
                 } else {
                     $warehouseStock = new WarehouseStock();
                     $warehouseStock->warehouse_id = Auth::user()->role->warehouse_id;
                     $warehouseStock->product_id = $product->id;
                     $warehouseStock->init_stock = 0;
-                    $warehouseStock->current_stock = -$item['qty'];
+                    $warehouseStock->current_stock = $updateCurrentStock;
                     $warehouseStock->save();
                 }
             }

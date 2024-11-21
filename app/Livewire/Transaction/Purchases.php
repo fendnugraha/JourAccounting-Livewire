@@ -128,9 +128,9 @@ class Purchases extends Component
                 }
 
                 $modal = $item['cost'] * $item['qty'];
-                $initial_stock = $product->end_stock;
-                $initial_cost = $product->cost;
-                $initTotal = $initial_stock * $initial_cost;
+                // $initial_stock = $product->end_stock;
+                // $initial_cost = $product->cost;
+                // $initTotal = $initial_stock * $initial_cost;
 
                 $this->addToJournal($invoice, "10600-001", $this->account, $modal, 'Pembelian Barang (Code:' . $product->code . ') ' . $product->name . ' (' . $item['qty'] . 'Pcs)', $serial);
 
@@ -150,31 +150,7 @@ class Purchases extends Component
 
                 $transaction->save();
 
-                $newStock = $item['qty'];
-                $newCost = $item['cost'];
-                $newTotal = $newStock * $newCost;
-
-                $updatedCost = ($initTotal + $newTotal) / ($initial_stock + $newStock);
-
-                $product_log = $transaction->where('product_id', $product->id)->sum('quantity');
-                $end_Stock = $product->stock + $product_log;
-                Product::where('id', $product->id)->update([
-                    'end_Stock' => $end_Stock,
-                    'cost' => $updatedCost,
-                ]);
-
-                $updateWarehouseStock = WarehouseStock::where('warehouse_id', Auth::user()->role->warehouse_id)->where('product_id', $product->id)->first();
-                if ($updateWarehouseStock) {
-                    $updateWarehouseStock->current_stock += $item['qty'];
-                    $updateWarehouseStock->save();
-                } else {
-                    $warehouseStock = new WarehouseStock();
-                    $warehouseStock->warehouse_id = Auth::user()->role->warehouse_id;
-                    $warehouseStock->product_id = $product->id;
-                    $warehouseStock->init_stock = 0;
-                    $warehouseStock->current_stock = $item['qty'];
-                    $warehouseStock->save();
-                }
+                Product::udpateCostAndStock($product->id, $item['qty'], $item['qty'], $item['cost'], Auth::user()->role->warehouse_id);
 
                 if ($this->discount > 0) {
                     $this->addToJournal($invoice, "10600-001", "40200-001", $this->discount, 'Diskon Pembelian Barang');

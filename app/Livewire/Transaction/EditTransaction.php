@@ -6,9 +6,10 @@ use App\Models\Journal;
 use App\Models\Product;
 use Livewire\Component;
 use App\Models\Transaction;
+use Livewire\Attributes\On;
 use Livewire\Attributes\Layout;
 use Illuminate\Support\Facades\DB;
-use Livewire\Attributes\On;
+use Illuminate\Support\Facades\Log;
 
 class EditTransaction extends Component
 {
@@ -28,7 +29,7 @@ class EditTransaction extends Component
         $this->invoice = $transaction->first()->invoice;
 
         foreach ($transaction as $item) {
-            $this->quantities[$item->product_id] = $item->quantity;
+            $this->quantities[$item->product_id] = $item->transaction_type == 'Purchase' ? $item->quantity : -$item->quantity;
             $this->prices[$item->product_id] = $item->transaction_type == 'Purchase' ? $item->cost : $item->price;
             $this->productsSelected[$item->product_id] = $item->product_id;
         }
@@ -43,6 +44,12 @@ class EditTransaction extends Component
         // dd($id, $productId);
         $trx = Transaction::find($id);
         // dd($trx);
+        //Check if the product is already exist
+        $checkProduct = Transaction::where('product_id', $productId)->where('invoice', $trx->invoice)->exists();
+        if ($checkProduct) {
+            session()->flash('error', 'Update Failed! Product already selected');
+            return; // Exit the method if the product is already selected
+        }
 
         $journal = Journal::where('invoice', $trx->invoice)
             ->where('description', 'like', '%' . $trx->product->code . '%')
@@ -52,10 +59,10 @@ class EditTransaction extends Component
             DB::beginTransaction();
             // dd($journal->description);
             $journal->description = 'Pembelian Barang (Code:' . $product->code . ') ' . $product->name . ' (' . $trx->quantity . 'Pcs)';
-            $journal->amount = $trx->transaction_type == 'Purchase' ? $trx->cost * $trx->quantity : $trx->price * $trx->quantity;
+            // $journal->amount = $trx->transaction_type == 'Purchase' ? $trx->cost * $trx->quantity : $trx->price * $trx->quantity;
 
             $trx->product_id = $productId;
-            $trx->quantity = $this->quantities[$id];
+            // $trx->quantity = $this->quantities[$id];
             $trx->save();
             $journal->save();
 
@@ -70,6 +77,114 @@ class EditTransaction extends Component
             DB::rollBack();
             session()->flash('error', 'Transaction failed.' . $e->getMessage());
         }
+    }
+
+    public function updateQuantity($id, $quantity)
+    {
+        if ($quantity == 0) {
+            session()->flash('error', 'Quantity must be greater than 0. Use delete button instead.');
+            return;
+        }
+
+        $trx = Transaction::find($id);
+        $journal = Journal::where('invoice', $trx->invoice)
+            ->where('description', 'like', '%' . $trx->product->code . '%')
+            ->first();
+        $journalHpp = Journal::where('invoice', $trx->invoice)
+            ->where('description', 'like', '%' . $trx->product->code . '%')
+            ->where('debt_code', '50100-001')
+            ->first();
+        $journalHpp->amount = $trx->cost * $quantity;
+
+        $journal->amount = $trx->transaction_type == 'Purchase' ? $trx->cost * $quantity : $trx->price * $quantity;
+        $trx->quantity = -$quantity;
+
+        $trx->save();
+        $journal->save();
+        $journalHpp->save();
+
+        $this->dispatch('TransactionUpdated', $trx->invoice);
+
+        session()->flash('success', 'Transaction updated successfully.');
+    }
+
+    public function updatePrice($id, $price)
+    {
+        // Find the transaction
+        $trx = Transaction::find($id);
+        if (!$trx) {
+            session()->flash('error', 'Transaction not found.');
+            return;
+        }
+
+        // Find the main journal entry
+        $journal = Journal::where('invoice', $trx->invoice)
+            ->where('description', 'like', '%' . $trx->product->code . '%')
+            ->first();
+
+        if (!$journal) {
+            session()->flash('error', 'Journal entry not found.');
+            return;
+        }
+
+        // Find the HPP journal entry
+        $journalHpp = Journal::where('invoice', $trx->invoice)
+            ->where('description', 'like', '%' . $trx->product->code . '%')
+            ->where('debt_code', '50100-001')
+            ->first();
+
+        if (!$journalHpp) {
+            session()->flash('error', 'HPP journal entry not found.');
+            return;
+        }
+
+        try {
+            if ($trx->transaction_type == 'Purchase') {
+                $quantity = $trx->quantity;
+            } else {
+                $quantity = -$trx->quantity;
+            }
+
+            // Update the journal description
+            $journal->description = 'Pembelian Barang (Code:' . $trx->product->code . ') ' . $trx->product->name . ' (' . $quantity . 'Pcs)';
+            // Update the journal amounts
+            $journal->amount = $price * $quantity;
+            $journalHpp->amount = $trx->cost * $quantity;;
+
+            // Update transaction price and cost
+            if ($trx->transaction_type == 'Purchase') {
+                $trx->cost = $price;
+            } else {
+                $trx->price = $price;
+            }
+
+            // Save changes to database
+            $trx->save();
+            $journal->save();
+            $journalHpp->save();
+
+            // Dispatch event for UI updates
+            $this->dispatch('TransactionUpdated', $trx->invoice);
+
+            session()->flash('success', 'Transaction updated successfully.');
+        } catch (\Exception $e) {
+            Log::error('Failed to update transaction: ' . $e->getMessage());
+            session()->flash('error', 'Failed to update transaction. Please try again.');
+        }
+    }
+
+
+    public function removeItem($id)
+    {
+        $trx = Transaction::find($id);
+        $trx->delete();
+        $journal = Journal::where('invoice', $trx->invoice)
+            ->where('description', 'like', '%' . $trx->product->code . '%')
+            ->delete();
+
+        $this->dispatch('TransactionUpdated', $trx->invoice);
+
+        session()->flash('success', 'Transaction deleted successfully.');
     }
 
     public function checkDiscountAndFee()

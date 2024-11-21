@@ -199,6 +199,8 @@ class Sales extends Component
             session()->flash('error', $e->getMessage());
         }
 
+        Journal::equityCount(now());
+
         $this->dispatch('SalesCreated', $this->salesCart);
     }
 

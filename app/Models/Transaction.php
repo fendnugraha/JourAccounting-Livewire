@@ -22,4 +22,9 @@ class Transaction extends Model
     {
         return $this->belongsTo(Contact::class);
     }
+
+    public function warehouse()
+    {
+        return $this->belongsTo(Warehouse::class);
+    }
 }

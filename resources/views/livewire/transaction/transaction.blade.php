@@ -45,11 +45,10 @@
                                     number_format($transaction->totalPrice, 2) :
                                     number_format($transaction->totalCost, 2) }}</td>
                                 <td class="text-center p-2">
-                                    <button
-                                        class="text-white text-sm font-bold bg-amber-400 py-1 px-3 rounded-lg hover:bg-blue-300"
-                                        wire:click="show({{ $transaction->id }})">
+                                    <a href="{{ route('transaction.view', $transaction->invoice) }}"
+                                        class="text-white text-sm font-bold bg-amber-400 py-1 px-3 rounded-lg hover:bg-blue-300">
                                         <i class="fa fa-eye"></i>
-                                    </button>
+                                    </a>
                                 </td>
                             </tr>
                             @endforeach

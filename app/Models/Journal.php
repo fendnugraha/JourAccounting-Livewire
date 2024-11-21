@@ -140,11 +140,11 @@ class Journal extends Model
         return self::generate_invoice_journal('RC.BK.' . $contact_id, 'receivables', [['contact_id', '=', $contact_id], ['payment_nth', '=', 0]]);
     }
 
-    public function endBalanceBetweenDate($account_code, $start_date, $end_date)
+    public static function endBalanceBetweenDate($account_code, $start_date, $end_date)
     {
         $initBalance = ChartOfAccount::where('acc_code', $account_code)->first();
 
-        $transactions = $this->where(function ($query) use ($account_code) {
+        $transactions = self::where(function ($query) use ($account_code) {
             $query
                 ->where('debt_code', $account_code)
                 ->orWhere('cred_code', $account_code);
@@ -163,6 +163,26 @@ class Journal extends Model
         } else {
             return $initBalance->st_balance + $credit - $debit;
         }
+    }
+
+    public static function equityCount($end_date, $includeEquity = true)
+    {
+        $coa = ChartOfAccount::all();
+
+        foreach ($coa as $coaItem) {
+            $coaItem->balance = self::endBalanceBetweenDate($coaItem->acc_code, '0000-00-00', $end_date);
+        }
+
+        $initBalance = $coa->where('acc_code', '30100-001')->first()->st_balance;
+        $assets = $coa->whereIn('account_id', \range(1, 18))->sum('balance');
+        $liabilities = $coa->whereIn('account_id', \range(19, 25))->sum('balance');
+        $equity = $coa->where('account_id', 26)->sum('balance');
+
+        // Use Eloquent to update a specific record
+        ChartOfAccount::where('acc_code', '30100-001')->update(['st_balance' => $initBalance + $assets - $liabilities - $equity]);
+
+        // Return the calculated equity
+        return ($includeEquity ? $initBalance : 0) + $assets - $liabilities - ($includeEquity ? $equity : 0);
     }
 
     public function profitLossCount($start_date, $end_date)

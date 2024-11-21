@@ -21,10 +21,11 @@ class BalanceSheet extends Component
         $this->endDate = Carbon::now()->endOfMonth()->format('Y-m-d H:i');
 
         // Update profitLossData
-        $this->updateProfitLossData();
+        // $this->updateProfitLossData();
 
         // Run the transactions and balance calculation logic
         $this->updateTransactionsAndBalances();
+        Journal::equityCount($this->endDate);
     }
 
     public function updateProfitLossData()

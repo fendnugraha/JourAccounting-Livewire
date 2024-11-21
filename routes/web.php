@@ -22,6 +22,7 @@ use App\Livewire\Setting\Product\ProductTable;
 use App\Livewire\Setting\Warehouse\EditWarehouse;
 use App\Livewire\Setting\Warehouse\WarehouseTable;
 use App\Livewire\Finance\Receivable\ReceivableTable;
+use App\Livewire\Transaction\ViewTransaction;
 
 Route::view('/', 'welcome');
 
@@ -58,8 +59,9 @@ Route::group(['middleware' => ['auth']], function () {
 
     //Transaction
     Route::get('/transaction', Transaction::class)->name('transaction');
-    Route::get('/transaction/purchases', App\Livewire\Transaction\Purchases::class)->name('transaction.purchases');
-    Route::get('/transaction/sales', App\Livewire\Transaction\Sales::class)->name('transaction.sales');
+    Route::get('/transaction/purchases', Purchases::class)->name('transaction.purchases');
+    Route::get('/transaction/sales', Sales::class)->name('transaction.sales');
+    Route::get('/transaction/{invoice}/view', ViewTransaction::class)->name('transaction.view');
 
     // Report
     Route::get('/report', App\Livewire\Report\Report::class)->name('report');

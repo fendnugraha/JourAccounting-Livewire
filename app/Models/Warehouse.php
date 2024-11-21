@@ -22,4 +22,9 @@ class Warehouse extends Model
     {
         return $this->hasMany(Journal::class);
     }
+
+    public function transaction()
+    {
+        return $this->hasMany(Transaction::class);
+    }
 }

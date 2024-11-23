@@ -60,6 +60,12 @@
                     </table>
 
                     {{ $transactions->links() }}
+
+                    @if(session('success'))
+                    <span>{{ session('success') }}</span>
+                    @elseif (session('error'))
+                    <span>{{ session('error') }}</span>
+                    @endif
                 </div>
             </div>
         </div>

@@ -23,7 +23,14 @@ class EditTransaction extends Component
     #[On('TransactionUpdated')]
     public function mount()
     {
+        if ($this->serial == null) {
+            return abort(404);
+        }
+
         $transaction = Transaction::where('serial_number', $this->serial)->get();
+        if ($transaction->isEmpty()) {
+            return to_route('transaction')->with('error', 'Transaction not found or deleted.');
+        }
         // dd($transaction);
         $this->serial = $transaction->first()->serial_number;
         $this->invoice = $transaction->first()->invoice;
@@ -177,6 +184,12 @@ class EditTransaction extends Component
     public function removeItem($id)
     {
         $trx = Transaction::find($id);
+        $checkProduct = Transaction::where('invoice', $trx->invoice)->count();
+        if ($checkProduct == 1) {
+            session()->flash('error', 'Cannot delete all items in transaction. Use Void button instead.');
+            return;
+        }
+
         $trx->delete();
         $journal = Journal::where('invoice', $trx->invoice)
             ->where('description', 'like', '%' . $trx->product->code . '%')
@@ -211,6 +224,13 @@ class EditTransaction extends Component
         }
 
         return $total;
+    }
+
+    public function voidTransaction()
+    {
+        Transaction::where('serial_number', $this->serial)->delete();
+        Journal::where('serial_number', $this->serial)->delete();
+        redirect()->to('transaction')->with('success', 'Transaction voided successfully.');
     }
 
     #[Layout('layouts.app')]

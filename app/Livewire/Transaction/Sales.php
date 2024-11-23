@@ -189,11 +189,11 @@ class Sales extends Component
             }
 
             if ($this->discount > 0) {
-                $this->addToJournal($invoice, "60111-001", "40100-001", $this->discount, 'Potongan Penjualan');
+                $this->addToJournal($invoice, "60111-001", "40100-001", $this->discount, 'Potongan Penjualan', $serial);
             }
 
             if ($this->serviceFee > 0) {
-                $this->addToJournal($invoice, $this->account, "40100-001", $this->serviceFee, 'Jasa Service');
+                $this->addToJournal($invoice, $this->account, "40100-002", $this->serviceFee, 'Jasa Service', $serial);
             }
 
             DB::commit();

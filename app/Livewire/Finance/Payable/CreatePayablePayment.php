@@ -45,6 +45,7 @@ class CreatePayablePayment extends Component
         $user = Auth::user();
         $dateIssued = Carbon::parse($this->date_issued);
         $payable = Payable::where('invoice', $this->invoice)->where('contact_id', $this->contact)->where('payment_nth', 0)->first();
+        $trx_type = $payable->journals->first()->trx_type;
 
         $sisa = Payable::selectRaw('sum(bill_amount - payment_amount) as total')
             ->where('invoice', $this->invoice)
@@ -95,7 +96,7 @@ class CreatePayablePayment extends Component
                 'cred_code' => $this->cred_code,
                 'amount' => $this->amount,
                 'fee_amount' => 0,
-                'trx_type' => 'Payable',
+                'trx_type' => $trx_type,
                 'rcv_pay' => 'Payable',
                 'payment_status' => $payment_status,
                 'payment_nth' => $payment_nth,

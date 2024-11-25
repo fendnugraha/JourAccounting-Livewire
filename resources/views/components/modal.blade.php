@@ -3,7 +3,7 @@
 <div x-data="{ isModalOpen: false, modalName: '{{ $modalName }}', modalTitle: '{{ $modalTitle }}' }"
     x-show="isModalOpen" x-on:open-modal.window="isModalOpen = ($event.detail.modalName === modalName)"
     x-on:close-modal.window="isModalOpen = false" x-on:keydown.escape.window="isModalOpen = false"
-    class="fixed inset-0 z-50 text-sm" x-transition:enter="transition ease-out duration-300"
+    class="fixed inset-0 z-[999] text-sm" x-transition:enter="transition ease-out duration-300"
     x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
     x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100"
     x-transition:leave-end="opacity-0" style="display: none">

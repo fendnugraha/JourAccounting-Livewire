@@ -24,14 +24,14 @@
         </select>
         @can('admin')
         <select wire:model.live="warehouse_id" class="w-1/2 text-sm border rounded-lg p-2"
-            wire:change="updateLimitPage('journalPage')">
+            wire:change="updatePerPage('journalPage')">
             <option value="">-- Semua --</option>
             @foreach ($warehouses as $c)
             <option value="{{ $c->id }}">{{ $c->name }}</option>
             @endforeach
         </select>
         @endcan
-        <select wire:model.live="perPage" wire:change="updateLimitPage('journalPage')"
+        <select wire:model.live="perPage" wire:change="updatePerPage('journalPage')"
             class="text-sm border rounded-lg p-2 w-40">
             <option value="5">5</option>
             <option value="10">10</option>
@@ -59,7 +59,7 @@
         </div>
     </div>
     <input type="search" wire:model.live.debounce.1500ms="search" placeholder="Search .."
-        class="w-full border text-sm rounded-lg p-2" wire:change="updateLimitPage('journalPage')">
+        class="w-full border text-sm rounded-lg p-2" wire:change="updatePerPage('journalPage')">
     <div class="min-w-full overflow-x-auto">
         <table class="table-auto w-full text-xs mb-2">
             <thead class="bg-white text-blue-950">

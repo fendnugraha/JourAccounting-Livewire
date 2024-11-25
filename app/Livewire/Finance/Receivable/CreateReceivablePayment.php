@@ -44,7 +44,8 @@ class CreateReceivablePayment extends Component
 
         $user = Auth::user();
         $dateIssued = Carbon::parse($this->date_issued);
-        $receivable = Receivable::where('invoice', $this->invoice)->where('contact_id', $this->contact)->where('payment_nth', 0)->first();
+        $receivable = Receivable::with('journals')->where('invoice', $this->invoice)->where('contact_id', $this->contact)->where('payment_nth', 0)->first();
+        $trx_type = $receivable->journals->first()->trx_type;
 
         $sisa = Receivable::selectRaw('sum(bill_amount - payment_amount) as total')
             ->where('invoice', $this->invoice)
@@ -95,8 +96,8 @@ class CreateReceivablePayment extends Component
                 'cred_code' => $cred_code,
                 'amount' => $this->amount,
                 'fee_amount' => 0,
-                'trx_type' => 'receivable',
-                'rcv_pay' => 'receivable',
+                'trx_type' => $trx_type,
+                'rcv_pay' => 'Receivable',
                 'payment_status' => $payment_status,
                 'payment_nth' => $payment_nth,
                 'description' => $this->description ?? 'Pembayaran piutang usaha',

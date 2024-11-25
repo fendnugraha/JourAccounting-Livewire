@@ -2,15 +2,16 @@
 
 namespace App\Livewire\Transaction;
 
+use Carbon\Carbon;
 use App\Models\Contact;
 use App\Models\Journal;
 use App\Models\Product;
 use Livewire\Component;
 use App\Models\Receivable;
 use App\Models\Transaction;
+use Livewire\Attributes\On;
 use App\Models\ChartOfAccount;
 use App\Models\WarehouseStock;
-use Carbon\Carbon;
 use Livewire\Attributes\Layout;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -54,6 +55,12 @@ class Sales extends Component
         $this->dispatch('cartUpdated');
 
         $this->updateSession();
+    }
+
+    #[On('ContactCreated')]
+    public function updateContactId($contact_id)
+    {
+        Contact::all();
     }
 
     public function updatedDiscount($value)
@@ -104,7 +111,7 @@ class Sales extends Component
         session()->forget('salesCart'); // Remove the cart data from the session
     }
 
-    private function addToJournal($invoice, $debt, $cred, $amount, $description = 'Penjualan Barang', $serial = null)
+    private function addToJournal($invoice, $debt, $cred, $amount, $description = 'Penjualan Barang', $serial = null, $rcv = null)
     {
         $journal = new Journal([
             'date_issued' => date('Y-m-d H:i'),
@@ -115,6 +122,9 @@ class Sales extends Component
             'fee_amount' => 0, // Ensure $fee is defined
             'description' => $description,
             'trx_type' => 'Sales',
+            'rcv_pay' => $rcv,
+            'payment_status' => $rcv ? 0 : null,
+            'payment_nth' => $rcv ? 0 : null,
             'user_id' => Auth::user()->id,
             'warehouse_id' => Auth::user()->role->warehouse_id,
             'serial_number' => $serial,
@@ -135,7 +145,7 @@ class Sales extends Component
             }
 
             if ($this->contact_id == 1) {
-                return $this->addError('contact_id', 'Contact "General" tidak diperbolehkan untuk pembeyaran kredit');
+                return $this->addError('contact_id', 'Contact "General" tidak diperbolehkan untuk metode pembayaran kredit, silahkan pilih contact lain');
             }
         }
 
@@ -166,14 +176,15 @@ class Sales extends Component
                 // $initial_cost = $product->price;
                 // $initTotal = $initial_stock * $initial_cost;
 
-
-                $this->addToJournal($invoice, $this->account, "40100-001", $jual, 'Penjualan Barang (Code:' . $product->code . ') ' . $product->name . ' (' . -$item['qty'] . 'Pcs)', $serial);
-
-                $this->addToJournal($invoice, "50100-001", "10600-001", $modal, 'Pembelian Barang (Code:' . $product->code . ') ' . $product->name . ' (' . -$item['qty'] . 'Pcs)', $serial);
-
                 if ($this->payment_method == 'Credit') {
                     $this->addToReceivable($invoice, $this->account, $jual, 'Penjualan Barang (Code:' . $product->code . ') ' . $product->name . ' (' . -$item['qty'] . 'Pcs)', Auth::user(), date('Y-m-d H:i'), $this->dueDate);
+                    $rcv = 'Receivable';
                 }
+
+                $this->addToJournal($invoice, $this->account, "40100-001", $jual, 'Penjualan Barang (Code:' . $product->code . ') ' . $product->name . ' (' . -$item['qty'] . 'Pcs)', $serial, $rcv);
+
+                $this->addToJournal($invoice, "50100-001", "10600-001", $modal, 'Pembelian Barang (Code:' . $product->code . ') ' . $product->name . ' (' . -$item['qty'] . 'Pcs)', $serial, $rcv);
+
 
                 $transaction = new Transaction([
                     'date_issued' => date('Y-m-d H:i'),

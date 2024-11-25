@@ -3,9 +3,10 @@
 namespace App\Livewire\Transaction;
 
 use App\Models\Journal;
+use App\Models\Payable;
 use App\Models\Product;
-use App\Models\Receivable;
 use Livewire\Component;
+use App\Models\Receivable;
 use App\Models\Transaction;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Layout;
@@ -20,6 +21,7 @@ class EditTransaction extends Component
     public $prices = [];
     public $productsSelected = [];
     public $discountAndFeeData;
+    public $transaction_type;
 
     #[On('TransactionUpdated')]
     public function mount()
@@ -35,6 +37,7 @@ class EditTransaction extends Component
         // dd($transaction);
         $this->serial = $transaction->first()->serial_number;
         $this->invoice = $transaction->first()->invoice;
+        $this->transaction_type = $transaction->first()->transaction_type;
 
         foreach ($transaction as $item) {
             $this->quantities[$item->product_id] = $item->transaction_type == 'Purchase' ? $item->quantity : -$item->quantity;
@@ -67,20 +70,35 @@ class EditTransaction extends Component
             ->where('description', 'like', '%' . $trx->product->code . '%')
             ->first();
 
+        $payable = Payable::where('invoice', $trx->invoice)
+            ->where('description', 'like', '%' . $trx->product->code . '%')
+            ->first();
+
         try {
             DB::beginTransaction();
             // dd($journal->description);
-            $receivable->description = 'Penjualan Barang (Code:' . $product->code . ') ' . $product->name . ' (' . $trx->quantity . 'Pcs)';
             // $journal->amount = $trx->transaction_type == 'Purchase' ? $trx->cost * $trx->quantity : $trx->price * $trx->quantity;
-
+            $description = $this->transaction_type = "Purchase" ? 'Pembelian Barang (Code:' . $product->code . ') ' . $product->name : 'Penjualan Barang (Code:' . $product->code . ') ' . $product->name;
             $trx->product_id = $productId;
             // $trx->quantity = $this->quantities[$id];
             $trx->save();
+
             foreach ($journals as $journal) {
-                $journal->description = 'Pembelian Barang (Code:' . $product->code  . ') ' . $product->name . ' (' . $trx->quantity . 'Pcs)';
+                $journal->description = $description . ' (' . $trx->quantity . 'Pcs)';
                 $journal->save(); // Save each updated journal
             }
-            $receivable->save();
+
+            if ($receivable || $payable) {
+
+
+                if ($this->transaction_type == "Purchase") {
+                    $payable->description = 'Pembelian Barang (Code:' . $product->code . ') ' . $product->name . ' (' . $trx->quantity . 'Pcs)';
+                    $payable->save();
+                } else {
+                    $receivable->description = 'Penjualan Barang (Code:' . $product->code . ') ' . $product->name . ' (' . $trx->quantity . 'Pcs)';
+                    $receivable->save();
+                }
+            }
 
 
             DB::commit();
@@ -117,23 +135,45 @@ class EditTransaction extends Component
             ->where('payment_nth', 0)
             ->first();
 
+        $payable = Payable::where('invoice', $trx->invoice)
+            ->where('description', 'like', '%' . $trx->product->code . '%')
+            ->where('payment_nth', 0)
+            ->first();
+
         $journalHpp->amount = $trx->cost * $quantity;
         $salePrice = $trx->transaction_type == 'Purchase' ? $trx->cost * $quantity : $trx->price * $quantity;
-        $receivable->bill_amount = $salePrice;
+
+
 
         $journal->amount = $salePrice;
         $trx->quantity = -$quantity;
 
-        $trx->save();
-        $journal->save();
-        $journalHpp->save();
+        try {
+            DB::beginTransaction();
 
-        if ($receivable->exists()) {
-            $receivable->save();
+            $journal->save();
+            $journalHpp->save();
+            $trx->save();
+
+            if ($receivable || $payable) {
+                if ($trx->transaction_type == 'Purchase') {
+                    $payable->bill_amount = $trx->cost * $quantity;
+                    $payable->save();
+                } else {
+                    $receivable->bill_amount = $salePrice;
+                    $receivable->save();
+                }
+            }
+
+
+            DB::commit();
+
+            session()->flash('success', 'Transaction updated successfully.');
+            $this->dispatch('TransactionUpdated', $trx->invoice);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            session()->flash('error', 'Transaction failed.' . $e->getMessage());
         }
-        $this->dispatch('TransactionUpdated', $trx->invoice);
-
-        session()->flash('success', 'Transaction updated successfully.');
     }
 
     public function updatePrice($id, $price)
@@ -171,7 +211,15 @@ class EditTransaction extends Component
             ->where('payment_nth', 0)
             ->first();
 
+        $payable = Payable::where('invoice', $trx->invoice)
+            ->where('description', 'like', '%' . $trx->product->code . '%')
+            ->where('payment_nth', 0)
+            ->first();
+
         try {
+            DB::beginTransaction();
+
+            // Calculate the quantity
             if ($trx->transaction_type == 'Purchase') {
                 $quantity = $trx->quantity;
             } else {
@@ -183,7 +231,6 @@ class EditTransaction extends Component
             // Update the journal amounts
             $journal->amount = $price * $quantity;
             $journalHpp->amount = $trx->cost * $quantity;
-            $receivable->bill_amount = $price * $quantity;
 
             // Update transaction price and cost
             if ($trx->transaction_type == 'Purchase') {
@@ -196,13 +243,24 @@ class EditTransaction extends Component
             $trx->save();
             $journal->save();
             $journalHpp->save();
-            $receivable->save();
 
+            if ($receivable || $payable) {
+                if ($trx->transaction_type == 'Purchase') {
+                    $payable->bill_amount = $trx->cost * $quantity;
+                    $payable->save();
+                } else {
+                    $receivable->bill_amount = $price * $quantity;
+                    $receivable->save();
+                }
+            }
+
+            DB::commit();
             // Dispatch event for UI updates
             $this->dispatch('TransactionUpdated', $trx->invoice);
 
             session()->flash('success', 'Transaction updated successfully.');
         } catch (\Exception $e) {
+            DB::rollBack();
             Log::error('Failed to update transaction: ' . $e->getMessage());
             session()->flash('error', 'Failed to update transaction. Please try again.');
         }
@@ -218,14 +276,43 @@ class EditTransaction extends Component
             return;
         }
 
-        $trx->delete();
-        $journal = Journal::where('invoice', $trx->invoice)
-            ->where('description', 'like', '%' . $trx->product->code . '%')
-            ->delete();
+        $checkPaymentReceivable = Receivable::where('invoice', $trx->invoice)->sum('payment_amount');
+        $checkPaymentPayable = Payable::where('invoice', $trx->invoice)->sum('payment_amount');
 
-        $this->dispatch('TransactionUpdated', $trx->invoice);
+        if ($checkPaymentReceivable > 0 || $checkPaymentPayable > 0) {
+            session()->flash('error', 'Cannot delete transaction. Please void payment first.');
+            return;
+        }
 
-        session()->flash('success', 'Transaction deleted successfully.');
+        try {
+            DB::beginTransaction();
+            if ($trx->transaction_type == 'Purchase') {
+                $payable = Payable::where('invoice', $trx->invoice)
+                    ->where('description', 'like', '%' . $trx->product->code . '%')
+                    ->first();
+                $payable->delete();
+            } else {
+                $receivable = Receivable::where('invoice', $trx->invoice)
+                    ->where('description', 'like', '%' . $trx->product->code . '%')
+                    ->first();
+                $receivable->delete();
+            }
+
+            $trx->delete();
+            $journal = Journal::where('invoice', $trx->invoice)
+                ->where('description', 'like', '%' . $trx->product->code . '%')
+                ->delete();
+
+            DB::commit();
+
+            session()->flash('success', 'Transaction deleted successfully.');
+
+            $this->dispatch('TransactionUpdated', $trx->invoice);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Failed to delete transaction: ' . $e->getMessage());
+            session()->flash('error', 'Failed to delete transaction. Please try again.');
+        }
     }
 
     public function checkDiscountAndFee()
@@ -254,12 +341,33 @@ class EditTransaction extends Component
         return $total;
     }
 
-    public function voidTransaction()
+    public function voidTransaction($id)
     {
-        Transaction::where('serial_number', $this->serial)->delete();
-        Journal::where('serial_number', $this->serial)->delete();
-        Receivable::where('invoice', $this->invoice)->delete();
-        redirect()->to('transaction')->with('success', 'Transaction voided successfully.');
+        $trx = Transaction::find($id);
+        $checkPaymentReceivable = Receivable::where('invoice', $trx->invoice)->sum('payment_amount');
+        $checkPaymentPayable = Payable::where('invoice', $trx->invoice)->sum('payment_amount');
+
+        if ($checkPaymentReceivable > 0 || $checkPaymentPayable > 0) {
+            session()->flash('error', 'Cannot void transaction. Please void payment first.');
+            return;
+        }
+
+        try {
+            DB::beginTransaction();
+
+            Transaction::where('serial_number', $this->serial)->delete();
+            Journal::where('serial_number', $this->serial)->delete();
+            Receivable::where('invoice', $this->invoice)->delete();
+
+            DB::commit();
+
+            redirect()->to('transaction')->with('success', 'Transaction voided successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Failed to void transaction: ' . $e->getMessage());
+
+            session()->flash('error', 'Failed to void transaction. Please try again.');
+        }
     }
 
     #[Layout('layouts.app')]

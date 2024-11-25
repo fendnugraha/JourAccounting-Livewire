@@ -63,7 +63,8 @@
                     </table>
                     <div class="mt-3">
                         <button class="py-3 px-4 bg-red-400 hover:bg-red-600 text-white rounded-lg"
-                            wire:confirm="Apakah anda yakin menghapus data ini?" wire:click="voidTransaction">Void
+                            wire:confirm="Apakah anda yakin menghapus data ini?"
+                            wire:click="voidTransaction({{ $transaction->first()->id }})">Void
                             Transaction <i class="fa fa-trash"></i>
                         </button>
                     </div>

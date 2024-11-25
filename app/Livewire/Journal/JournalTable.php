@@ -54,7 +54,7 @@ class JournalTable extends Component
     }
 
     #[On('JournalCreated')]
-    public function updateData()
+    public function updatePerPage()
     {
         // Perbarui data yang diperlukan ketika event terjadi
         $this->resetPage('journalPage'); // Reset pagination jika diperlukan

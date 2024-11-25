@@ -4,6 +4,7 @@ namespace App\Livewire\Transaction;
 
 use App\Models\Journal;
 use App\Models\Product;
+use App\Models\Receivable;
 use Livewire\Component;
 use App\Models\Transaction;
 use Livewire\Attributes\On;
@@ -58,20 +59,28 @@ class EditTransaction extends Component
             return; // Exit the method if the product is already selected
         }
 
-        $journal = Journal::where('invoice', $trx->invoice)
+        $journals = Journal::where('invoice', $trx->invoice)
+            ->where('description', 'like', '%' . $trx->product->code . '%')
+            ->get();
+
+        $receivable = Receivable::where('invoice', $trx->invoice)
             ->where('description', 'like', '%' . $trx->product->code . '%')
             ->first();
 
         try {
             DB::beginTransaction();
             // dd($journal->description);
-            $journal->description = 'Pembelian Barang (Code:' . $product->code . ') ' . $product->name . ' (' . $trx->quantity . 'Pcs)';
+            $receivable->description = 'Penjualan Barang (Code:' . $product->code . ') ' . $product->name . ' (' . $trx->quantity . 'Pcs)';
             // $journal->amount = $trx->transaction_type == 'Purchase' ? $trx->cost * $trx->quantity : $trx->price * $trx->quantity;
 
             $trx->product_id = $productId;
             // $trx->quantity = $this->quantities[$id];
             $trx->save();
-            $journal->save();
+            foreach ($journals as $journal) {
+                $journal->description = 'Pembelian Barang (Code:' . $product->code  . ') ' . $product->name . ' (' . $trx->quantity . 'Pcs)';
+                $journal->save(); // Save each updated journal
+            }
+            $receivable->save();
 
 
             DB::commit();
@@ -97,19 +106,31 @@ class EditTransaction extends Component
         $journal = Journal::where('invoice', $trx->invoice)
             ->where('description', 'like', '%' . $trx->product->code . '%')
             ->first();
+
         $journalHpp = Journal::where('invoice', $trx->invoice)
             ->where('description', 'like', '%' . $trx->product->code . '%')
             ->where('debt_code', '50100-001')
             ->first();
-        $journalHpp->amount = $trx->cost * $quantity;
 
-        $journal->amount = $trx->transaction_type == 'Purchase' ? $trx->cost * $quantity : $trx->price * $quantity;
+        $receivable = Receivable::where('invoice', $trx->invoice)
+            ->where('description', 'like', '%' . $trx->product->code . '%')
+            ->where('payment_nth', 0)
+            ->first();
+
+        $journalHpp->amount = $trx->cost * $quantity;
+        $salePrice = $trx->transaction_type == 'Purchase' ? $trx->cost * $quantity : $trx->price * $quantity;
+        $receivable->bill_amount = $salePrice;
+
+        $journal->amount = $salePrice;
         $trx->quantity = -$quantity;
 
         $trx->save();
         $journal->save();
         $journalHpp->save();
 
+        if ($receivable->exists()) {
+            $receivable->save();
+        }
         $this->dispatch('TransactionUpdated', $trx->invoice);
 
         session()->flash('success', 'Transaction updated successfully.');
@@ -145,6 +166,11 @@ class EditTransaction extends Component
             return;
         }
 
+        $receivable = Receivable::where('invoice', $trx->invoice)
+            ->where('description', 'like', '%' . $trx->product->code . '%')
+            ->where('payment_nth', 0)
+            ->first();
+
         try {
             if ($trx->transaction_type == 'Purchase') {
                 $quantity = $trx->quantity;
@@ -156,7 +182,8 @@ class EditTransaction extends Component
             $journal->description = 'Pembelian Barang (Code:' . $trx->product->code . ') ' . $trx->product->name . ' (' . $quantity . 'Pcs)';
             // Update the journal amounts
             $journal->amount = $price * $quantity;
-            $journalHpp->amount = $trx->cost * $quantity;;
+            $journalHpp->amount = $trx->cost * $quantity;
+            $receivable->bill_amount = $price * $quantity;
 
             // Update transaction price and cost
             if ($trx->transaction_type == 'Purchase') {
@@ -169,6 +196,7 @@ class EditTransaction extends Component
             $trx->save();
             $journal->save();
             $journalHpp->save();
+            $receivable->save();
 
             // Dispatch event for UI updates
             $this->dispatch('TransactionUpdated', $trx->invoice);
@@ -230,6 +258,7 @@ class EditTransaction extends Component
     {
         Transaction::where('serial_number', $this->serial)->delete();
         Journal::where('serial_number', $this->serial)->delete();
+        Receivable::where('invoice', $this->invoice)->delete();
         redirect()->to('transaction')->with('success', 'Transaction voided successfully.');
     }
 

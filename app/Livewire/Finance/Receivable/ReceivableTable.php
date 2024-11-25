@@ -26,7 +26,7 @@ class ReceivableTable extends Component
 
     public function getData()
     {
-        $receivables = Receivable::with('contact')
+        $receivables = Receivable::with(['contact', 'journals'])
             ->where('invoice', 'like', '%' . $this->searchInvoice . '%')
             ->orWhereHas('contact', function ($query) {
                 $query->where('name', 'like', '%' . $this->searchInvoice . '%');

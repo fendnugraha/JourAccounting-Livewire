@@ -6,9 +6,11 @@ use App\Models\Contact;
 use App\Models\Journal;
 use App\Models\Product;
 use Livewire\Component;
+use App\Models\Receivable;
 use App\Models\Transaction;
 use App\Models\ChartOfAccount;
 use App\Models\WarehouseStock;
+use Carbon\Carbon;
 use Livewire\Attributes\Layout;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -25,6 +27,8 @@ class Sales extends Component
     public $discount = 0;
     public $serviceFee = 0;
     public $contact_id = 1;
+    public $payment_method = 'Cash';
+    public int $dueDate = 30;
 
     public function mount()
     {
@@ -123,10 +127,25 @@ class Sales extends Component
 
     public function storeCart()
     {
+        if ($this->payment_method == 'Credit') {
+            $this->account = '10400-001';
+
+            if ($this->dueDate < 0) {
+                return $this->addError('dueDate', 'Jatuh tempo tidak boleh kurang dari 0');
+            }
+
+            if ($this->contact_id == 1) {
+                return $this->addError('contact_id', 'Contact "General" tidak diperbolehkan untuk pembeyaran kredit');
+            }
+        }
+
+        // dd(Carbon::parse(date('Y-m-d H:i'))->addDays($this->dueDate));
+
         $validate = $this->validate([
             'account' => 'required',
             'payment' => 'required|numeric',
         ]);
+        // dd($this->account, $this->payment);
 
         $invoice = (new Journal())->sales_journal();
         $serial = Transaction::generateSerialNumber('SO', Auth::user()->id);
@@ -147,8 +166,14 @@ class Sales extends Component
                 // $initial_cost = $product->price;
                 // $initTotal = $initial_stock * $initial_cost;
 
+
                 $this->addToJournal($invoice, $this->account, "40100-001", $jual, 'Penjualan Barang (Code:' . $product->code . ') ' . $product->name . ' (' . -$item['qty'] . 'Pcs)', $serial);
+
                 $this->addToJournal($invoice, "50100-001", "10600-001", $modal, 'Pembelian Barang (Code:' . $product->code . ') ' . $product->name . ' (' . -$item['qty'] . 'Pcs)', $serial);
+
+                if ($this->payment_method == 'Credit') {
+                    $this->addToReceivable($invoice, $this->account, $jual, 'Penjualan Barang (Code:' . $product->code . ') ' . $product->name . ' (' . -$item['qty'] . 'Pcs)', Auth::user(), date('Y-m-d H:i'), $this->dueDate);
+                }
 
                 $transaction = new Transaction([
                     'date_issued' => date('Y-m-d H:i'),
@@ -194,6 +219,9 @@ class Sales extends Component
 
             if ($this->serviceFee > 0) {
                 $this->addToJournal($invoice, $this->account, "40100-002", $this->serviceFee, 'Jasa Service', $serial);
+                if ($this->payment_method == 'Credit') {
+                    $this->addToReceivable($invoice, $this->account, $this->serviceFee, 'Jasa Service', Auth::user(), date('Y-m-d H:i'), $this->dueDate);
+                }
             }
 
             DB::commit();
@@ -211,6 +239,31 @@ class Sales extends Component
         Journal::equityCount(now());
 
         $this->dispatch('SalesCreated', $this->salesCart);
+    }
+
+    public function addToReceivable($invoice, $account, $amount, $description, $user, $dateIssued, $dueDate)
+    {
+        try {
+            DB::beginTransaction();
+
+            Receivable::create([
+                'date_issued' => $dateIssued,
+                'due_date' => Carbon::parse($dateIssued)->addDays($dueDate),
+                'invoice' => $invoice,
+                'description' => $description ?? 'Piutang Usaha',
+                'bill_amount' => $amount,
+                'payment_amount' => 0,
+                'payment_status' => 0,
+                'payment_nth' => 0,
+                'contact_id' => $this->contact_id,
+                'user_id' => $user->id,
+                'account_code' => $account
+            ]);
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+        }
     }
 
     #[Layout('layouts.app')]

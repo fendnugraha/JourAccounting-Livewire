@@ -13,9 +13,9 @@ class Receivable extends Model
         return $this->belongsTo(Contact::class);
     }
 
-    public function journal()
+    public function journals()
     {
-        return $this->belongsTo(Journal::class, 'invoice', 'invoice');
+        return $this->hasMany(Journal::class, 'invoice', 'invoice');
     }
 
     public static function getLastPayment($invoice)

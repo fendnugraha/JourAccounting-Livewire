@@ -40,6 +40,9 @@
                                 <option value="{{ $contact->id }}">{{ $contact->name }}</option>
                                 @endforeach
                             </select>
+                            @error('contact_id')
+                            <span class="text-red-500 text-xs">{{ $message }}</span>
+                            @enderror
                         </div>
                         <input type="search" class="w-full text-sm border rounded-lg p-2 mb-2"
                             wire:model.live.debounce.500ms="search" x-on:click="showResults = true"
@@ -175,17 +178,40 @@
                             wire:model.live.defer="serviceFee"
                             x-on:input="$wire.set('serviceFee', $event.target.value)">
                     </div>
-                    <div class="mb-3 ">
+                    <div class="mb-2" x-show="$wire.payment_method === 'Cash'">
                         <label for="account">Pembayaran</label>
-                        <select class="w-full text-sm border rounded-lg p-2 @error('account') border-red-500 
-                    @enderror" wire:model.live="account" id="account">
+                        <select class="w-full text-sm border rounded-lg p-2 @error('account') border-red-500 @enderror"
+                            wire:model.live="account" id="account">
                             <option value="">--Pilih Account--</option>
                             @foreach ($accounts as $account)
                             <option value="{{ $account->acc_code }}">{{ $account->acc_name }}</option>
                             @endforeach
                         </select>
-                        @error('account') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                        @error('account')
+                        <span class="text-red-500 text-xs">{{ $message }}</span>
+                        @enderror
                     </div>
+                    <div class="mb-2" x-show="$wire.payment_method === 'Credit'">
+                        <label for="dueDate">Jatuh Tempo (Hari)</label>
+                        <input type="number" wire:model.defer="dueDate" class="w-full text-sm border rounded-lg p-2"
+                            placeholder="Default: 30" min="1">
+                        @error('dueDate')
+                        <span class="text-red-500 text-xs">{{ $message }}</span>
+                        @enderror
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 mb-3">
+                        <div>
+                            <input type="radio" wire:model.live="payment_method" value="Cash" id="cash"
+                                x-click="showPayment = true">
+                            <label for="Cash">Cash</label>
+                        </div>
+                        <div>
+                            <input type="radio" wire:model.live="payment_method" value="Credit" id="credit"
+                                x-click="showPayment = false">
+                            <label for="Credit">Credit</label>
+                        </div>
+                    </div>
+
                     <div class="grid grid-cols-2 gap-2">
                         <button class="text-white font-bold bg-red-400 py-2 px-3 rounded-2xl hover:bg-red-300"
                             wire:click="clearCart">Clear Cart</button>
@@ -254,7 +280,8 @@
             <div class="grid grid-cols-2 gap-2">
                 <button class="text-white font-bold bg-red-400 py-3 px-3 rounded-2xl hover:bg-red-300"
                     wire:click="clearCart" wire:confirm="Apakah anda yakin menghapus data ini?"><i
-                        class="fa fa-trash"></i> Clear Cart</button>
+                        class="fa fa-trash"></i>
+                    Clear Cart</button>
                 <button class="text-white font-bold bg-gray-700 py-3 px-3 rounded-2xl hover:bg-gray-600"
                     wire:click="storeCart">
                     <i class="fa fa-check"></i> Checkout

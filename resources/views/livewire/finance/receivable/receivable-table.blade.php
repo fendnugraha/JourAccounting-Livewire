@@ -65,10 +65,14 @@
                                 $dueDate = Carbon::parse($p->due_date);
 
                                 $diff = round($today->diffInDays($dueDate));
+                                if($p->journals->first()->trx_type == 'Sales' && $p->payment_nth == 0){
+                                $hide = 'hidden';
+                                }
                                 @endphp
                                 <tr class="border-b hover:bg-slate-50 hover:border-white">
                                     <td class="p-2">
-                                        <span class="text-xs font-bold">{{ $p->date_issued }} | {{ $p->invoice }}</span>
+                                        <span class="text-xs font-bold">{{ $p->date_issued }} | {{ $p->invoice }} | {{
+                                            $p->journals->first()->trx_type }}</span>
                                         <br>
                                         Contact: <span class="text-sm text-blue-600 font-bold">{{ $p->contact->name
                                             }}</span>
@@ -88,7 +92,7 @@
                                     <td class="text-center">
                                         <button type="button" wire:click="delete({{ $p->id }})"
                                             class="px-3 py-2 rounded-xl bg-red-300 hover:bg-red-400 text-white text-xs"
-                                            wire:confirm="are you sure?">Delete</button>
+                                            wire:confirm="are you sure?" {{ $hide ?? '' }}>Delete</button>
                                     </td>
                                 </tr>
                                 @endforeach

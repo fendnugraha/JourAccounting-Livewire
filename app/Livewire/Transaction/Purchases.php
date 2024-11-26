@@ -24,6 +24,9 @@ class Purchases extends Component
     public $account;
     public $discount = 0;
     public $contact_id = 1;
+    public $payment_method = 'Cash';
+    public int $dueDate = 30;
+
 
     public function mount()
     {

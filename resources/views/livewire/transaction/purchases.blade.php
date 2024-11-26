@@ -27,8 +27,8 @@
                 ['href' => route('transaction.purchases'), 'route' => 'transaction.purchases', 'text' => 'Purchases']
             ]" />
 
-            <div class="grid sm:grid-cols-4 grid-cols-1 gap-2 pb-10 sm:pb-0">
-                <div class="bg-white p-3 text-gray-900 shadow-sm sm:rounded-lg col-span-3">
+            <div class="grid sm:grid-cols-4 grid-cols-1 gap-3 pb-10 sm:pb-0">
+                <div class="text-gray-900 col-span-3">
                     {{-- <h1 class="text-lg font-bold mb-3">{{ __('Sales Order') }}</h1> --}}
                     <div class="relative z-50" x-data="{ showResults: false }">
                         <div class="mb-2 grid grid-cols-4 gap-2 items-center">
@@ -69,62 +69,51 @@
                         </div>
                     </div>
                     @if (session('purchaseCart'))
-                    <table class="table-auto w-full text-xs my-2">
-                        {{-- <thead class="bg-white text-blue-950">
-                            <tr>
-                                <th class="text-start">Quantity</th>
-                                <th class="text-center">Price</th>
-                                <th class="text-center">Action</th>
-                            </tr>
-                        </thead> --}}
-                        <tbody class="bg-white">
-                            @php
-                            $total = 0;
-                            @endphp
-                            @foreach ($purchaseCart as $item)
-                            @php
-                            // Calculate subtotal for the current item
-                            $subtotal = $item['qty'] * $item['cost'];
-                            // Add to the total
-                            $total += $subtotal;
-                            @endphp
-                            <tr>
-                                <td colspan="2" class="text-lg py-2">{{ $item['name'] }}</td>
-                                <td class="text-end py-2">
-                                    <button
-                                        class="text-white font-bold bg-red-400 py-1 px-3 rounded-lg hover:bg-red-300"
-                                        wire:click="removeFromCart({{ $item['id'] }})">
-                                        <i class="fa-solid fa-minus"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr class="border-b border-slate-200">
-                                <td>
-                                    <input type="number"
-                                        class="w-full text-end text-xs rounded-lg bg-slate-300 border-0"
-                                        wire:change="updateQty({{ $item['id'] }}, $event.target.value)"
-                                        wire:model="purchaseCart.{{ $item['id'] }}.qty">
-                                    <span class="font-bold text-blue-900 text-sm">Qty</span>
-                                </td>
-                                <td colspan="2" class="text-end ps-2">
-                                    <input type="number"
-                                        class="w-full text-end text-xs rounded-lg bg-slate-300 border-0"
-                                        wire:change="updateCost({{ $item['id'] }}, $event.target.value)"
-                                        wire:model="purchaseCart.{{ $item['id'] }}.cost">
-                                    Subtotal: <span class="font-bold text-blue-900 text-sm">{{ number_format($subtotal,
-                                        2)
-                                        }}</span>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                        <tfoot class="bg-gray-100">
-                            <tr>
-                                <td class="text-end font-bold p-3">Total:</td>
-                                <td colspan="2" class="text-end font-bold p-3">{{ number_format($total, 2) }}</td>
-                            </tr>
-                        </tfoot>
-                    </table>
+                    @php
+                    $total = 0;
+                    @endphp
+                    @foreach ($purchaseCart as $item)
+                    @php
+                    // Calculate subtotal for the current item
+                    $subtotal = $item['qty'] * $item['cost'];
+                    // Add to the total
+                    $total += $subtotal;
+                    @endphp
+                    <div class="bg-white px-5 py-3 text-gray-900 shadow-sm sm:rounded-2xl mb-2">
+                        <div class="grid grid-cols-4 gap-2">
+                            <div class="col-span-3">
+                                <h1 class="text-lg font-bold text-slate-600">{{ $item['name'] }}</h1>
+                            </div>
+                            <div class="col-span-1 text-right">
+                                <h3 class="text-md">Subtotal: <span class="font-bold text-blue-600">{{
+                                        number_format($subtotal) }}</span>
+                                    IDR</h3>
+                            </div>
+                        </div>
+                        <h1 class="text-sm text-slate-500 my-2">
+                            {{ $item['qty'] }} Pcs x {{ number_format($item['cost']) }} IDR
+                        </h1>
+                        <div class="grid grid-cols-4 gap-2">
+                            <div class="flex gap-2 items-center col-span-3">
+                                <label for="qty">Qty</label>
+                                <input type="number" wire:model="purchaseCart.{{ $item['id'] }}.qty"
+                                    wire:change="updateQty({{ $item['id'] }}, $event.target.value)"
+                                    class="text-sm border border-slate-300 rounded-lg py-2 px-3">
+                                <label for="cost">Harga</label>
+                                <input type="number" wire:model="purchaseCart.{{ $item['id'] }}.cost"
+                                    wire:change="updateCost({{ $item['id'] }}, $event.target.value)"
+                                    class="w-1/4 text-sm border border-slate-300 rounded-lg py-2 px-3">
+                            </div>
+                            <div class="text-right">
+                                <button type="button"
+                                    class="text-white text-sm font-bold bg-red-400 px-3 py-2 rounded-lg hover:bg-red-300"
+                                    wire:click="removeFromCart({{ $item['id'] }})">
+                                    <i class="fa-solid fa-trash"></i> Hapus
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
                     @endif
                 </div>
                 <div class="bg-white p-3 text-gray-900 shadow-sm sm:rounded-lg hidden sm:block">
@@ -162,16 +151,38 @@
                             $discount, 2) }}
                         </h1>
                     </div>
-                    <div class="mb-3 ">
+                    <div class="mb-2" x-show="$wire.payment_method === 'Cash'">
                         <label for="account">Pembayaran</label>
-                        <select class="w-full text-sm border rounded-lg p-2 @error('account') border-red-500 
-                    @enderror" wire:model.live="account" id="account">
+                        <select class="w-full text-sm border rounded-lg p-2 @error('account') border-red-500 @enderror"
+                            wire:model.live="account" id="account">
                             <option value="">--Pilih Account--</option>
                             @foreach ($accounts as $account)
                             <option value="{{ $account->acc_code }}">{{ $account->acc_name }}</option>
                             @endforeach
                         </select>
-                        @error('account') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                        @error('account')
+                        <span class="text-red-500 text-xs">{{ $message }}</span>
+                        @enderror
+                    </div>
+                    <div class="mb-2" x-show="$wire.payment_method === 'Credit'">
+                        <label for="dueDate">Jatuh Tempo (Hari)</label>
+                        <input type="number" wire:model.defer="dueDate" class="w-full text-sm border rounded-lg p-2"
+                            placeholder="Default: 30" min="1">
+                        @error('dueDate')
+                        <span class="text-red-500 text-xs">{{ $message }}</span>
+                        @enderror
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 mb-3">
+                        <div>
+                            <input type="radio" wire:model.live="payment_method" value="Cash" id="cash"
+                                x-click="showPayment = true">
+                            <label for="Cash">Cash</label>
+                        </div>
+                        <div>
+                            <input type="radio" wire:model.live="payment_method" value="Credit" id="credit"
+                                x-click="showPayment = false">
+                            <label for="Credit">Credit</label>
+                        </div>
                     </div>
                     <div class="grid grid-cols-2 gap-2">
                         <button class="text-white font-bold bg-red-400 py-2 px-3 rounded-2xl hover:bg-red-300"

@@ -37,7 +37,48 @@ class Product extends Model
         return $category_slug->slug . '' . \sprintf("%04s", $kd);
     }
 
-    public static function udpateCostAndStock($id, $newQty, $newStock, $newCost, $warehouse_id)
+    public static function updateStock($id, $newQty, $warehouse_id)
+    {
+        $product = Product::find($id);
+        $product_log = Transaction::where('product_id', $product->id)->sum('quantity');
+        $end_Stock = $product->end_stock + $newQty;
+        Product::where('id', $product->id)->update([
+            'end_Stock' => $end_Stock,
+        ]);
+
+        $updateWarehouseStock = WarehouseStock::where('warehouse_id', $warehouse_id)->where('product_id', $product->id)->first();
+        if ($updateWarehouseStock) {
+            $updateWarehouseStock->current_stock += $newQty;
+            $updateWarehouseStock->save();
+        } else {
+            $warehouseStock = new WarehouseStock();
+            $warehouseStock->warehouse_id = $warehouse_id;
+            $warehouseStock->product_id = $product->id;
+            $warehouseStock->current_stock = $newQty;
+            $warehouseStock->save();
+        }
+
+        return true;
+    }
+
+    public static function updateCost($id, $newStock, $newCost)
+    {
+        $product = Product::find($id);
+        $initial_stock = $product->end_stock;
+        $initial_cost = $product->cost;
+        $initTotal = $initial_stock * $initial_cost;
+
+        $newTotal = $newStock * $newCost;
+
+        $updatedCost = ($initTotal + $newTotal) / ($initial_stock + $newStock);
+        Product::where('id', $product->id)->update([
+            'cost' => $updatedCost,
+        ]);
+
+        return true;
+    }
+
+    public static function updateCostAndStock($id, $newQty, $newStock, $newCost, $warehouse_id)
     {
         $product = Product::find($id);
 

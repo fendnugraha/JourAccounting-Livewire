@@ -47,9 +47,28 @@ class ViewTransaction extends Component
     public function render()
     {
         // dd($this->checkDiscountAndFee());
-        $transaction = Transaction::where('serial_number', $this->serial)->get();
+        $transaction = Transaction::with(['payable', 'receivable'])->where('serial_number', $this->serial)->get();
         if ($transaction->isEmpty()) {
             return abort(404);
+        }
+
+        if ($transaction->first()->receivable || $transaction->first()->payable) {
+
+            if ($transaction->first()->transaction_type == 'Sales') {
+                $dueDate = Carbon::parse($transaction->first()->receivable->due_date)->format('F d, Y');
+            } elseif ($transaction->first()->transaction_type == 'Purchase') {
+                $dueDate = Carbon::parse($transaction->first()->payable->due_date)->format('F d, Y');
+            } else {
+                $dueDate = null;
+            }
+        }
+
+        if ($transaction->first()->transaction_type == 'Sales') {
+            $payment_method = $transaction->first()->journal->debt->acc_name;
+        } elseif ($transaction->first()->transaction_type == 'Purchase') {
+            $payment_method = $transaction->first()->journal->cred->acc_name;
+        } else {
+            $payment_method = null;
         }
 
         return view('livewire.transaction.view-transaction', [
@@ -58,7 +77,8 @@ class ViewTransaction extends Component
             'discount' => $this->checkDiscountAndFee()['discount'] ?? 0,
             'serviceFee' => $this->checkDiscountAndFee()['serviceFee'] ?? 0,
             'date_issued' => Carbon::parse($transaction->first()->date_issued)->format('F d, Y'),
-            'due_date' => Carbon::parse($transaction->first()->due_date)->format('F d, Y')
+            'due_date' => $dueDate ?? 'Full Payment',
+            'payment_method' => $payment_method
         ]);
     }
 }

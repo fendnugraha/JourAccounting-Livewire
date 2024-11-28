@@ -51,7 +51,7 @@ class EditTransaction extends Component
     }
     public function updateProduct($id, $productId)
     {
-        $product = Product::find($productId);
+        // $product = Product::find($productId);
         // dd($id, $productId);
         $trx = Transaction::find($id);
         // dd($trx);
@@ -62,44 +62,56 @@ class EditTransaction extends Component
             return; // Exit the method if the product is already selected
         }
 
-        $journals = Journal::where('invoice', $trx->invoice)
-            ->where('description', 'like', '%' . $trx->product->code . '%')
-            ->get();
+        // $journals = Journal::where('invoice', $trx->invoice)
+        //     ->where('description', 'like', '%' . $trx->product->code . '%')
+        //     ->get();
 
-        $receivable = Receivable::where('invoice', $trx->invoice)
-            ->where('description', 'like', '%' . $trx->product->code . '%')
-            ->first();
+        // $receivable = Receivable::where('invoice', $trx->invoice)
+        //     ->where('description', 'like', '%' . $trx->product->code . '%')
+        //     ->first();
 
-        $payable = Payable::where('invoice', $trx->invoice)
-            ->where('description', 'like', '%' . $trx->product->code . '%')
-            ->first();
+        // $payable = Payable::where('invoice', $trx->invoice)
+        //     ->where('description', 'like', '%' . $trx->product->code . '%')
+        //     ->first();
 
         try {
             DB::beginTransaction();
             // dd($journal->description);
             // $journal->amount = $trx->transaction_type == 'Purchase' ? $trx->cost * $trx->quantity : $trx->price * $trx->quantity;
-            $description = $this->transaction_type = "Purchase" ? 'Pembelian Barang (Code:' . $product->code . ') ' . $product->name : 'Penjualan Barang (Code:' . $product->code . ') ' . $product->name;
+            // $description = $this->transaction_type = "Purchase" ? 'Pembelian Barang (Code:' . $product->code . ') ' . $product->name : 'Penjualan Barang (Code:' . $product->code . ') ' . $product->name;
+            if ($trx->transaction_type == "Purchase") {
+                Product::updateStock($trx->product_id, -$trx->quantity, $trx->warehouse_id);
+            } else {
+                Product::updateStock($trx->product_id, $trx->quantity, $trx->warehouse_id);
+            }
+
             $trx->product_id = $productId;
             // $trx->quantity = $this->quantities[$id];
+
+            // foreach ($journals as $journal) {
+            //     $journal->description = $description . ' (' . $trx->quantity . 'Pcs)';
+            //     $journal->save(); // Save each updated journal
+            // }
+
+            // if ($receivable || $payable) {
+
+
+            //     if ($this->transaction_type == "Purchase") {
+            //         $payable->description = 'Pembelian Barang (Code:' . $product->code . ') ' . $product->name . ' (' . $trx->quantity . 'Pcs)';
+            //         $payable->save();
+            //     } else {
+            //         $receivable->description = 'Penjualan Barang (Code:' . $product->code . ') ' . $product->name . ' (' . $trx->quantity . 'Pcs)';
+            //         $receivable->save();
+            //     }
+            // }
+
             $trx->save();
 
-            foreach ($journals as $journal) {
-                $journal->description = $description . ' (' . $trx->quantity . 'Pcs)';
-                $journal->save(); // Save each updated journal
+            if ($trx->transaction_type == "Purchase") {
+                Product::updateStock($productId, $trx->quantity, $trx->warehouse_id);
+            } else {
+                Product::updateStock($productId, -$trx->quantity, $trx->warehouse_id);
             }
-
-            if ($receivable || $payable) {
-
-
-                if ($this->transaction_type == "Purchase") {
-                    $payable->description = 'Pembelian Barang (Code:' . $product->code . ') ' . $product->name . ' (' . $trx->quantity . 'Pcs)';
-                    $payable->save();
-                } else {
-                    $receivable->description = 'Penjualan Barang (Code:' . $product->code . ') ' . $product->name . ' (' . $trx->quantity . 'Pcs)';
-                    $receivable->save();
-                }
-            }
-
 
             DB::commit();
 
@@ -122,42 +134,64 @@ class EditTransaction extends Component
 
         $trx = Transaction::find($id);
         $journal = Journal::where('invoice', $trx->invoice)
-            ->where('description', 'like', '%' . $trx->product->code . '%')
             ->first();
 
         $journalHpp = Journal::where('invoice', $trx->invoice)
-            ->where('description', 'like', '%' . $trx->product->code . '%')
             ->where('debt_code', '50100-001')
             ->first();
 
         $receivable = Receivable::where('invoice', $trx->invoice)
-            ->where('description', 'like', '%' . $trx->product->code . '%')
             ->where('payment_nth', 0)
             ->first();
 
         $payable = Payable::where('invoice', $trx->invoice)
-            ->where('description', 'like', '%' . $trx->product->code . '%')
             ->where('payment_nth', 0)
             ->first();
 
-        $journalHpp->amount = $trx->cost * $quantity;
-        $salePrice = $trx->transaction_type == 'Purchase' ? $trx->cost * $quantity : $trx->price * $quantity;
-
-
-
-        $journal->amount = $salePrice;
-        $trx->quantity = -$quantity;
 
         try {
             DB::beginTransaction();
+            if ($trx->transaction_type == 'Purchase') {
+                Product::updateStock($trx->product_id, -$trx->quantity, $trx->warehouse_id);
+            } else {
+                Product::updateStock($trx->product_id, $trx->quantity, $trx->warehouse_id);
+            }
 
-            $journal->save();
-            $journalHpp->save();
+            $trx->quantity = $trx->transaction_type == 'Purchase' ? $quantity : -$quantity;
             $trx->save();
+
+            if ($trx->transaction_type == 'Purchase') {
+                Product::updateStock($trx->product_id, $quantity, $trx->warehouse_id);
+            } else {
+                Product::updateStock($trx->product_id, -$quantity, $trx->warehouse_id);
+            }
+
+            $transaction = Transaction::select(
+                'product_id',
+                'transaction_type',
+                DB::raw('SUM(cost * quantity) as total_cost'),
+                DB::raw('SUM(price * quantity) as total_price')
+            )
+                ->where('serial_number', $trx->serial_number)
+                ->groupBy('product_id', 'transaction_type')
+                ->get();
+
+            // Now, you can sum 'total_cost' after the query result is retrieved
+            $totalCost = $transaction->sum('total_cost');
+            $totalPrice = $transaction->sum('total_price');
+
+            if ($trx->transaction_type == 'Sales') {
+                $journalHpp->amount = $totalCost;
+                $journalHpp->save();
+            }
+
+            $salePrice = $transaction->first()->transaction_type == 'Purchase' ? $totalCost : $totalPrice;
+
+            $journal->amount = $salePrice;
 
             if ($receivable || $payable) {
                 if ($trx->transaction_type == 'Purchase') {
-                    $payable->bill_amount = $trx->cost * $quantity;
+                    $payable->bill_amount = $salePrice;
                     $payable->save();
                 } else {
                     $receivable->bill_amount = $salePrice;
@@ -165,6 +199,7 @@ class EditTransaction extends Component
                 }
             }
 
+            $journal->save();
 
             DB::commit();
 
@@ -185,74 +220,66 @@ class EditTransaction extends Component
             return;
         }
 
-        // Find the main journal entry
         $journal = Journal::where('invoice', $trx->invoice)
-            ->where('description', 'like', '%' . $trx->product->code . '%')
             ->first();
 
-        if (!$journal) {
-            session()->flash('error', 'Journal entry not found.');
-            return;
-        }
-
-        // Find the HPP journal entry
         $journalHpp = Journal::where('invoice', $trx->invoice)
-            ->where('description', 'like', '%' . $trx->product->code . '%')
             ->where('debt_code', '50100-001')
             ->first();
 
-        if (!$journalHpp) {
-            session()->flash('error', 'HPP journal entry not found.');
-            return;
-        }
-
         $receivable = Receivable::where('invoice', $trx->invoice)
-            ->where('description', 'like', '%' . $trx->product->code . '%')
             ->where('payment_nth', 0)
             ->first();
 
         $payable = Payable::where('invoice', $trx->invoice)
-            ->where('description', 'like', '%' . $trx->product->code . '%')
             ->where('payment_nth', 0)
             ->first();
 
         try {
             DB::beginTransaction();
 
-            // Calculate the quantity
-            if ($trx->transaction_type == 'Purchase') {
-                $quantity = $trx->quantity;
-            } else {
-                $quantity = -$trx->quantity;
-            }
-
-            // Update the journal description
-            $journal->description = 'Pembelian Barang (Code:' . $trx->product->code . ') ' . $trx->product->name . ' (' . $quantity . 'Pcs)';
-            // Update the journal amounts
-            $journal->amount = $price * $quantity;
-            $journalHpp->amount = $trx->cost * $quantity;
-
-            // Update transaction price and cost
             if ($trx->transaction_type == 'Purchase') {
                 $trx->cost = $price;
             } else {
                 $trx->price = $price;
             }
 
-            // Save changes to database
             $trx->save();
-            $journal->save();
-            $journalHpp->save();
+
+            $transaction = Transaction::select(
+                'product_id',
+                'transaction_type',
+                DB::raw('SUM(cost * quantity) as total_cost'),
+                DB::raw('SUM(price * quantity) as total_price')
+            )
+                ->where('serial_number', $trx->serial_number)
+                ->groupBy('product_id', 'transaction_type')
+                ->get();
+
+            // Now, you can sum 'total_cost' after the query result is retrieved
+            $totalCost = $transaction->sum('total_cost');
+            $totalPrice = $transaction->sum('total_price');
+
+            if ($trx->transaction_type == 'Sales') {
+                $journalHpp->amount = -$totalCost;
+                $journalHpp->save();
+            }
+
+            $salePrice = $transaction->first()->transaction_type == 'Purchase' ? $totalCost : -$totalPrice;
+
+            $journal->amount = $salePrice;
 
             if ($receivable || $payable) {
                 if ($trx->transaction_type == 'Purchase') {
-                    $payable->bill_amount = $trx->cost * $quantity;
+                    $payable->bill_amount = $salePrice;
                     $payable->save();
                 } else {
-                    $receivable->bill_amount = $price * $quantity;
+                    $receivable->bill_amount = $salePrice;
                     $receivable->save();
                 }
             }
+
+            $journal->save();
 
             DB::commit();
             // Dispatch event for UI updates
@@ -284,24 +311,64 @@ class EditTransaction extends Component
             return;
         }
 
+        $journal = Journal::where('invoice', $trx->invoice)
+            ->first();
+
+        $journalHpp = Journal::where('invoice', $trx->invoice)
+            ->where('debt_code', '50100-001')
+            ->first();
+
+        $receivable = Receivable::where('invoice', $trx->invoice)
+            ->where('payment_nth', 0)
+            ->first();
+
+        $payable = Payable::where('invoice', $trx->invoice)
+            ->where('payment_nth', 0)
+            ->first();
+
         try {
             DB::beginTransaction();
+            $trx->delete();
             if ($trx->transaction_type == 'Purchase') {
-                $payable = Payable::where('invoice', $trx->invoice)
-                    ->where('description', 'like', '%' . $trx->product->code . '%')
-                    ->first();
-                $payable->delete();
+                Product::updateCostAndStock($trx->product_id, -$trx->quantity, $trx->cost, $trx->price, $trx->warehouse_id);
             } else {
-                $receivable = Receivable::where('invoice', $trx->invoice)
-                    ->where('description', 'like', '%' . $trx->product->code . '%')
-                    ->first();
-                $receivable->delete();
+                Product::updateCostAndStock($trx->product_id, $trx->quantity, $trx->cost, $trx->price, $trx->warehouse_id);
             }
 
-            $trx->delete();
-            $journal = Journal::where('invoice', $trx->invoice)
-                ->where('description', 'like', '%' . $trx->product->code . '%')
-                ->delete();
+            $transaction = Transaction::select(
+                'product_id',
+                'transaction_type',
+                DB::raw('SUM(cost * quantity) as total_cost'),
+                DB::raw('SUM(price * quantity) as total_price')
+            )
+                ->where('serial_number', $trx->serial_number)
+                ->groupBy('product_id', 'transaction_type')
+                ->get();
+
+            // Now, you can sum 'total_cost' after the query result is retrieved
+            $totalCost = $transaction->sum('total_cost');
+            $totalPrice = $transaction->sum('total_price');
+
+            if ($trx->transaction_type == 'Sales') {
+                $journalHpp->amount = -$totalCost;
+                $journalHpp->save();
+            }
+
+            $salePrice = $transaction->first()->transaction_type == 'Purchase' ? $totalCost : -$totalPrice;
+
+            $journal->amount = $salePrice;
+
+            if ($receivable || $payable) {
+                if ($trx->transaction_type == 'Purchase') {
+                    $payable->bill_amount = $salePrice;
+                    $payable->save();
+                } else {
+                    $receivable->bill_amount = $salePrice;
+                    $receivable->save();
+                }
+            }
+
+            $journal->save();
 
             DB::commit();
 
@@ -357,7 +424,11 @@ class EditTransaction extends Component
 
             Transaction::where('serial_number', $this->serial)->delete();
             Journal::where('serial_number', $this->serial)->delete();
-            Receivable::where('invoice', $this->invoice)->delete();
+            if ($trx->transaction_type == 'Purchase') {
+                Payable::where('invoice', $this->invoice)->delete();
+            } else { // 'Sales'
+                Receivable::where('invoice', $this->invoice)->delete();
+            }
 
             DB::commit();
 

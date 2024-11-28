@@ -29,7 +29,7 @@ class Sales extends Component
     public $serviceFee = 0;
     public $contact_id = 1;
     public $payment_method = 'Cash';
-    public int $dueDate = 30;
+    public int $dueDate = 30; // Default due date in days
 
     public function mount()
     {
@@ -181,9 +181,9 @@ class Sales extends Component
                     $rcv = 'Receivable';
                 }
 
-                $this->addToJournal($invoice, $this->account, "40100-001", $jual, 'Penjualan Barang (Code:' . $product->code . ') ' . $product->name . ' (' . -$item['qty'] . 'Pcs)', $serial, $rcv);
+                $this->addToJournal($invoice, $this->account, "40100-001", $jual, 'Penjualan Barang (Code:' . $product->code . ') ' . $product->name . ' (' . -$item['qty'] . 'Pcs)', $serial, $rcv ?? null);
 
-                $this->addToJournal($invoice, "50100-001", "10600-001", $modal, 'Pembelian Barang (Code:' . $product->code . ') ' . $product->name . ' (' . -$item['qty'] . 'Pcs)', $serial, $rcv);
+                $this->addToJournal($invoice, "50100-001", "10600-001", $modal, 'Pembelian Barang (Code:' . $product->code . ') ' . $product->name . ' (' . -$item['qty'] . 'Pcs)', $serial, $rcv ?? null);
 
 
                 $transaction = new Transaction([

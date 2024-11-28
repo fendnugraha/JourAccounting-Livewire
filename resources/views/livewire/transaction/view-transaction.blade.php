@@ -79,14 +79,18 @@
             <div class="flex justify-between mb-6">
                 <div>
                     <p class="text-md font-semibold text-teal-500">Subtotal:</p>
-                    <p class="text-md font-semibold text-teal-500">Biaya Jasa Service (Rp):</p>
-                    <small class="text-sm text-gray-600">Teknisi: {{ $transaction->first()->user->name }}</small>
+                    <div {{ $serviceFee==0 ? 'hidden' : '' }}>
+                        <p class="text-md font-semibold text-teal-500">Biaya Jasa Service (Rp):</p>
+                        <small class="text-sm text-gray-600">Teknisi: {{ $transaction->first()->user->name }}</small>
+                    </div>
                     <p class="text-md font-semibold text-red-500 mt-2">Discount (Rp):</p>
                     <p class="text-xl font-bold text-orange-500">Total:</p>
                 </div>
                 <div class="text-right">
                     <p class="text-md font-semibold text-gray-700">{{ number_format($total) }}</p>
-                    <p class="text-md font-semibold text-gray-700">{{ number_format($serviceFee) }}</p>
+                    <div {{ $serviceFee==0 ? 'hidden' : '' }}>
+                        <p class="text-md font-semibold text-gray-700">{{ number_format($serviceFee) }}</p>
+                    </div>
                     <small>-</small>
                     <p class="text-md font-semibold text-red-700 mt-2">{{ number_format($discount == 0 ? 0 : -$discount)
                         }}
@@ -99,14 +103,16 @@
 
             <!-- Notes Section -->
             <div class="text-sm text-gray-600">
-                <p><strong>Notes:</strong> Pembayaran harus dilakukan sebelum jatuh tempo pada tanggal {{ $due_date }},
+                <p><strong>Metode Pembayaran:</strong> {{ ($payment_method) }}</p>
+                <p {{ $due_date=='Full Payment' ? 'hidden' : '' }}><strong>Notes:</strong> Pembayaran harus dilakukan
+                    sebelum jatuh tempo pada tanggal {{ $due_date }},
                     Hubungi Customer Service untuk informasi lebih lanjut.
                 </p>
             </div>
 
             <!-- Footer Section -->
             <div class="mt-8 text-center text-sm text-gray-500">
-                <p>&copy; 2024 Your Company Name. All rights reserved.</p>
+                <p>&copy; 2022 {{ config('app.name') }}. All rights reserved.</p>
             </div>
         </div>
 

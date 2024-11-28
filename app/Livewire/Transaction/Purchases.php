@@ -2,12 +2,15 @@
 
 namespace App\Livewire\Transaction;
 
+use Carbon\Carbon;
+use App\Models\Contact;
 use App\Models\Journal;
+use App\Models\Payable;
 use App\Models\Product;
 use Livewire\Component;
 use App\Models\Transaction;
+use Livewire\Attributes\On;
 use App\Models\ChartOfAccount;
-use App\Models\Contact;
 use App\Models\WarehouseStock;
 use Livewire\Attributes\Layout;
 use Illuminate\Support\Facades\DB;
@@ -54,6 +57,12 @@ class Purchases extends Component
         $this->updateSession();
     }
 
+    #[On('ContactCreated')]
+    public function updateContactId($contact_id)
+    {
+        Contact::all();
+    }
+
     public function removeFromCart($productId)
     {
         unset($this->purchaseCart[$productId]);
@@ -89,7 +98,7 @@ class Purchases extends Component
         session()->forget('purchaseCart'); // Remove the cart data from the session
     }
 
-    private function addToJournal($invoice, $debt, $cred, $amount, $description = 'Pembelian Barang', $serial = null)
+    private function addToJournal($invoice, $debt, $cred, $amount, $description = 'Pembelian Barang', $serial = null, $rcv = null)
     {
         $journal = new Journal([
             'date_issued' => date('Y-m-d H:i'),
@@ -100,6 +109,9 @@ class Purchases extends Component
             'fee_amount' => 0, // Ensure $fee is defined
             'description' => $description,
             'trx_type' => 'Purchase',
+            'rcv_pay' => $rcv,
+            'payment_status' => $rcv ? 0 : null,
+            'payment_nth' => $rcv ? 0 : null,
             'user_id' => Auth::user()->id,
             'warehouse_id' => Auth::user()->role->warehouse_id,
             'serial_number' => $serial,
@@ -110,8 +122,45 @@ class Purchases extends Component
         return $journal;
     }
 
+    public function addToPayable($invoice, $account, $amount, $description, $user, $dateIssued, $dueDate)
+    {
+        try {
+            DB::beginTransaction();
+
+            Payable::create([
+                'date_issued' => $dateIssued,
+                'due_date' => Carbon::parse($dateIssued)->addDays($dueDate),
+                'invoice' => $invoice,
+                'description' => $description ?? 'Piutang Usaha',
+                'bill_amount' => $amount,
+                'payment_amount' => 0,
+                'payment_status' => 0,
+                'payment_nth' => 0,
+                'contact_id' => $this->contact_id,
+                'user_id' => $user->id,
+                'account_code' => $account
+            ]);
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+        }
+    }
+
     public function storeCart()
     {
+        if ($this->payment_method == 'Credit') {
+            $this->account = '20100-001';
+
+            if ($this->dueDate < 0) {
+                return $this->addError('dueDate', 'Jatuh tempo tidak boleh kurang dari 0');
+            }
+
+            if ($this->contact_id == 1) {
+                return $this->addError('contact_id', 'Contact "General" tidak diperbolehkan untuk metode pembayaran kredit, silahkan pilih contact lain');
+            }
+        }
+
         $validate = $this->validate([
             'account' => 'required',
             'payment' => 'required|numeric',
@@ -119,6 +168,8 @@ class Purchases extends Component
 
         $invoice = (new Journal())->purchase_journal();
         $serial = Transaction::generateSerialNumber('PO', Auth::user()->id);
+
+        $totalModal = 0;
 
         try {
             DB::beginTransaction();
@@ -134,8 +185,7 @@ class Purchases extends Component
                 // $initial_stock = $product->end_stock;
                 // $initial_cost = $product->cost;
                 // $initTotal = $initial_stock * $initial_cost;
-
-                $this->addToJournal($invoice, "10600-001", $this->account, $modal, 'Pembelian Barang (Code:' . $product->code . ') ' . $product->name . ' (' . $item['qty'] . 'Pcs)', $serial);
+                $totalModal += $modal;
 
                 $transaction = new Transaction([
                     'date_issued' => date('Y-m-d H:i'),
@@ -153,10 +203,20 @@ class Purchases extends Component
 
                 $transaction->save();
 
-                Product::udpateCostAndStock($product->id, $item['qty'], $item['qty'], $item['cost'], Auth::user()->role->warehouse_id);
+                Product::updateCostAndStock($product->id, $item['qty'], $item['qty'], $item['cost'], Auth::user()->role->warehouse_id);
+            }
 
-                if ($this->discount > 0) {
-                    $this->addToJournal($invoice, "10600-001", "40200-001", $this->discount, 'Diskon Pembelian Barang');
+            if ($this->payment_method == 'Credit') {
+                $this->addToPayable($invoice, $this->account, $totalModal - $this->discount, 'Pembelian Barang ' . $invoice, Auth::user(), date('Y-m-d H:i'), $this->dueDate);
+                $rcv = 'Payable';
+            }
+
+            $this->addToJournal($invoice, "10600-001", $this->account, $totalModal - $this->discount, 'Pembelian Barang ' . $invoice, $serial, $rcv ?? null);
+
+            if ($this->discount > 0) {
+                $this->addToJournal($invoice, "10600-001", "40200-001", $this->discount, 'Diskon Pembelian Barang', $serial, $rcv ?? null);
+                if ($this->payment_method == 'Credit') {
+                    $this->addToPayable($invoice, $this->account, -$this->discount, 'Diskon Pembelian Barang', Auth::user(), date('Y-m-d H:i'), $this->dueDate);
                 }
             }
 

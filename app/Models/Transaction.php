@@ -36,6 +36,16 @@ class Transaction extends Model
 
     public static function generateSerialNumber($prefix, $user_id)
     {
-        return $prefix . '-' . $user_id . '-' . strtoupper(uniqid(rand() + time(), false));
+        return time() . '-' . $prefix . '-' . $user_id . '-' . strtoupper(uniqid(rand() + time(), false));
+    }
+
+    public function payable()
+    {
+        return $this->belongsTo(Payable::class, 'invoice', 'invoice');
+    }
+
+    public function receivable()
+    {
+        return $this->belongsTo(Receivable::class, 'invoice', 'invoice');
     }
 }

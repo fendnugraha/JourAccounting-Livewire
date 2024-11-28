@@ -46,7 +46,7 @@
                                 @endforeach
                             </select>
                             <button x-data x-on:click="$dispatch('open-modal', {'modalName': 'createCntact'})"
-                                class="bg-red-400 text-white min-w-36 sm:py-3 sm:px-8 p-6 text-xl sm:text-sm hover:shadow-md flex justify-center items-center rounded-xl hover:bg-red-500 transition duration-300 ease-out">
+                                class="bg-red-400 text-white min-w-36 border sm:py-2 sm:px-8 p-6 text-xl sm:text-sm hover:shadow-md flex justify-center items-center rounded-xl hover:bg-red-500 transition duration-300 ease-out">
                                 Add Contact &nbsp; <i class="fa-solid fa-plus-circle"></i>
                             </button>
                         </div>

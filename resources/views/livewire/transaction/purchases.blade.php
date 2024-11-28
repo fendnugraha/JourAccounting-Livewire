@@ -19,6 +19,9 @@
         </div>
     </x-notification>
     @endif
+    <x-modal modalName="createCntact" modalTitle="Form Tambah Contact">
+        <livewire:setting.contact.create-contact />
+    </x-modal>
     <div class="py-6 sm:py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <x-sub-navlinks :links="[
@@ -32,15 +35,23 @@
                     {{-- <h1 class="text-lg font-bold mb-3">{{ __('Sales Order') }}</h1> --}}
                     <div class="relative z-50" x-data="{ showResults: false }">
                         <div class="mb-2 grid grid-cols-4 gap-2 items-center">
-                            <label class="" for="contact_id">Supplier</label>
-                            <select class="w-full sm:w-1/2 text-sm border rounded-lg p-2 col-span-3"
+                            <label class="" for="contact_id">Suppiler</label>
+                            <select
+                                class="w-full text-sm border rounded-lg p-2 col-span-2 @error('contact_id') border-red-500 @enderror"
                                 wire:model="contact_id" id="contact_id">
-                                <option value="">--Pilih Supplier--</option>
+                                <option value="">--Pilih Customer--</option>
                                 @foreach ($contacts as $contact)
                                 <option value="{{ $contact->id }}">{{ $contact->name }}</option>
                                 @endforeach
                             </select>
+                            <button x-data x-on:click="$dispatch('open-modal', {'modalName': 'createCntact'})"
+                                class="bg-red-400 border text-white min-w-36 sm:py-2 sm:px-8 p-6 text-xl sm:text-sm hover:shadow-md flex justify-center items-center rounded-xl hover:bg-red-500 transition duration-300 ease-out">
+                                Add Contact &nbsp; <i class="fa-solid fa-plus-circle"></i>
+                            </button>
                         </div>
+                        @error('contact_id')
+                        <span class="text-red-500 text-xs">{{ $message }}</span>
+                        @enderror
                         <input type="search" class="w-full text-sm border rounded-lg p-2 mb-2"
                             wire:model.live.debounce.500ms="search" x-on:click="showResults = true"
                             placeholder="Search item..">

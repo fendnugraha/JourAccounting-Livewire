@@ -127,7 +127,7 @@ class Journal extends Model
     public function purchase_journal()
     {
         // Untuk purchase journal, kita menambahkan kondisi agar hanya mengembalikan yang quantity > 0
-        return $this->generate_invoice_journal('PO.BK', 'transactions', [['quantity', '>', 0], ['transaction_type', '=', 'Purchases']]);
+        return $this->generate_invoice_journal('PO.BK', 'transactions', [['quantity', '>', 0], ['transaction_type', '=', 'Purchase']]);
     }
 
     public static function payable_invoice($contact_id)

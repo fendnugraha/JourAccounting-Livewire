@@ -61,22 +61,46 @@ class Product extends Model
         return true;
     }
 
-    public static function updateCost($id, $newStock, $newCost)
+    public static function updateCost($id, $condition = [])
     {
         $product = Product::find($id);
-        $initial_stock = $product->end_stock;
-        $initial_cost = $product->cost;
-        $initTotal = $initial_stock * $initial_cost;
 
-        $newTotal = $newStock * $newCost;
+        if (!$product) {
+            return false; // Exit if the product does not exist
+        }
 
-        $updatedCost = ($initTotal + $newTotal) / ($initial_stock + $newStock);
+        $transaction = Transaction::select(
+            'product_id',
+            DB::raw('SUM(cost * quantity) as totalCost'),
+            DB::raw('SUM(quantity) as totalQuantity')
+        )
+            ->where('product_id', $product->id)
+            ->where('transaction_type', 'Purchase')
+            ->when(!empty($condition), function ($query) use ($condition) {
+                $query->where($condition);
+            })
+            ->groupBy('product_id')
+            ->first();
+
+        if (!$transaction || $transaction->totalQuantity == 0) {
+            // No transactions or zero quantity
+            Product::where('id', $product->id)->update([
+                'cost' => 0, // Set cost to 0 or leave unchanged based on requirements
+            ]);
+            return false;
+        }
+
+        // Calculate new cost
+        $newCost = $transaction->totalCost / $transaction->totalQuantity;
+
+        // Update the product's cost
         Product::where('id', $product->id)->update([
-            'cost' => $updatedCost,
+            'cost' => $newCost,
         ]);
 
         return true;
     }
+
 
     public static function updateCostAndStock($id, $newQty, $newStock, $newCost, $warehouse_id)
     {

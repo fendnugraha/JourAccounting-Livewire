@@ -203,7 +203,8 @@ class Purchases extends Component
 
                 $transaction->save();
 
-                Product::updateCostAndStock($product->id, $item['qty'], $item['qty'], $item['cost'], Auth::user()->role->warehouse_id);
+                Product::updateCost($item['id']);
+                Product::updateStock($item['id'], $item['qty'], Auth::user()->role->warehouse_id);
             }
 
             if ($this->payment_method == 'Credit') {

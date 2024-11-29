@@ -89,6 +89,7 @@ class EditTransaction extends Component
             } else {
                 Product::updateStock($trx->product_id, $trx->quantity, $trx->warehouse_id);
             }
+            Product::updateCost($trx->product_id, [['invoice', '!=', $trx->invoice]]);
 
             $trx->product_id = $productId;
             // $trx->quantity = $this->quantities[$id];
@@ -117,6 +118,8 @@ class EditTransaction extends Component
             } else {
                 Product::updateStock($productId, -$trx->quantity, $trx->warehouse_id);
             }
+
+            Product::updateCost($productId, []);
 
             DB::commit();
 
@@ -165,6 +168,7 @@ class EditTransaction extends Component
             $trx->quantity = $trx->transaction_type == 'Purchase' ? $quantity : -$quantity;
             $trx->save();
 
+
             if ($trx->transaction_type == 'Purchase') {
                 Product::updateStock($trx->product_id, $quantity, $trx->warehouse_id);
             } else {
@@ -205,6 +209,7 @@ class EditTransaction extends Component
             }
 
             $journal->save();
+            Product::updateCost($trx->product_id, []);
 
             DB::commit();
 
@@ -286,6 +291,8 @@ class EditTransaction extends Component
 
             $journal->save();
 
+            Product::updateCost($trx->product_id);
+
             DB::commit();
             // Dispatch event for UI updates
             $this->dispatch('TransactionUpdated', $trx->invoice);
@@ -294,7 +301,7 @@ class EditTransaction extends Component
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Failed to update transaction: ' . $e->getMessage());
-            session()->flash('error', 'Failed to update transaction. Please try again.');
+            session()->flash('error', 'Failed to update transaction. Please try again.' . $e->getMessage());
         }
     }
 
@@ -333,11 +340,13 @@ class EditTransaction extends Component
 
         try {
             DB::beginTransaction();
+            Product::updateCost($trx->product_id, [['invoice', '!=', $trx->invoice]]);
+
             $trx->delete();
             if ($trx->transaction_type == 'Purchase') {
-                Product::updateCostAndStock($trx->product_id, -$trx->quantity, $trx->cost, $trx->price, $trx->warehouse_id);
+                Product::updateStock($trx->product_id, -$trx->quantity, $trx->warehouse_id);
             } else {
-                Product::updateCostAndStock($trx->product_id, $trx->quantity, $trx->cost, $trx->price, $trx->warehouse_id);
+                Product::updateStock($trx->product_id, $trx->quantity, $trx->warehouse_id);
             }
 
             $transaction = Transaction::select(
@@ -423,16 +432,30 @@ class EditTransaction extends Component
             session()->flash('error', 'Cannot void transaction. Please void payment first.');
             return;
         }
+        $transaction = Transaction::where('serial_number', $this->serial)->get();
 
         try {
             DB::beginTransaction();
 
-            Transaction::where('serial_number', $this->serial)->delete();
             Journal::where('serial_number', $this->serial)->delete();
             if ($trx->transaction_type == 'Purchase') {
                 Payable::where('invoice', $this->invoice)->delete();
             } else { // 'Sales'
                 Receivable::where('invoice', $this->invoice)->delete();
+            }
+
+            if ($trx->transaction_type == 'Sales') {
+                foreach ($transaction as $item) {
+                    Product::updateCost($item->product_id, [['invoice', '!=', $trx->invoice]]);
+                    Product::updateStock($item->product_id, $item->quantity, $item->warehouse_id);
+                    $item->delete();
+                }
+            } else {
+                foreach ($transaction as $item) {
+                    Product::updateCost($item->product_id, [['invoice', '!=', $trx->invoice]]);
+                    Product::updateStock($item->product_id, -$item->quantity, $item->warehouse_id);
+                    $item->delete();
+                }
             }
 
             DB::commit();
@@ -442,15 +465,20 @@ class EditTransaction extends Component
             DB::rollBack();
             Log::error('Failed to void transaction: ' . $e->getMessage());
 
-            session()->flash('error', 'Failed to void transaction. Please try again.');
+            session()->flash('error', 'Failed to void transaction. Please try again.' . $e->getMessage());
         }
     }
 
     public function addItem()
     {
-        $trx = Transaction::where('invoice', $this->invoice);
+        $trx = Transaction::where('serial_number', $this->serial)->get();
         if (!$trx) {
             session()->flash('error', 'Transaction not found.');
+            return;
+        }
+
+        if ($trx->pluck('product_id')->contains($this->product_id)) {
+            session()->flash('error', 'Product already exists.');
             return;
         }
 
@@ -459,13 +487,12 @@ class EditTransaction extends Component
             'quantity' => 'required|numeric',
             'price' => 'required|numeric',
         ]);
-        dd($this->validate());
-
+        $checkProduct = Product::find($this->product_id);
         if ($trx->first()->transaction_type == 'Sales') {
             $quantity = -$this->quantity;
             $type = 'Sales';
             $harga = $this->price;
-            $cost = 0;
+            $cost = $checkProduct->cost;
         } else {
             $quantity = $this->quantity;
             $type = 'Purchase';
@@ -473,24 +500,92 @@ class EditTransaction extends Component
             $cost = $this->price;
         }
 
+        $journal = Journal::where('invoice', $trx->first()->invoice)
+            ->first();
+
+        $journalHpp = Journal::where('invoice', $trx->first()->invoice)
+            ->where('debt_code', '50100-001')
+            ->first();
+
+        $receivable = Receivable::where('invoice', $trx->first()->invoice)
+            ->where('payment_nth', 0)
+            ->first();
+
+        $payable = Payable::where('invoice', $trx->first()->invoice)
+            ->where('payment_nth', 0)
+            ->first();
+
         try {
-            $transaction = new Transaction([
-                'date_issued' => date('Y-m-d H:i'),
+            DB::beginTransaction();
+            $transactiontb = new Transaction([
+                'date_issued' => $trx->first()->date_issued,
                 'invoice' => $trx->first()->invoice, // Ensure $invoice is defined
                 'product_id' => $this->product_id,
                 'quantity' => $quantity,
                 'price' => $harga,
                 'cost' => $cost,
                 'transaction_type' => $type,
-                'contact_id' => $this->contact_id,
+                'contact_id' => $trx->first()->contact_id,
                 'warehouse_id' => $trx->first()->warehouse_id,
                 'user_id' => $trx->first()->user_id,
                 'serial_number' => $trx->first()->serial_number,
             ]);
 
-            $transaction->save();
+            $transactiontb->save();
+
+            $transaction = Transaction::select(
+                'product_id',
+                'transaction_type',
+                DB::raw('SUM(cost * quantity) as total_cost'),
+                DB::raw('SUM(price * quantity) as total_price')
+            )
+                ->where('serial_number', $trx->first()->serial_number)
+                ->groupBy('product_id', 'transaction_type')
+                ->get();
+
+            // Now, you can sum 'total_cost' after the query result is retrieved
+            $totalCost = $transaction->sum('total_cost');
+            $totalPrice = $transaction->sum('total_price');
+
+            if ($trx->first()->transaction_type == 'Sales') {
+                $journalHpp->amount = -$totalCost;
+                $journalHpp->save();
+            }
+
+            $salePrice = $transaction->first()->transaction_type == 'Purchase' ? $totalCost : -$totalPrice;
+
+            $journal->amount = $salePrice;
+
+            if ($receivable || $payable) {
+                if ($trx->first()->transaction_type == 'Purchase') {
+                    $payable->bill_amount = $salePrice;
+                    $payable->save();
+                } else {
+                    $receivable->bill_amount = $salePrice;
+                    $receivable->save();
+                }
+            }
+
+            $journal->save();
+
+            $qty = $trx->first()->transaction_type == 'Sales' ? -$this->quantity : $this->quantity;
+            Product::updateStock($this->product_id, $qty, $trx->first()->warehouse_id);
+            Product::updateCost($this->product_id);
+
+            DB::commit();
+
+            $this->product_id = null;
+            $this->quantity = 0;
+            $this->price = 0;
+
+            session()->flash('success', 'Item added successfully.');
+
+            $this->dispatch('TransactionUpdated', $trx->first()->invoice);
         } catch (\Exception $e) {
+            DB::rollBack();
             Log::error('Failed to add item: ' . $e->getMessage());
+
+            session()->flash('error', 'Failed to add item. Please try again.' . $e->getMessage());
         }
     }
 

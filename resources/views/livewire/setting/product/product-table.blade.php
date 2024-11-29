@@ -86,6 +86,7 @@
                                 <th>Name</th>
                                 <th>Harga Modal</th>
                                 <th>Harga Jual</th>
+                                <th>Last Update</th>
                                 <th>Action</th>
 
                             </tr>
@@ -98,7 +99,14 @@
                             @else
                             @php $status = '<sup class="text-red-600 font-bold">Inactive</sup>' @endphp
                             @endif
-                            <tr class="border border-slate-100 hover:bg-yellow-100 odd:bg-white even:bg-blue-50">
+
+                            @php
+                            $priceWarning = $product->price > $product->cost ? '' : 'text-red-600';
+                            $warning = $product->price > $product->cost ? '' : '<i
+                                class="fa-solid fa-triangle-exclamation"></i>';
+                            @endphp
+                            <tr
+                                class="border {{ $priceWarning }} border-slate-100 hover:bg-yellow-100 odd:bg-white even:bg-blue-50">
                                 <td class="p-3 text-center">{{ $product->id }}</td>
                                 <td>{{ $product->code }} <span class="font-bold text-md text-blue-950">{{ $product->name
                                         }}</span>
@@ -108,7 +116,9 @@
                                         number_format($product->sold) }} terjual</span>
                                 </td>
                                 <td class="text-right p-3 text-xs">{{ number_format($product->cost, 2) }}</td>
-                                <td class="text-right p-3 text-xs">{{ number_format($product->price, 2) }}</td>
+                                <td class="text-right p-3 text-xs">{!! $warning !!} {{ number_format($product->price, 2)
+                                    }}</td>
+                                <td class="text-center p-3 text-xs">{{ $product->updated_at->diffForHumans() }}</td>
                                 <td class="text-center">
                                     <a wire:navigate href="{{ route('product.edit', $product->id) }}"
                                         class="text-slate-800 font-bold bg-yellow-400 py-1 px-3 rounded-lg hover:bg-yellow-300"><i

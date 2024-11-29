@@ -13,6 +13,8 @@ use Livewire\Attributes\Layout;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
+use function PHPSTORM_META\type;
+
 class EditTransaction extends Component
 {
     public $serial;
@@ -22,6 +24,9 @@ class EditTransaction extends Component
     public $productsSelected = [];
     public $discountAndFeeData;
     public $transaction_type;
+    public $quantity;
+    public $price;
+    public $product_id;
 
     #[On('TransactionUpdated')]
     public function mount()
@@ -438,6 +443,54 @@ class EditTransaction extends Component
             Log::error('Failed to void transaction: ' . $e->getMessage());
 
             session()->flash('error', 'Failed to void transaction. Please try again.');
+        }
+    }
+
+    public function addItem()
+    {
+        $trx = Transaction::where('invoice', $this->invoice);
+        if (!$trx) {
+            session()->flash('error', 'Transaction not found.');
+            return;
+        }
+
+        $this->validate([
+            'product_id' => 'required',
+            'quantity' => 'required|numeric',
+            'price' => 'required|numeric',
+        ]);
+        dd($this->validate());
+
+        if ($trx->first()->transaction_type == 'Sales') {
+            $quantity = -$this->quantity;
+            $type = 'Sales';
+            $harga = $this->price;
+            $cost = 0;
+        } else {
+            $quantity = $this->quantity;
+            $type = 'Purchase';
+            $harga = 0;
+            $cost = $this->price;
+        }
+
+        try {
+            $transaction = new Transaction([
+                'date_issued' => date('Y-m-d H:i'),
+                'invoice' => $trx->first()->invoice, // Ensure $invoice is defined
+                'product_id' => $this->product_id,
+                'quantity' => $quantity,
+                'price' => $harga,
+                'cost' => $cost,
+                'transaction_type' => $type,
+                'contact_id' => $this->contact_id,
+                'warehouse_id' => $trx->first()->warehouse_id,
+                'user_id' => $trx->first()->user_id,
+                'serial_number' => $trx->first()->serial_number,
+            ]);
+
+            $transaction->save();
+        } catch (\Exception $e) {
+            Log::error('Failed to add item: ' . $e->getMessage());
         }
     }
 

@@ -10,35 +10,42 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
                     <x-modal modalName="addProduct" modalTitle="Form Tambah Produk">
-                        <div class="mb-4 grid grid-cols-3 gap-4 items-center">
-                            <label for="product" class="text-sm">Product</label>
-                            <select class="w-full border rounded-lg p-2 col-span-2 text-sm" wire:model="product">
-                                <option value="">Pilih Produk</option>
-                                @foreach ($products as $p)
-                                <option value="{{ $p->id }}">{{ $p->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="mb-4 grid grid-cols-3 gap-4 items-center">
-                            <label for="quantity" class="text-sm">Quantity</label>
-                            <input type="number" class="w-full border rounded-lg p-2 col-span-1 text-sm"
-                                placeholder="Qty." wire:model=" quantity" min="1">
-                        </div>
-                        <div class="mb-4 grid grid-cols-3 gap-4 items-center">
-                            <label for="price" class="text-sm">Harga</label>
-                            <input type="number" class="w-full border rounded-lg p-2 col-span-1 text-sm"
-                                placeholder="Rp. " wire:model="price" min="1">
-                        </div>
-                        <div class="flex justify-end gap-2 mt-6">
-                            <button class="bg-slate-200 hover:bg-slate-300 text-gray-700 py-4 px-14 rounded-2xl">
-                                Cancel
-                            </button>
-                            <button type="submit"
-                                class="bg-gray-700 hover:bg-gray-600 text-white py-4 px-14 rounded-2xl disabled:bg-slate-300 disabled:cursor-none"
-                                wire:loading.attr="disabled">
-                                Simpan <span wire:loading><i class="fa-solid fa-spinner animate-spin"></i></span>
-                            </button>
-                        </div>
+                        <form wire:submit="addItem">
+                            <div class="mb-4 grid grid-cols-3 gap-4 items-center">
+                                <label for="product" class="text-sm">Product</label>
+                                <select
+                                    class="w-full border rounded-lg p-2 col-span-2 @error('product_id') border-red-500 @enderror text-sm"
+                                    wire:model="product_id">
+                                    <option value="">Pilih Produk</option>
+                                    @foreach ($products as $p)
+                                    <option value="{{ $p->id }}">{{ $p->name }}</option>
+                                    @endforeach
+                                </select>
+                                @error('product_id')
+                                <span class="text-red-500 text-xs">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="mb-4 grid grid-cols-3 gap-4 items-center">
+                                <label for="quantity" class="text-sm">Quantity</label>
+                                <input type="number" class="w-full border rounded-lg p-2 col-span-1 text-sm"
+                                    placeholder="Qty." wire:model=" quantity" min="1">
+                            </div>
+                            <div class="mb-4 grid grid-cols-3 gap-4 items-center">
+                                <label for="price" class="text-sm">Harga</label>
+                                <input type="number" class="w-full border rounded-lg p-2 col-span-1 text-sm"
+                                    placeholder="Rp. " wire:model="price" min="1">
+                            </div>
+                            <div class="flex justify-end gap-2 mt-6">
+                                <button class="bg-slate-200 hover:bg-slate-300 text-gray-700 py-4 px-14 rounded-2xl">
+                                    Cancel
+                                </button>
+                                <button type="submit"
+                                    class="bg-gray-700 hover:bg-gray-600 text-white py-4 px-14 rounded-2xl disabled:bg-slate-300 disabled:cursor-none"
+                                    wire:loading.attr="disabled">
+                                    Simpan <span wire:loading><i class="fa-solid fa-spinner animate-spin"></i></span>
+                                </button>
+                            </div>
+                        </form>
                     </x-modal>
                     <button x-data x-on:click="$dispatch('open-modal', {'modalName': 'addProduct'})"
                         class="bg-blue-500 text-white min-w-36 sm:py-3 sm:px-8 p-6 text-xl sm:text-sm hover:shadow-md flex justify-center items-center rounded-xl hover:bg-blue-600 transition duration-300 ease-out"><i

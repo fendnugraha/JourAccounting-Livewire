@@ -6,6 +6,7 @@ use App\Models\Role;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\User;
 use App\Models\Contact;
+use App\Models\Product;
 use App\Models\Warehouse;
 use Database\Factories\ContactFactory;
 use Database\Factories\ProductFactory;
@@ -60,10 +61,11 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             AccountSeeder::class,
-            ChartOfAccountSeeder::class
+            ChartOfAccountSeeder::class,
+            ProductSeeder::class
         ]);
 
-        ProductFactory::new()->count(10)->create();
+        // ProductFactory::new()->count(10)->create();
         ContactFactory::new()->count(10)->create();
     }
 }

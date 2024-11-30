@@ -2,10 +2,10 @@
 
 namespace App\Livewire\Setting\Product;
 
-use App\Models\Sale;
 use App\Models\Product;
 use Livewire\Component;
 use App\Models\Category;
+use App\Models\Transaction;
 use Livewire\Attributes\On;
 use Livewire\WithPagination;
 use Livewire\Attributes\Layout;
@@ -23,7 +23,7 @@ class ProductTable extends Component
     {
         $product = Product::find($id);
 
-        $salesExists = Sale::where('product_id', $id)->exists();
+        $salesExists = Transaction::where('product_id', $id)->exists();
         if ($salesExists) {
             session()->flash('error', 'Product Cannot be Deleted!');
         } else {
@@ -56,7 +56,7 @@ class ProductTable extends Component
     {
         return view('livewire.setting.product.product-table', [
             'title' => 'Product',
-            'products' => Product::where('name', 'like', '%' . $this->search . '%')->paginate($this->perPage),
+            'products' => Product::where('name', 'like', '%' . $this->search . '%')->orderBy('name', 'asc')->paginate($this->perPage),
         ]);
     }
 }

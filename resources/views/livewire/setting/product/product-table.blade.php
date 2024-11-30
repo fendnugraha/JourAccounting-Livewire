@@ -63,7 +63,7 @@
 
                 </div>
             </div>
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg sm:w-3/4">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <div class="flex justify-between mb-2 gap-2">
                         <div class="w-full">
@@ -82,9 +82,8 @@
                     <table class="table-auto w-full text-sm mb-2">
                         <thead class="bg-white text-blue-950">
                             <tr class="border-b">
-                                <th class="p-4">ID</th>
-                                <th>Name</th>
-                                <th>Harga Modal</th>
+                                <th class="p-4">Name <i class="fa-solid fa-sort"></i></th>
+                                <th>Harga Modal </th>
                                 <th>Harga Jual</th>
                                 <th>Last Update</th>
                                 <th>Action</th>
@@ -103,12 +102,12 @@
                             @php
                             $priceWarning = $product->price > $product->cost ? '' : 'text-red-600';
                             $warning = $product->price > $product->cost ? '' : '<i
-                                class="fa-solid fa-triangle-exclamation"></i>';
+                                class="fa-solid fa-circle-exclamation mr-1"></i>';
                             @endphp
                             <tr
                                 class="border {{ $priceWarning }} border-slate-100 hover:bg-yellow-100 odd:bg-white even:bg-blue-50">
-                                <td class="p-3 text-center">{{ $product->id }}</td>
-                                <td>{{ $product->code }} <span class="font-bold text-md text-blue-950">{{ $product->name
+                                <td>{{ $product->code }} <span class="font-bold p-3 text-md text-blue-950">{{
+                                        $product->name
                                         }}</span>
                                     <br>
                                     <span class="text-slate-600">{{ ucwords($product->category) }} &nbsp;&nbsp;{{
@@ -118,7 +117,8 @@
                                 <td class="text-right p-3 text-xs">{{ number_format($product->cost, 2) }}</td>
                                 <td class="text-right p-3 text-xs">{!! $warning !!} {{ number_format($product->price, 2)
                                     }}</td>
-                                <td class="text-center p-3 text-xs">{{ $product->updated_at->diffForHumans() }}</td>
+                                <td class="text-center p-3 text-xs">{{ $product->updated_at->diffForHumans() ?? '' }}
+                                </td>
                                 <td class="text-center">
                                     <a wire:navigate href="{{ route('product.edit', $product->id) }}"
                                         class="text-slate-800 font-bold bg-yellow-400 py-1 px-3 rounded-lg hover:bg-yellow-300"><i
@@ -133,7 +133,7 @@
                         </tbody>
                     </table>
 
-                    {{ $products->links() }}
+                    {{ $products->onEachSide(0)->links() }}
                 </div>
             </div>
         </div>

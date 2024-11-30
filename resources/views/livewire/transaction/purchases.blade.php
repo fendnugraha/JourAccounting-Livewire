@@ -52,31 +52,33 @@
                         @error('contact_id')
                         <span class="text-red-500 text-xs">{{ $message }}</span>
                         @enderror
-                        <input type="search" class="w-full text-sm border rounded-lg p-2 mb-2"
-                            wire:model.live.debounce.500ms="search" x-on:click="showResults = true"
-                            placeholder="Search item..">
+                        <div x-transition x-on:click.away="showResults = false">
+                            <input type="search" class="w-full text-sm border rounded-lg p-2 mb-2"
+                                wire:model.live.debounce.500ms="search" x-on:focus="showResults = true"
+                                x-on:input="showResults = true" placeholder="Search item..">
 
-                        <!-- Display search results only when `showResults` is true -->
-                        <div class="absolute top-18 left-0 w-full sm:w-3/4 bg-white border border-gray-200 rounded-lg shadow-lg"
-                            x-show="showResults" x-transition x-on:click.away="showResults = false">
-                            <table class="table-auto text-sm w-full">
-                                <tbody>
-                                    @foreach ($products as $product)
-                                    <tr class="border-b hover:bg-yellow-100">
-                                        <td class="p-2">{{ $product->name }}</td>
-                                        <td class="p-2">{{ $product->end_stock }} <sup>Pcs</sup></td>
-                                        <td>{{ number_format($product->cost, 2) }}</td>
-                                        <td>
-                                            <button type="button"
-                                                class="text-white font-bold bg-green-400 py-1 px-3 rounded-lg hover:bg-green-300"
-                                                wire:click="addToCart({{ $product->id }})">
-                                                <i class="fa fa-plus-circle"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+                            <!-- Display search results only when `showResults` is true -->
+                            <div class="absolute top-18 left-0 w-full sm:w-3/4 bg-white border border-gray-200 rounded-lg shadow-lg"
+                                x-show="showResults">
+                                <table class="table-auto text-sm w-full">
+                                    <tbody>
+                                        @foreach ($products as $product)
+                                        <tr class="border-b hover:bg-yellow-100">
+                                            <td class="p-2">{{ $product->name }}</td>
+                                            <td class="p-2">{{ $product->end_stock }} <sup>Pcs</sup></td>
+                                            <td>{{ number_format($product->cost, 2) }}</td>
+                                            <td>
+                                                <button type="button"
+                                                    class="text-white font-bold bg-green-400 py-1 px-3 rounded-lg hover:bg-green-300"
+                                                    wire:click="addToCart({{ $product->id }})">
+                                                    <i class="fa fa-plus-circle"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                     @if (session('purchaseCart'))

@@ -126,7 +126,7 @@
                 <tbody class="">
                     @foreach ($journals as $journal)
                     @php
-                    $hidden = in_array($journal->trx_type, [null, 'Mutasi Kas', 'Accessories', 'Pengeluaran',
+                    $hidden = in_array($journal->trx_type, [null, 'Mutasi Kas', 'Accessories',
                     'Purchase',
                     'Sales', 'Payable', 'Receivable']) ?
                     'hidden' : '';
@@ -134,21 +134,22 @@
                     'hidden' : '';
 
                     @endphp
-                    <tr
-                        class="border-b border-slate-100 odd:bg-white even:bg-blue-50 hover:bg-slate-600 hover:text-white cursor-pointer">
-                        <td class="p-4">
-
-                            <span class="font-bold">#{{ $journal->id }} | {{ $journal->date_issued }} |
+                    <tr class="border-b border-slate-200 hover:bg-slate-600 hover:text-white cursor-pointer">
+                        <td class="p-2">
+                            <span class="font-bold text-primary">#{{ $journal->id }} | {{ $journal->date_issued }} |
                                 {{ $journal->invoice
                                 }} | {{
                                 $journal->trx_type
-                                }}</span> <br>
-                            {{ $journal->description }} {{ $journal->transaction ?
-                            $journal->transaction->product->name .
-                            ' - ' .
-                            $journal->transaction->quantity . ' Pcs x Rp' .
-                            number_format($journal->transaction->price) .
-                            '' : '' }}<br>
+                                }}</span>
+                            <a href="{{ route('journal.edit', $journal->id) }}"
+                                class="mx-1 text-yellow-600 hover:text-yellow-400 {{ $hidden }}" wire:navigate><i
+                                    class="fa-solid fa-pen-to-square"></i> Edit</a>
+                            <a role="button" wire:click="delete({{ $journal->id }})" wire:loading.attr="disabled"
+                                wire:confirm="Apakah anda yakin menghapus data ini?"
+                                class=" text-red-600 hover:text-red-400 {{ $hidden }}"><i class="fa-solid fa-trash"></i>
+                                Hapus</a>
+                            <br>
+
                             <span class="font-bold">{{ ($journal->cred_code == $cash &&
                                 $journal->trx_type
                                 !== 'Mutasi Kas')
@@ -156,20 +157,8 @@
                                 : (($journal->debt_code == $cash && $journal->trx_type !== 'Mutasi Kas')
                                 ? $journal->cred->acc_name
                                 : $journal->cred->acc_name . ' -> ' . $journal->debt->acc_name)
-                                }}</span>
-                            <span class="italic font-bold text-slate-600">{{ $journal->status == 2 ?
-                                '(Belum
-                                diambil)' : ''
                                 }}</span><br>
-                            <div class="flex justify-evenly gap-1 mt-1 sm:w-1/2">
-                                <a href="{{ route('journal.edit', $journal->id) }}"
-                                    class="text-slate-800 text-center font-bold bg-yellow-400 rounded-md py-1 px-3 w-full hover:bg-yellow-300 {{ $hidden }}"
-                                    wire:navigate><i class="fa-solid fa-pen-to-square"></i></a>
-                                <button wire:click="delete({{ $journal->id }})" wire:loading.attr="disabled"
-                                    wire:confirm="Apakah anda yakin menghapus data ini?"
-                                    class="text-white font-bold bg-red-400 rounded-md py-1 px-3 w-full hover:bg-red-300 disabled:bg-slate-300"
-                                    {{ $hide_pay }}><i class="fa-solid fa-trash"></i></button>
-                            </div>
+                            <span class="text-xs">Note: {{ $journal->description }}</span>
                         </td>
                         <td
                             class="p-4 text-md text-right {{ $account == $journal->cred_code ? 'text-red-500' : ($account == $journal->debt_code ? 'text-green-500' : '') }} font-bold p-2">

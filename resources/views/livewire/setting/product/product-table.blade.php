@@ -104,9 +104,8 @@
                             $warning = $product->price > $product->cost ? '' : '<i
                                 class="fa-solid fa-circle-exclamation mr-1"></i>';
                             @endphp
-                            <tr
-                                class="border {{ $priceWarning }} border-slate-100 hover:bg-yellow-100 odd:bg-white even:bg-blue-50">
-                                <td>{{ $product->code }} <span class="font-bold p-3 text-md text-blue-950">{{
+                            <tr class="border-b {{ $priceWarning }} border-slate-200 hover:bg-yellow-100">
+                                <td class="p-3">{{ $product->code }} <span class="font-bold text-md text-blue-950">{{
                                         $product->name
                                         }}</span>
                                     <br>

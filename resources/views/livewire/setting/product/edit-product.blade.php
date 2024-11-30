@@ -21,8 +21,8 @@
                         <div class="mb-3">
                             <label for="cost" class="block">Harga Modal</label>
                             <input type="number" name="cost" id="cost" wire:model="cost"
-                                class="sm:w-1/2 w-full border rounded-lg px-4 py-2 @error('cost') border-red-500 @enderror"
-                                value="{{ $product->cost }}">
+                                class="sm:w-1/2 w-full border rounded-lg px-4 py-2 disabled:bg-slate-300 @error('cost') border-red-500 @enderror"
+                                value="{{ $product->cost }}" readonly disabled>
                             @error('cost') <span class="text-red-500">{{ $message }}</span> @enderror
                         </div>
                         <div class="mb-3">

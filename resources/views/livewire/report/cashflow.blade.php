@@ -9,6 +9,14 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="overflow-hidden sm:rounded-lg">
                 <div class="text-gray-900">
+                    <div class="mb-4">
+                        <label for="periode" class="text-sm">Periode</label>
+                        <input type="datetime-local" wire:model.live="startDate"
+                            class="w-52 text-sm border rounded-lg p-2">
+                        <label for="periode" class="text-sm">Sampai</label>
+                        <input type="datetime-local" wire:model.live="endDate"
+                            class="w-52 text-sm border rounded-lg p-2">
+                    </div>
                     <div class="grid grid-cols-2 gap-2 mb-4">
                         <div class="p-4 bg-gray-600 text-white shadow-sm rounded-xl">
                             <h5 class="">Kenaikan Penurunan Kas</h5>

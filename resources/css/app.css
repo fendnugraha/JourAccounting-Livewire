@@ -5,19 +5,135 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    font-family: "Figtree", sans-serif;
+  }
+
   body {
-    @apply bg-gray-100 dark:bg-gray-900;
+    @apply bg-[#f5f5f5];
+  }
+
+  .bg-primary {
+    @apply bg-[#3b1278];
+  }
+
+  .text-primary {
+    @apply text-[#3b1278];
+  }
+
+  .bg-secondary {
+    @apply bg-[#53b3cb];
+  }
+
+  .text-secondary {
+    @apply text-[#53b3cb];
+  }
+
+  .bg-warning {
+    @apply bg-[#fbbf24];
+  }
+
+  .text-warning {
+    @apply text-[#fbbf24];
+  }
+
+  .bg-danger {
+    @apply bg-[#6E0E0A];
+  }
+
+  .text-danger {
+    @apply text-[#6E0E0A];
+  }
+
+  .bg-success {
+    @apply bg-[#38D818];
+  }
+
+  .text-success {
+    @apply text-[#38D818];
+  }
+
+  .bg-gray {
+    @apply bg-[#f5f5f5];
+  }
+
+  .text-gray {
+    @apply text-[#f5f5f5];
+  }
+
+  .bg-tertiary {
+    @apply bg-[#d74e09];
+  }
+
+  .text-tertiary {
+    @apply text-[#d74e09];
+  }
+
+  .bg-dark {
+    @apply bg-[#1f1f1f];
+  }
+
+  .text-dark {
+    @apply text-[#1f1f1f];
   }
 }
 
 @layer components {
-  .btn {
-    @apply inline-block px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-md;
+  .my-primary-button {
+    @apply py-2 px-6 bg-[#3b1278] hover:bg-[#551bac] text-white font-bold rounded-xl;
+  }
+
+  .my-secondary-button {
+    @apply py-2 px-6 bg-[#53b3cb] hover:bg-[#59c5e0] text-white font-bold rounded-xl;
+  }
+
+  .my-warning-button {
+    @apply py-2 px-6 bg-[#fbbf24] hover:bg-[#fcd34d] text-white font-bold rounded-xl;
+  }
+
+  .my-danger-button {
+    @apply py-2 px-6 bg-[#6E0E0A] hover:bg-[#a8322e] text-white font-bold rounded-xl;
+  }
+
+  .my-success-button {
+    @apply py-2 px-6 bg-[#38D818] hover:bg-[#56e439] text-white font-bold rounded-xl;
+  }
+
+  .my-tertiary-button {
+    @apply py-2 px-6 bg-[#d74e09] hover:bg-[#e76f0a] text-white font-bold rounded-xl;
+  }
+
+  .my-dark-button {
+    @apply py-2 px-6 bg-[#1f1f1f] hover:bg-[#333333] text-white font-bold rounded-xl;
+  }
+
+  .my-table {
+    @apply table-auto w-full;
+  }
+
+  .my-table th {
+    @apply p-4 text-center;
+  }
+
+  .my-table td {
+    @apply p-4 text-left;
+  }
+
+  .my-table tr {
+    @apply border-b border-slate-100;
+  }
+
+  .my-table tr:hover {
+    @apply bg-[#f5f5f5];
+  }
+
+  .my-table th {
+    @apply bg-[#3b1278] text-white;
   }
 }
 
 @layer utilities {
-  .text-primary {
-    @apply text-indigo-700;
+  .my-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
   }
 }

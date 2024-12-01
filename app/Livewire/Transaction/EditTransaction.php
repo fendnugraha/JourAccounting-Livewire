@@ -86,10 +86,10 @@ class EditTransaction extends Component
             // $description = $this->transaction_type = "Purchase" ? 'Pembelian Barang (Code:' . $product->code . ') ' . $product->name : 'Penjualan Barang (Code:' . $product->code . ') ' . $product->name;
             if ($trx->transaction_type == "Purchase") {
                 Product::updateStock($trx->product_id, -$trx->quantity, $trx->warehouse_id);
+                Product::updateCost($trx->product_id, [['invoice', '!=', $trx->invoice]]);
             } else {
                 Product::updateStock($trx->product_id, $trx->quantity, $trx->warehouse_id);
             }
-            Product::updateCost($trx->product_id, [['invoice', '!=', $trx->invoice]]);
 
             $trx->product_id = $productId;
             // $trx->quantity = $this->quantities[$id];
@@ -115,11 +115,11 @@ class EditTransaction extends Component
 
             if ($trx->transaction_type == "Purchase") {
                 Product::updateStock($productId, $trx->quantity, $trx->warehouse_id);
+                Product::updateCost($productId, []);
             } else {
                 Product::updateStock($productId, -$trx->quantity, $trx->warehouse_id);
             }
 
-            Product::updateCost($productId, []);
 
             DB::commit();
 
@@ -171,6 +171,7 @@ class EditTransaction extends Component
 
             if ($trx->transaction_type == 'Purchase') {
                 Product::updateStock($trx->product_id, $quantity, $trx->warehouse_id);
+                Product::updateCost($trx->product_id, []);
             } else {
                 Product::updateStock($trx->product_id, -$quantity, $trx->warehouse_id);
             }
@@ -209,7 +210,6 @@ class EditTransaction extends Component
             }
 
             $journal->save();
-            Product::updateCost($trx->product_id, []);
 
             DB::commit();
 

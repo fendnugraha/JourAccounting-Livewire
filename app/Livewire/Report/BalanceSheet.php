@@ -11,6 +11,8 @@ use Livewire\Attributes\Layout;
 class BalanceSheet extends Component
 {
     public $endDate;
+    public $month;
+    public $year;
     public $profitLossData;
     public $transactions;
     public $chartOfAccounts;
@@ -18,14 +20,14 @@ class BalanceSheet extends Component
     public function mount()
     {
         // Set the end date for the balance sheet calculation
-        $this->endDate = Carbon::now()->endOfMonth()->format('Y-m-d H:i');
+        $this->month = date('m');
+        $this->year = date('Y');
+        $this->endDate = Carbon::create($this->year, $this->month, 1)->endOfDay();
 
-        // Update profitLossData
-        // $this->updateProfitLossData();
-
+        $this->updateProfitLossData();
         // Run the transactions and balance calculation logic
-        $this->updateTransactionsAndBalances();
         Journal::equityCount($this->endDate);
+        $this->updateTransactionsAndBalances();
     }
 
     public function updateProfitLossData()
@@ -34,13 +36,24 @@ class BalanceSheet extends Component
         $this->profitLossData = $journal->profitLossCount('0000-00-00', $this->endDate);
     }
 
+    public function updatedMonth()
+    {
+        $this->endDate = Carbon::create($this->year, $this->month, 1)->endOfDay();
+    }
+
+    public function updatedYear()
+    {
+        $this->endDate = Carbon::create($this->year, $this->month, 1)->endOfDay();
+    }
+
     public function updateTransactionsAndBalances()
     {
         // Fetch transactions
         $journal = new Journal();
+        // Update profitLossData
         $this->transactions = $journal->with(['debt', 'cred'])
             ->selectRaw('debt_code, cred_code, SUM(amount) as total')
-            ->whereBetween('date_issued', [Carbon::create(0000, 1, 1)->endOfDay(), $this->endDate])
+            ->whereBetween('date_issued', [Carbon::create(0000, 1, 1)->endOfDay(), Carbon::create($this->year, $this->month, 1)->endOfDay()])
             ->groupBy('debt_code', 'cred_code')
             ->get();
 
@@ -58,15 +71,15 @@ class BalanceSheet extends Component
         }
 
         // Calculate equity and update balances for the chart of accounts
-        $initEquity = $this->chartOfAccounts->where('acc_code', '30100-001')->first()->st_balance;
-        $assets = $this->chartOfAccounts->whereIn('account_id', \range(1, 18));
-        $liabilities = $this->chartOfAccounts->whereIn('account_id', \range(19, 25));
-        $equity = $this->chartOfAccounts->where('account_id', 26);
+        // $initEquity = $this->chartOfAccounts->where('acc_code', '30100-001')->first()->st_balance;
+        // $assets = $this->chartOfAccounts->whereIn('account_id', \range(1, 18));
+        // $liabilities = $this->chartOfAccounts->whereIn('account_id', \range(19, 25));
 
+        // $equity = $this->chartOfAccounts->where('account_id', 26)->where('acc_code', '!=', '30100-001')->where('acc_code', '!=', '30100-002')->sum('balance');
         // Update equity balance in the database
-        ChartOfAccount::where('acc_code', '30100-001')->update([
-            'st_balance' => $initEquity + $assets->sum('balance') - $liabilities->sum('balance') - $equity->sum('balance'),
-        ]);
+        // ChartOfAccount::where('acc_code', '30100-001')->update([
+        //     'st_balance' => $assets->sum('balance') - $liabilities->sum('balance') - $equity
+        // ]);
     }
 
     #[Layout('layouts.app')]
@@ -74,16 +87,17 @@ class BalanceSheet extends Component
     {
         // The data is already populated in mount() and updateTransactionsAndBalances()
         // Just pass the data to the view
-
         $assets = $this->chartOfAccounts->whereIn('account_id', \range(1, 18));
         $liabilities = $this->chartOfAccounts->whereIn('account_id', \range(19, 25));
         $equity = $this->chartOfAccounts->where('account_id', 26);
+        $equityCount = $equity->sum('balance');
 
         return view('livewire.report.balance-sheet', [
             'title' => 'Balance Sheet',
             'assets' => $assets->groupBy('account_id'),
             'liabilities' => $liabilities->groupBy('account_id'),
             'equity' => $equity->groupBy('account_id'),
+            'equityCount' => $equityCount
         ]);
     }
 }

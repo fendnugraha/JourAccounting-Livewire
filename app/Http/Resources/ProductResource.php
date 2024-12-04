@@ -16,12 +16,13 @@ class ProductResource extends JsonResource
      * @return array<int|string, mixed>
      */
 
-    public function __construct($status, $message, $resource)
+    public function __construct($resource, $status = true, $message = "Operation successful")
     {
         parent::__construct($resource);
         $this->status  = $status;
         $this->message = $message;
     }
+
 
     public function toArray(Request $request): array
     {

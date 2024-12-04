@@ -13,9 +13,12 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::all();
-        return new ProductResource(true, 'List of products', $products);
+        $products = Product::paginate(10);
+
+        // Pass the resource as the first argument
+        return new ProductResource($products, true, 'List of products');
     }
+
 
     /**
      * Show the form for creating a new resource.

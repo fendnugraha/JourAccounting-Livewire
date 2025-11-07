@@ -12,4 +12,8 @@ Route::view('profile', 'profile')
     ->middleware(['auth'])
     ->name('profile');
 
-require __DIR__.'/auth.php';
+Route::group(['middleware' => ['auth']], function () {
+    Route::view('settings', 'settings')->name('settings');
+});
+
+require __DIR__ . '/auth.php';

@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ChartOfAccout;
+use App\Models\ChartOfAccount;
 use Illuminate\Http\Request;
 
-class ChartOfAccoutController extends Controller
+class ChartOfAccountController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -34,7 +34,7 @@ class ChartOfAccoutController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(ChartOfAccout $chartOfAccout)
+    public function show(ChartOfAccount $chartOfAccount)
     {
         //
     }
@@ -42,7 +42,7 @@ class ChartOfAccoutController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(ChartOfAccout $chartOfAccout)
+    public function edit(ChartOfAccount $chartOfAccount)
     {
         //
     }
@@ -50,7 +50,7 @@ class ChartOfAccoutController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, ChartOfAccout $chartOfAccout)
+    public function update(Request $request, ChartOfAccount $chartOfAccount)
     {
         //
     }
@@ -58,7 +58,7 @@ class ChartOfAccoutController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(ChartOfAccout $chartOfAccout)
+    public function destroy(ChartOfAccount $chartOfAccount)
     {
         //
     }

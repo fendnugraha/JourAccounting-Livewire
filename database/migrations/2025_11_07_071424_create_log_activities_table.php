@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('log_activities', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained('users')->onDelete('restrict');
+            $table->foreignId('warehouse_id')->constrained('warehouses')->onDelete('restrict');
+            $table->string('activity', 255); // Nama aktivitas. Contoh
+            $table->string('description', 255); // Deskripsi aktivitas. Contoh "User X melakukan aktivitas Y"
             $table->timestamps();
         });
     }

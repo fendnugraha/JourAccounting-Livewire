@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class ChartOfAccout extends Model
+class ChartOfAccount extends Model
 {
     //
 }

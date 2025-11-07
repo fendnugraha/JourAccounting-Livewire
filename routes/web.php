@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ChartOfAccountController;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome');
@@ -13,7 +14,10 @@ Route::view('profile', 'profile')
     ->name('profile');
 
 Route::group(['middleware' => ['auth']], function () {
-    Route::view('settings', 'settings')->name('settings');
+    Route::view('settings', 'settings.settings')->name('settings');
+
+    //COA
+    Route::get('settings/account', [ChartOfAccountController::class, 'index'])->name('settings.account.index');
 });
 
 require __DIR__ . '/auth.php';

@@ -12,7 +12,14 @@ class ChartOfAccountController extends Controller
      */
     public function index()
     {
-        //
+        $chartOfAccounts = ChartOfAccount::orderBy('acc_code', 'asc')->paginate(10)->onEachSide(0);
+        return view(
+            'settings.account.index',
+            [
+                'title' => 'Chart of Account',
+                'chartOfAccounts' => $chartOfAccounts
+            ]
+        );
     }
 
     /**

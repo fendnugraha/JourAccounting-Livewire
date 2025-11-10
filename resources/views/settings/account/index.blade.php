@@ -7,25 +7,21 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <x-primary-button x-data x-on:click="$dispatch('open-modal','create-user')"
-                class="bg-blue-600 text-white px-4 py-2 rounded">
-                Open Modal
-            </x-primary-button>
+            <div class="flex gap-4 mb-4">
+                <a href="{{ route('settings') }}" class="self-center" wire:navigate><i
+                        class="bi bi-arrow-left w-5 h-5"></i></a>
+                <x-primary-button x-data x-on:click="$dispatch('open-modal','create-account')"
+                    class="bg-blue-600 text-white px-4 py-2 rounded">
+                    Tambah Account
+                </x-primary-button>
+            </div>
 
-            <x-modal name="create-user" :show="false" :title="'Create Chart of Account'">
-
-                <p class="mt-2">
-                    Isi konten modal di sini.
-                </p>
-
-                <div class="mt-4 text-right">
-                    <button x-on:click="$dispatch('close-modal','create-user')"
-                        class="px-4 py-2 bg-gray-700 text-white rounded">
-                        Close
-                    </button>
-                </div>
+            <x-modal name="create-account" :show="false" :title="'Tambah Account'">
+                @livewire('settings.account.create-account')
             </x-modal>
 
+            @livewire('settings.account.account-table')
         </div>
     </div>
+
 </x-app-layout>

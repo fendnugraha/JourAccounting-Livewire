@@ -12,7 +12,12 @@ class ContactController extends Controller
      */
     public function index()
     {
-        //
+        return view(
+            'settings.contact.index',
+            [
+                'title' => 'Contact',
+            ]
+        );
     }
 
     /**

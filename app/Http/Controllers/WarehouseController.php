@@ -12,7 +12,12 @@ class WarehouseController extends Controller
      */
     public function index()
     {
-        //
+        return view(
+            'settings.warehouse.index',
+            [
+                'title' => 'Warehouse',
+            ]
+        );
     }
 
     /**
@@ -44,7 +49,13 @@ class WarehouseController extends Controller
      */
     public function edit(Warehouse $warehouse)
     {
-        //
+        return view(
+            'settings.warehouse.edit',
+            [
+                'title' => 'Edit Warehouse : ' . ucwords($warehouse->name),
+                'warehouse' => $warehouse
+            ]
+        );
     }
 
     /**

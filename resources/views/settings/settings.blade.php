@@ -8,13 +8,27 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <ul class="w-1/2 rounded-lg bg-white divide-y divide-gray-200">
-                <li><a href="#" class="block p-4 hover:bg-gray-50">User</a></li>
-                <li><a href="{{ route('settings.account.index') }}" class="block p-4 hover:bg-gray-50"
-                        wire:navigate>Chart of
-                        Accounts</a></li>
-                <li><a href="#" class="block p-4 hover:bg-gray-50">Warehouse</a></li>
-                <li><a href="#" class="block p-4 hover:bg-gray-50">Product</a></li>
-                <li><a href="#" class="block p-4 hover:bg-gray-50">Contact</a></li>
+                <li>
+                    <x-link href="{{ route('settings.user.index') }}" class="block p-4 hover:bg-yellow-50">User
+                        Management</x-link>
+                </li>
+                <li>
+                    <x-link href="{{ route('settings.account.index') }}" class="block p-4 hover:bg-yellow-50">Chart of
+                        Accounts</x-link>
+                </li>
+                <li>
+                    <x-link href="{{ route('settings.warehouse.index') }}" class="block p-4 hover:bg-yellow-50">
+                        Warehouse
+                    </x-link>
+                </li>
+                <li>
+                    <x-link href="{{ route('settings.product.index') }}" class="block p-4 hover:bg-yellow-50">Product
+                    </x-link>
+                </li>
+                <li>
+                    <x-link href="{{ route('settings.contact.index') }}" class="block p-4 hover:bg-yellow-50">Contact
+                    </x-link>
+                </li>
             </ul>
 
         </div>

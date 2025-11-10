@@ -58,9 +58,10 @@ $maxWidth = [
         x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
         x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
         <div class="p-6">
-            <div class="flex justify-between">
+            <div class="flex justify-between mb-4">
                 <h2 class="text-lg font-semibold">{{ $title }}</h2>
-                <button @click="show = false">X</button>
+                <button @click="show = false"><i data-lucide="x" class="w-5 h-5"></i>
+                </button>
             </div>
             {{ $slot }}
         </div>

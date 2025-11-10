@@ -12,7 +12,12 @@ class JournalController extends Controller
      */
     public function index()
     {
-        //
+        return view(
+            'transaction.index',
+            [
+                'title' => 'Transaction',
+            ]
+        );
     }
 
     /**

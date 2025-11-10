@@ -12,7 +12,12 @@ class ProductController extends Controller
      */
     public function index()
     {
-        //
+        return view(
+            'settings.product.index',
+            [
+                'title' => 'Product',
+            ]
+        );
     }
 
     /**

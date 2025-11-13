@@ -8,7 +8,8 @@
             <tbody class="bg-white">
                 @foreach($accounts as $account)
                 <tr class="border border-slate-100 odd:bg-white even:bg-blue-50" wire:key="account-{{ $account->id }}">
-                    <td class="p-3">{{ $account->acc_name }}</td>
+                    <td class="p-3">{{ $account->acc_name }}
+                    </td>
                     <td class="text-center">
                         <input type="checkbox" class="disabled:bg-slate-500"
                             wire:click="updateAccountList({{ $warehouse->id }}, {{ $account->id }})"
@@ -24,5 +25,9 @@
             </tbody>
         </table>
         {{ $accounts->links() }}
+
+        <x-action-message class="ms-3" on="warehouse-updated">
+            {{ session('success') ?? 'Updated.' }}
+        </x-action-message>
     </div>
 </div>

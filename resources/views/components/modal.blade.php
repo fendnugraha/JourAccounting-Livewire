@@ -60,7 +60,7 @@ $maxWidth = [
         <div class="p-6">
             <div class="flex justify-between mb-4">
                 <h2 class="text-lg font-semibold">{{ $title }}</h2>
-                <button @click="show = false"><i data-lucide="x" class="w-5 h-5"></i>
+                <button @click="show = false"><i class="bi bi-x text-2xl"></i>
                 </button>
             </div>
             {{ $slot }}

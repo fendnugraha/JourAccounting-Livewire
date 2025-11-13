@@ -73,10 +73,9 @@ class CreateWithdrawal extends Component
             DB::commit();
 
             $this->dispatch('journal-created', $journal);
+            session()->flash('success', 'Journal created successfully.');
 
             $this->reset(['date_issued', 'amount', 'fee_amount', 'description', 'custName']);
-
-            session()->flash('success', 'Journal created successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error($e->getMessage());

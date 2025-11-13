@@ -340,6 +340,23 @@ class Journal extends Model
             ->pluck('total_amount', 'account_id')
             ->toArray();
 
+        $debitMutasi = Journal::selectRaw('debt_code as account_id, SUM(amount) as total_amount')
+            ->where('trx_type', 'Mutasi Kas')
+            ->whereIn('debt_code', $allAccountIds)
+            ->whereBetween('date_issued', [$previousDate, $endDate])
+            ->groupBy('debt_code')
+            ->pluck('total_amount', 'account_id')
+            ->toArray();
+
+        $creditMutasi = Journal::selectRaw('cred_code as account_id, SUM(amount) as total_amount')
+            ->where('trx_type', 'Mutasi Kas')
+            ->whereIn('cred_code', $allAccountIds)
+            ->whereBetween('date_issued', [$previousDate, $endDate])
+            ->groupBy('cred_code')
+            ->pluck('total_amount', 'account_id')
+            ->toArray();
+
+
         $missingDatesToUpdate = [];
         foreach ($allAccountIds as $accountId) {
             if (!isset($previousDayBalances[$accountId])) {
@@ -384,60 +401,51 @@ class Journal extends Model
             'chartOfAccounts' => $chartOfAccounts,
             'sumtotalBank' => $sumtotalBank->sum('balance'),
             'sumtotalCash' => $sumtotalCash->sum('balance'),
+            'debit' => $debit,
+            'credit' => $credit,
+            'debitMutasi' => $debitMutasi,
+            'creditMutasi' => $creditMutasi
         ];
     }
 
-    public function createMutation($request)
+    public static function createMutation(array $data)
     {
-        $request->validate([
-            'date_issued' => 'date',
-            'debt_code' => 'required|exists:chart_of_accounts,id',
-            'cred_code' => 'required|exists:chart_of_accounts,id',
-            'amount' => 'required|numeric',
-            'trx_type' => 'required',
-            'admin_fee' => 'numeric|min:0',
-        ], [
-            'admin_fee.numeric' => 'Biaya admin harus berupa angka.',
-            'debt_code.required' => 'Akun debet harus diisi.',
-            'cred_code.required' => 'Akun kredit harus diisi.',
-        ]);
-
-        $description = $request->description ?? 'Mutasi Kas';
+        $description = $data['description'] ?? 'Mutasi Kas';
         $hqCashAccount = Warehouse::find(1)->chart_of_account_id;
 
-        $cred = ChartOfAccount::find($request->cred_code);
-        $confirmation = $cred->account_id == 1 && $cred->warehouse_id == 1 ? $request->confirmation : 1;
+        $cred = ChartOfAccount::find($data['cred_code']);
+        $confirmation = $cred->account_id == 1 && $cred->warehouse_id == 1 ? $data['is_confirmed'] : 1;
 
-        if (Carbon::parse($request->date_issued)->lt(Carbon::now()->startOfDay()) && auth()->user()->role->role !== 'Super Admin') {
-            return $message = 'Anda tidak memiliki izin untuk membuat transaksi sebelum jam 00:00';
+        if (Carbon::parse($data['date_issued'])->lt(Carbon::now()->startOfDay()) && auth()->user()->role->role !== 'Super Admin') {
+            return 'Anda tidak memiliki izin untuk membuat transaksi sebelum jam 00:00';
         }
 
 
         DB::beginTransaction();
         try {
-            $journal = Journal::create([
+            Journal::create([
                 'invoice' => Journal::invoice_journal(),  // Menggunakan metode statis untuk invoice
-                'date_issued' => $request->date_issued ?? now(),
-                'debt_code' => $request->debt_code,
-                'cred_code' => $request->cred_code,
-                'amount' => $request->amount,
-                'is_confirmed' => $request->is_confirmed ?? 0,
+                'date_issued' => $data['date_issued'] ?? now(),
+                'debt_code' => $data['debt_code'],
+                'cred_code' => $data['cred_code'],
+                'amount' => $data['amount'],
+                'is_confirmed' => $data['is_confirmed'] ?? 0,
                 'status' => $confirmation ?? 0,
-                'fee_amount' => $request->fee_amount,
-                'trx_type' => $request->trx_type,
+                'fee_amount' => $data['fee_amount'] ?? 0,
+                'trx_type' => $data['trx_type'],
                 'description' => $description,
                 'user_id' => auth()->user()->id,
-                'warehouse_id' => auth()->user()->role->warehouse_id
+                'warehouse_id' => auth()->user()->roles->warehouse_id
             ]);
 
-            if ($request->admin_fee > 0) {
+            if ($data['admin_fee'] > 0) {
                 Journal::create([
                     'invoice' => Journal::invoice_journal(),  // Menggunakan metode statis untuk invoice
-                    'date_issued' => $request->date_issued ?? now(),
+                    'date_issued' => $data['date_issued'] ?? now(),
                     'debt_code' => $hqCashAccount,
-                    'cred_code' => $request->cred_code,
-                    'amount' => $request->admin_fee,
-                    'fee_amount' => -$request->admin_fee,
+                    'cred_code' => $data['cred_code'],
+                    'amount' => $data['admin_fee'],
+                    'fee_amount' => -$data['admin_fee'],
                     'trx_type' => 'Pengeluaran',
                     'description' => $description ?? 'Biaya admin Mutasi Saldo Kas',
                     'user_id' => auth()->user()->id,
@@ -445,26 +453,26 @@ class Journal extends Model
                 ]);
             }
 
-            if ($request->date_issued) {
+            if ($data['date_issued']) {
                 try {
-                    $dateIssued = Carbon::parse($request->date_issued);
+                    $dateIssued = Carbon::parse($data['date_issued']);
 
                     if ($dateIssued->lt(Carbon::now()->startOfDay())) {
-                        $this->_updateBalancesDirectly($dateIssued);
+                        Journal::_updateBalancesDirectly($dateIssued);
                     }
                 } catch (\Exception $e) {
-                    Log::warning("Invalid date_issued format: {$request->date_issued}");
+                    Log::warning("Invalid date_issued format: {$data['date_issued']}");
                 }
             }
 
             DB::commit();
 
-            return $message = 'Transaksi berhasil dibuat';
+            return 'Transaksi berhasil dibuat';
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error($e->getMessage());
 
-            return $message = 'Terjadi kesalahan saat membuat transaksi';
+            return 'Terjadi kesalahan saat membuat transaksi';
         }
     }
 }

@@ -31,9 +31,9 @@
             class="w-full border border-slate-300 text-sm rounded-lg p-2" />
     </div>
     <div class="overflox-x-auto">
-        <table class="table-auto w-full text-xs mb-2">
-            <thead class="bg-white text-blue-950">
-                <tr class="border-b-2">
+        <table class="table w-full text-sm mb-2">
+            <thead class="">
+                <tr class="">
                     <th class="p-4">Keterangan</th>
                     <th>Jumlah</th>
                     <th class="text-center">Action</th>
@@ -50,8 +50,7 @@
                 $hide_pay = ($journal->trx_type == null) ? 'disabled' : '';
 
                 @endphp
-                <tr
-                    class="border-b border-slate-100 odd:bg-white even:bg-blue-50 hover:bg-slate-600 hover:text-white cursor-pointer">
+                <tr class="">
                     <td class="p-2">
 
                         <span class="font-bold">ID: {{ $journal->id
@@ -78,8 +77,10 @@
                     <td
                         class="p-1 sm:p-3 text-right {{ $account == $journal->cred_code ? 'text-red-500' : ($account == $journal->debt_code ? 'text-green-500' : '') }} font-bold p-2">
                         <span class="text-sm sm:text-lg font-bold">{{ number_format($journal->amount) }}</span> <br>
+                        @if ($journal->fee_amount != 0)
                         <span class="text-sky-600">{{ number_format($journal->fee_amount) }}
                         </span>
+                        @endif
                     </td>
                     <td class="">
                         <div class="flex justify-center gap-3">

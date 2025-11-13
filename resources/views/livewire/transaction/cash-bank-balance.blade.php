@@ -1,6 +1,6 @@
 <div class="">
     <div
-        class="flex justify-center items-center mb-3 flex-col bg-sky-950 hover:bg-sky-900 p-2 rounded-2xl text-orange-300 hover:text-white">
+        class="flex justify-center items-center mb-3 flex-col bg-sky-800 hover:bg-sky-900 p-2 rounded-2xl text-orange-300 hover:text-white">
         <h1 class="text-sm">Total Saldo Kas & Bank</h1>
         <h1 class="text-2xl font-bold">{{ number_format($total) }}</h1>
 

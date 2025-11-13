@@ -22,16 +22,17 @@
                     </x-slot>
 
                     <x-slot name="content">
-                        <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100">
-                            Profile
+                        <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100" x-data
+                            x-on:click="$dispatch('open-modal','create-voucher')">
+                            Voucher & SP
                         </a>
-
-                        <button class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100">
-                            Logout
-                        </button>
+                        <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100" x-data
+                            x-on:click="$dispatch('open-modal','create-deposit')">
+                            Penjualan Deposit
+                        </a>
                     </x-slot>
                 </x-dropdown>
-                <x-dropdown align="left" width="48">
+                <x-dropdown align="left" width="w-64">
                     <x-slot name="trigger">
                         <x-button class="min-w-32" style="danger">
                             Pengeluaran (Biaya)
@@ -39,13 +40,18 @@
                     </x-slot>
 
                     <x-slot name="content">
-                        <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100">
-                            Profile
+                        <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100" x-data
+                            x-on:click="$dispatch('open-modal','create-mutation-to-hq')">
+                            Pengembalian saldo kas & bank
                         </a>
-
-                        <button class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100">
-                            Logout
-                        </button>
+                        <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100" x-data
+                            x-on:click="$dispatch('open-modal','create-expense')">
+                            Biaya Operasional
+                        </a>
+                        <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100" x-data
+                            x-on:click="$dispatch('open-modal','create-bank-expense')">
+                            Biaya Admin Bank
+                        </a>
                     </x-slot>
                 </x-dropdown>
             </div>
@@ -60,5 +66,20 @@
     </x-modal>
     <x-modal name="create-withdrawal" :show="false" :title="'Penarikan Tunai'">
         @livewire('transaction.create-withdrawal')
+    </x-modal>
+    <x-modal name="create-mutation-to-hq" :show="false" :title="'Pengembalian saldo kas & bank'">
+        @livewire('transaction.create-mutation-to-hq')
+    </x-modal>
+    <x-modal name="create-expense" :show="false" :title="'Biaya Operasional'">
+        @livewire('transaction.create-expense')
+    </x-modal>
+    <x-modal name="create-bank-expense" :show="false" :title="'Biaya Admin Bank'">
+        @livewire('transaction.create-bank-expense')
+    </x-modal>
+    <x-modal name="create-voucher" :show="false" :title="'Penjualan Voucher'">
+        @livewire('transaction.create-voucher')
+    </x-modal>
+    <x-modal name="create-deposit" :show="false" :title="'Penjualan Deposit'">
+        @livewire('transaction.create-deposit')
     </x-modal>
 </x-app-layout>

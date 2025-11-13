@@ -24,38 +24,15 @@ class MutationHistory extends Component
     #[On('warehouse-changed')]
     public function updateWarehouse($warehouse)
     {
-        // LOGIKA PENTING: Langsung update properti dan reset page.
-        // Livewire akan melihat properti publik $this->warehouse berubah 
-        // dan akan menjalankan Computed Property `journals()`.
-        Log::info('MutationHistory: Event "warehouse-changed" received and applying update.', [
-            'old_warehouse' => $this->warehouse,
-            'new_warehouse' => $warehouse
-        ]);
-
         $this->warehouse = $warehouse;
         $this->resetPage();
-        // Tidak perlu cek `if ($this->warehouse != $warehouse)` karena 
-        // Livewire sudah cukup pintar untuk melakukan re-render.
     }
 
     #[Computed]
     public function journals()
     {
-        Log::debug('MutationHistory: Computing journals.', ['warehouse_id' => $this->warehouse, 'endDate' => $this->endDate]);
-
-        if (!$this->warehouse) {
-            Log::warning('MutationHistory: Warehouse ID is null. Returning empty set.');
-            return Journal::whereRaw('1 = 0')->paginate($this->perPage, ['*'], 'journalPage');
-        }
-
         $wh_accounts = ChartOfAccount::where('warehouse_id', $this->warehouse)->pluck('id')->toArray();
 
-        if (empty($wh_accounts)) {
-            Log::info('MutationHistory: No ChartOfAccount found for the warehouse. Returning empty set.');
-            return Journal::whereRaw('1 = 0')->paginate($this->perPage, ['*'], 'journalPage');
-        }
-
-        // QUERY LOGIC
         $journals = Journal::with([
             'cred:id,acc_name,account_id,warehouse_id',
             'debt:id,acc_name,account_id,warehouse_id',
@@ -78,8 +55,6 @@ class MutationHistory extends Component
             })
             ->latest()
             ->paginate($this->perPage, ['*'], 'journalPage');
-
-        Log::debug('MutationHistory: Query executed successfully.', ['results_count' => $journals->count(), 'total_items' => $journals->total()]);
 
         return $journals;
     }

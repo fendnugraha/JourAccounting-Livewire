@@ -48,25 +48,38 @@ class TransactionTable extends Component
         $startDate = $startDate ? Carbon::parse($startDate)->startOfDay() : Carbon::now()->startOfDay();
         $endDate = $endDate ? Carbon::parse($endDate)->endOfDay() : Carbon::now()->endOfDay();
 
-        $journals = Journal::with(['debt:id,acc_name,account_id,warehouse_id', 'cred:id,acc_name,account_id,warehouse_id', 'transaction.product'])
-            ->where(function ($query) use ($chartOfAccounts, $startDate, $endDate) {
-                // Filter based on chart of accounts (either debt_code or cred_code)
-                $query->where(function ($subQuery) use ($chartOfAccounts) {
-                    $this->account ? $subQuery->where('cred_code', $this->account)->orWhere('debt_code', $this->account) : $subQuery->whereIn('cred_code', $chartOfAccounts)->orWhereIn('debt_code', $chartOfAccounts);
+        $journals = Journal::with([
+            'debt:id,acc_name,account_id,warehouse_id',
+            'cred:id,acc_name,account_id,warehouse_id',
+            'transaction.product'
+        ])
+            ->whereBetween('date_issued', [$startDate, $endDate])
+            ->where(function ($query) use ($chartOfAccounts, $warehouse) {
+                // Filter by selected account OR by all accounts in chartOfAccounts
+                $query->when($this->account, function ($subQuery) {
+                    $subQuery->where('cred_code', $this->account)
+                        ->orWhere('debt_code', $this->account);
+                }, function ($subQuery) use ($chartOfAccounts) {
+                    $subQuery->whereIn('cred_code', $chartOfAccounts)
+                        ->orWhereIn('debt_code', $chartOfAccounts);
                 })
-                    ->whereBetween('date_issued', [$startDate, $endDate]);
+                    // Tambahkan logika inventory di cabang terkait
+                    ->orWhere(function ($subQuery) use ($warehouse) {
+                        $this->account ? $subQuery : $subQuery->where(function ($inner) {
+                            $inner->where('debt_code', ChartOfAccount::INVENTORY)
+                                ->orWhere('cred_code', ChartOfAccount::INVENTORY);
+                        })
+                            ->where('warehouse_id', $warehouse);
+                    });
             })
-            ->orWhere(function ($query) use ($warehouse, $startDate, $endDate) {
-                $query->where(function ($subQuery) {
-                    $subQuery->where('debt_code', 9)
-                        ->orWhere('cred_code', 9);
-                })
-                    ->where('warehouse_id', $warehouse)
-                    ->whereBetween('date_issued', [$startDate, $endDate]); // Apply whereBetween here as well
-            })
-            ->FilterJournals(['search' => $this->search, 'account' => $this->account])
+            ->FilterJournals([
+                'search' => $this->search,
+                'account' => $this->account,
+            ])
             ->orderBy('date_issued', $this->sort ?? 'desc')
-            ->paginate($this->perPage, ['*'], 'journalPage')->onEachSide(0);
+            ->paginate($this->perPage, ['*'], 'journalPage')
+            ->onEachSide(0);
+
         return $journals;
     }
 

@@ -46,7 +46,7 @@
         <x-action-message class="me-3" on="journal-created">
             {{ session('success') ?? 'Berhasil.' }}
         </x-action-message>
-        <x-primary-button type="submit">
+        <x-primary-button type="submit" wire:loading.attr="disabled">
             {{ __('Create') }}
         </x-primary-button>
     </div>

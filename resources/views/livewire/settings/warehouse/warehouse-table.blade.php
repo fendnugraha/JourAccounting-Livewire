@@ -4,9 +4,9 @@
             placeholder="Search..." />
     </div>
     <div class="overflow-x-auto">
-        <table class="table-auto w-full text-xs mb-2">
-            <thead class="bg-white text-blue-950">
-                <tr class="border-b">
+        <table class="table w-full text-xs mb-2">
+            <thead class="bg-white">
+                <tr class="">
                     <th class="p-4">Name</th>
                     <th>Alamat</th>
                     <th>Akun Kas</th>
@@ -15,7 +15,7 @@
             </thead>
             <tbody class="bg-white">
                 @foreach($warehouses as $warehouse)
-                <tr class="border border-slate-100 odd:bg-white even:bg-blue-50">
+                <tr class="">
                     <td class="p-3">ID:{{ $warehouse->id }} {{ $warehouse->name }}</td>
                     <td>{{ $warehouse->address }}</td>
                     <td class="">{{ $warehouse->chartOfAccount->acc_name ?? 'Not Set' }}</td>

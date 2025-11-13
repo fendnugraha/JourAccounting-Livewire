@@ -4,7 +4,7 @@
             placeholder="Search..." />
     </div>
     <div class="overflow-x-auto">
-        <table class="table-auto w-full text-xs mb-2">
+        <table class="table w-full text-xs mb-2">
             <thead class="bg-white text-blue-950">
                 <tr class="border-b">
                     <th class="p-4">ID</th>
@@ -16,7 +16,7 @@
             </thead>
             <tbody class="bg-white">
                 @foreach($users as $user)
-                <tr class="border border-slate-100 odd:bg-white even:bg-blue-50">
+                <tr class="">
                     <td class="p-3">{{ $user->id }}</td>
                     <td>{{ $user->name }}</td>
                     <td>{{ $user->email }}</td>

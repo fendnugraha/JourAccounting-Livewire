@@ -54,7 +54,7 @@
         <x-action-message class="me-3" on="journal-created">
             {{ __('Saved.') }}
         </x-action-message>
-        <x-primary-button type="submit">
+        <x-primary-button type="submit" wire:loading.attr="disabled">
             {{ __('Create') }}
         </x-primary-button>
     </div>

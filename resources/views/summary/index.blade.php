@@ -7,7 +7,10 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-
+            @livewire('summary.warehouse-balance')
+            @livewire('summary.revenue-report')
+            @livewire('summary.generaledger')
+            @livewire('summary.log-activity')
         </div>
     </div>
 </x-app-layout>

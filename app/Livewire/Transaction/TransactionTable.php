@@ -32,6 +32,12 @@ class TransactionTable extends Component
         $this->cash = Auth::user()->roles->warehouse->chart_of_account_id;
     }
 
+    public function updatedWarehouse()
+    {
+        $this->resetPage('journalPage');
+        $this->account = null;
+    }
+
     public function updateLimitPage($pageName = 'journalPage')
     {
         $this->resetPage($pageName);

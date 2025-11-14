@@ -10,6 +10,7 @@
             @livewire('dashboard.daily-dashboard')
             @livewire('dashboard.cash-bank-mutation')
             @livewire('dashboard.voucher-sales-table')
+            @livewire('dashboard.expense-table')
         </div>
     </div>
 </x-app-layout>

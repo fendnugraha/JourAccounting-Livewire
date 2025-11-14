@@ -49,7 +49,7 @@ class CreateMutationFromHq extends Component
             'amount' => $this->amount,
             'trx_type' => 'Mutasi Kas',
             'fee_amount' => 0,
-            'admin_fee' => $this->admin_fee,
+            'admin_fee' => $this->bank_fee,
             'is_confirmed' => true,
             'description' => $this->description,
         ]);

@@ -5,7 +5,6 @@
             <table class="table w-full text-xs">
                 <thead>
                     <tr>
-                        <th class="text-center">Tanggal</th>
                         <th class="text-center">Keterangan</th>
                         <th class="text-center">Jumlah</th>
                     </tr>
@@ -13,9 +12,11 @@
                 <tbody>
                     @forelse ($expenses as $expense)
                     <tr>
-                        <td class="text-center">{{ $expense->date }}</td>
-                        <td>{{ $expense->description }}</td>
-                        <td class="text-right">{{ Number::format($expense->amount) }}</td>
+                        <td><span class="block font-bold">{{ $expense->date_issued }} {{ $expense->cred->acc_name
+                                }}</span>
+                            {{ $expense->description }}
+                        </td>
+                        <td class="text-right text-sm font-bold">{{ Number::format(-$expense->fee_amount) }}</td>
                     </tr>
                     @empty
                     <tr>
@@ -30,6 +31,6 @@
     </div>
     <div class="card p-4 w-1/4 flex flex-col justify-center items-center !bg-red-500 text-white">
         <h1 class="">Total</h1>
-        <h1 class="text-2xl font-bold">{{ Number::format($expenses->sum('amount')) }}</h1>
+        <h1 class="text-2xl font-bold">{{ Number::format(-$expenses->sum('fee_amount')) }}</h1>
     </div>
 </div>

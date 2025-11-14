@@ -67,7 +67,7 @@
                         <h4 class="text-sm text-nowrap">Tarik Tunai</h4>
                         <h4
                             class="text-sm font-semibold px-2 py-0.5 bg-teal-200/40 dark:bg-slate-500 text-slate-500 dark:text-white rounded-full">
-                            {{ Number::format($dailyReport['totalCashWithdrawal']['total']) }}
+                            {{ Number::format($dailyReport['totalCashWithdrawal']['count']) }}
                         </h4>
                     </div>
                     <h1 class="text-lg sm:text-xl font-bold text-slate-500">
@@ -97,7 +97,7 @@
                 class="w-full bg-red-200 rounded-2xl sm:rounded-3xl drop-shadow-xs h-full flex flex-col justify-center items-center">
 
                 <h1 class="text-xl sm:text-2xl font-bold text-red-500">
-                    {{ Number::format($dailyReport['totalExpense']) }}</h1>
+                    {{ Number::format(-$dailyReport['totalExpense']) }}</h1>
                 <h1 class="text-slate-500">Biaya</h1>
             </div>
             <div

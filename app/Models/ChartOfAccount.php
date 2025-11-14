@@ -9,6 +9,8 @@ class ChartOfAccount extends Model
 {
     const SAVING_ACCOUNT = 160;
     const INVENTORY = 10;
+    const BANK_FEE = 49;
+
     protected $guarded = ['id'];
 
     protected $casts = [

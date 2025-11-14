@@ -52,8 +52,8 @@ class CreateWithdrawal extends Component
                 'cred_code' => auth()->user()->roles->warehouse->chart_of_account_id,
                 'amount' => $this->amount,
                 'fee_amount' => $this->fee_amount,
-                'trx_type' => 'Transfer Uang',
-                'description' => $description ?? 'Transfer Uang',
+                'trx_type' => 'Tarik Tunai',
+                'description' => $description ?? 'Tarik Tunai',
                 'user_id' => auth()->user()->id,
                 'warehouse_id' => auth()->user()->roles->warehouse_id
             ]);

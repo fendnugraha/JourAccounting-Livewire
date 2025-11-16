@@ -25,7 +25,7 @@
             </thead>
             <tbody>
                 <!-- PASTIKAN MENGGUNAKAN $this->journals -->
-                @foreach ($this->journals as $journal)
+                @forelse ($this->journals as $journal)
                 <tr>
                     <td>
                         <!-- Menggunakan Carbon untuk memformat tanggal agar lebih rapi -->
@@ -43,7 +43,11 @@
                         {{ Number::format($journal->amount) }}
                     </td>
                 </tr>
-                @endforeach
+                @empty
+                <tr>
+                    <td colspan="2" class="text-center">Tidak ada data</td>
+                </tr>
+                @endforelse
             </tbody>
         </table>
     </div>

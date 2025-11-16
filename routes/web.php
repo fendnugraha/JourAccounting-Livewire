@@ -21,6 +21,7 @@ Route::view('profile', 'profile')
 Route::group(['middleware' => ['auth']], function () {
     Route::view('settings', 'settings.settings')->name('settings');
     Route::view('summary', 'summary.index')->name('summary');
+    Route::view('finance', 'finance.index')->name('finance');
 
     Route::view('settings/user', 'settings.user.index', ['title' => 'User Management'])->name('settings.user.index');
 

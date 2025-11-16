@@ -52,7 +52,6 @@
                 @endphp
                 <tr class="">
                     <td class="p-2">
-
                         <span class="font-bold">ID: {{ $journal->id
                             }} | {{ $journal->date_issued
                             }} | {{ $journal->invoice
@@ -72,7 +71,6 @@
                         <span class="block sm:hidden ">ID:{{ $journal->id }} | {{
                             $journal->date_issued
                             }}</span>
-
                     </td>
                     <td
                         class="p-1 sm:p-3 text-right {{ $account == $journal->cred_code ? 'text-red-500' : ($account == $journal->debt_code ? 'text-green-500' : '') }} font-bold p-2">

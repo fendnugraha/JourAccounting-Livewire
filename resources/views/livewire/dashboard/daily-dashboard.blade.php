@@ -59,7 +59,7 @@
                         </h4>
                     </div>
                     <h1 class="text-lg sm:text-xl font-bold text-slate-500">
-                        {{ Number::format($dailyReport['totalTransfer']['total']) }}
+                        {{ short_number($dailyReport['totalTransfer']['total']) }}
                     </h1>
                 </div>
                 <div class="flex flex-col justify-between w-full bg-white/50 dark:bg-white/60 p-2 rounded-2xl">
@@ -71,7 +71,7 @@
                         </h4>
                     </div>
                     <h1 class="text-lg sm:text-xl font-bold text-slate-500">
-                        {{ Number::format($dailyReport['totalCashWithdrawal']['total']) }}
+                        {{ short_number($dailyReport['totalCashWithdrawal']['total']) }}
                     </h1>
                 </div>
             </div>

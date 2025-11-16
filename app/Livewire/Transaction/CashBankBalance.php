@@ -32,7 +32,7 @@ class CashBankBalance extends Component
         $this->chartOfAccounts = Journal::balancesByWarehouse($warehouse, $endDate);
     }
 
-    #[On('journal-created')]
+    #[On(['journal-created', 'journal-updated', 'journal-deleted'])]
     public function updatedEndDate()
     {
         $this->refreshData($this->warehouse, $this->end_date);

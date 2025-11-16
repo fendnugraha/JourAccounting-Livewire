@@ -82,13 +82,19 @@
                     </td>
                     <td class="">
                         <div class="flex justify-center gap-3">
-                            <a href="{{ route('journal.edit', $journal->id) }}"
-                                class="text-slate-800 text-center font-bold {{ $hidden }}" wire:navigate><i
-                                    class="bi bi-pencil text-lg"></i></a>
-                            <button wire:click="delete({{ $journal->id }})" wire:loading.attr="disabled"
-                                wire:confirm="Apakah anda yakin menghapus data ini?"
-                                class="text-red-500 font-bold disabled:text-slate-300" {{ $hide_pay }}><i
-                                    class="bi bi-trash text-lg"></i></button>
+                            <button x-data x-on:click="
+                                        $wire.setSelectedId({{ $journal->id }});
+                                      $dispatch('open-modal','edit-journal'); " @class(['hidden'=>
+                                !in_array($journal->trx_type, ['Transfer Uang', 'Tarik Tunai'])])>
+                                <i class="bi bi-pencil text-lg"></i>
+                            </button>
+
+                            <button wire:click="destroy({{ $journal->id }})"
+                                wire:confirm="Apakah anda yakin menghapus data ini?" wire:loading.attr="disabled"
+                                @class(['text-red-500 font-bold disabled:text-slate-300', $hide_pay])>
+                                <i class="bi bi-trash text-lg"></i>
+                            </button>
+
                         </div>
                     </td>
                 </tr>
@@ -98,4 +104,7 @@
 
         {{ $journals->links(data: ['scrollTo' => false]) }}
     </div>
+    <x-modal name="edit-journal" :show="false" :title="'Edit Jurnal'">
+        @livewire('transaction.edit-journal', ['selectedId' => $selectedId])
+    </x-modal>
 </div>

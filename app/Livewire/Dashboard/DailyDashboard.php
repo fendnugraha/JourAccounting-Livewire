@@ -16,8 +16,8 @@ class DailyDashboard extends Component
 
     public function mount()
     {
-        // $this->startDate = Carbon::now()->startOfMonth()->format('Y-m-d');
-        // $this->endDate = Carbon::now()->endOfMonth()->format('Y-m-d');
+        $this->startDate = Carbon::now()->startOfDay()->format('Y-m-d');
+        $this->endDate = Carbon::now()->endOfDay()->format('Y-m-d');
         $this->warehouse = Auth::user()->roles->warehouse_id;
     }
 
@@ -35,8 +35,8 @@ class DailyDashboard extends Component
     public function getDailyReport()
     {
         $warehouse = $this->warehouse;
-        $startDate = $this->startDate ? Carbon::parse($this->startDate)->startOfDay() : Carbon::now()->startOfDay();
-        $endDate = $this->endDate ? Carbon::parse($this->endDate)->endOfDay() : Carbon::now()->endOfDay();
+        $startDate = $this->startDate;
+        $endDate = $this->endDate;
 
         $diffDays = Carbon::parse($endDate)->startOfDay()->diffInDays(Carbon::parse($startDate)->startOfDay());
 

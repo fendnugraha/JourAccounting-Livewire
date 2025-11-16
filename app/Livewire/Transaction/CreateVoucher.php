@@ -19,6 +19,7 @@ class CreateVoucher extends Component
     public $quantity = 1;
     public $description;
     public $price = 0;
+    public $product_type = 'Voucher & SP';
 
     protected $rules = [
         'date_issued' => 'required',
@@ -41,6 +42,8 @@ class CreateVoucher extends Component
         $cost = Product::find($this->product_id)->cost;
         $modal = $cost * $this->quantity;
 
+        $is_vcr = Product::find($this->product_id)->category == 'Voucher & SP';
+
         $description = $this->description ?? "Penjualan Voucher & SP";
         $fee = $price - $modal;
         $invoice = Journal::invoice_journal();
@@ -54,7 +57,7 @@ class CreateVoucher extends Component
                 'cred_code' => ChartOfAccount::INVENTORY,
                 'amount' => $modal,
                 'fee_amount' => $fee,
-                'trx_type' => 'Voucher & SP',
+                'trx_type' => $is_vcr ? 'Voucher & SP' : 'Accessories',
                 'description' => $description,
                 'user_id' => auth()->user()->id,
                 'warehouse_id' => auth()->user()->roles->warehouse_id
@@ -89,6 +92,11 @@ class CreateVoucher extends Component
         }
     }
 
+    public function setProductType($value)
+    {
+        $this->product_type = $value;
+    }
+
     public function updatedProductId($value)
     {
         $product = Product::find($value);
@@ -97,7 +105,9 @@ class CreateVoucher extends Component
     public function render()
     {
         return view('livewire.transaction.create-voucher', [
-            "products" => Product::orderBy('name')->get()
+            "products" => Product::where(function ($query) {
+                $this->product_type == 'Voucher & SP' ? $query->where('category', 'Voucher & SP') : $query->where('category', '!=', 'Voucher & SP');
+            })->orderBy('name')->get()
         ]);
     }
 }

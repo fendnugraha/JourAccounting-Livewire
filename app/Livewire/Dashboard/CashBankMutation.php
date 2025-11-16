@@ -19,7 +19,7 @@ class CashBankMutation extends Component
     public function mount()
     {
         $this->warehouse = Auth::user()->roles->warehouse_id ?? null;
-        $this->endDate = Carbon::now()->format('Y-m-d');
+        $this->endDate = Carbon::now()->endOfDay()->format('Y-m-d');
         $this->refreshData();
     }
 
@@ -41,6 +41,7 @@ class CashBankMutation extends Component
 
     public function updatedEndDate()
     {
+        $this->dispatch('end-date-changed', endDate: $this->endDate);
         $this->refreshData();
     }
 

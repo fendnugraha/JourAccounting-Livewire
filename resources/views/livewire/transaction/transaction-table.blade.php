@@ -1,4 +1,7 @@
-<div class="bg-white rounded-2xl p-4 sm:col-span-3">
+<div class="card p-4 sm:col-span-3">
+    <h1 class="card-title mb-4">Transaksi
+        <span class="card-subtitle">Periode: {{ $startDate }} - {{ $endDate }}</span>
+    </h1>
     <div class="flex justify-start items-center mb-2 gap-2">
         <select wire:model.live="account" class="w-full text-sm border border-slate-300 rounded-lg p-2">
             <option value="">-- Semua --</option>
@@ -22,6 +25,17 @@
             <option value="50">50</option>
             <option value="100">100</option>
         </select>
+        <button class="text-sm border border-slate-300 rounded-lg p-2 w-14" x-data
+            x-on:click="$dispatch('open-modal','filter-journal')"><i class=" bi bi-funnel"></i>
+        </button>
+        <x-modal name="filter-journal" :show="false" :title="'Filter'" :maxWidth="'sm'">
+            <div class="flex flex-col gap-2">
+                <x-input-label for="trx_type" :value="__('Dari')" />
+                <x-text-input wire:model.live="startDate" type="date" class="mt-1 block w-full" />
+                <x-input-label for="trx_type" :value="__('Sampai')" />
+                <x-text-input wire:model.live="endDate" type="date" class="mt-1 block w-full" />
+            </div>
+        </x-modal>
     </div>
     <div class="mb-2 flex items-center gap-2">
         <button wire:click="$refresh" class="border border-slate-300 rounded-full p-2 w-11 hover:bg-slate-200">

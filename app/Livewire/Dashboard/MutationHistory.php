@@ -28,6 +28,13 @@ class MutationHistory extends Component
         $this->resetPage();
     }
 
+    #[On('end-date-changed')]
+    public function updateEndDate($endDate)
+    {
+        $this->endDate = $endDate;
+        $this->resetPage();
+    }
+
     #[Computed]
     public function journals()
     {

@@ -26,7 +26,7 @@ class FinanceTable extends Component
         $this->contact = $contact;
     }
 
-    #[On('finance-created')]
+    #[On(['finance-created', 'finance-deleted'])]
     public function render()
     {
         return view('livewire.finance.finance-table');

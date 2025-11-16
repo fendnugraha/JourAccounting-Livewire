@@ -24,7 +24,7 @@
                     <x-slot name="content">
                         <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100" x-data
                             x-on:click="$dispatch('open-modal','create-voucher')">
-                            Voucher & SP
+                            Voucher, SP & Acc
                         </a>
                         <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100" x-data
                             x-on:click="$dispatch('open-modal','create-deposit')">

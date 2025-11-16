@@ -31,8 +31,8 @@ class TransactionTable extends Component
     public function mount()
     {
         $this->warehouse = Auth::user()->roles->warehouse_id;
-        $this->startDate = date('Y-m-d H:i');
-        $this->endDate = date('Y-m-d H:i');
+        $this->startDate = date('Y-m-d');
+        $this->endDate = date('Y-m-d');
         $this->cash = Auth::user()->roles->warehouse->chart_of_account_id;
     }
 

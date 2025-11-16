@@ -10,9 +10,17 @@
         <button class="small-button" wire:click="$refresh">
             <i class="bi bi-arrow-clockwise"></i>
         </button>
-        <button class="small-button">
-            <i class="bi bi-funnel"></i>
+        <button class="small-button" x-data x-on:click="$dispatch('open-modal','filter-journal')"><i
+                class=" bi bi-funnel"></i>
         </button>
+        <x-modal name="filter-journal" :show="false" :title="'Filter'" :maxWidth="'sm'">
+            <div class="flex flex-col gap-2">
+                <x-input-label for="trx_type" :value="__('Dari')" />
+                <x-text-input wire:model.live="startDate" type="date" class="mt-1 block w-full" />
+                <x-input-label for="trx_type" :value="__('Sampai')" />
+                <x-text-input wire:model.live="endDate" type="date" class="mt-1 block w-full" />
+            </div>
+        </x-modal>
     </div>
     <div class="grid grid-cols-1 sm:grid-cols-5 grid-row-1 sm:grid-rows-4 gap-4 grow h-fit">
         <div

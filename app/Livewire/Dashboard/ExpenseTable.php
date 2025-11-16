@@ -5,6 +5,7 @@ namespace App\Livewire\Dashboard;
 use Carbon\Carbon;
 use App\Models\Journal;
 use Livewire\Component;
+use App\Models\Warehouse;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Auth;
 
@@ -20,8 +21,8 @@ class ExpenseTable extends Component
     public function mount()
     {
         $this->warehouse = Auth::user()->roles->warehouse_id;
-        $this->startDate = date('Y-m-d H:i');
-        $this->endDate = date('Y-m-d H:i');
+        $this->startDate = date('Y-m-d');
+        $this->endDate = date('Y-m-d');
     }
 
     public function getExpenses($warehouse, $startDate, $endDate)
@@ -56,6 +57,7 @@ class ExpenseTable extends Component
     {
         return view('livewire.dashboard.expense-table', [
             'expenses' => $this->getExpenses($this->warehouse, $this->startDate, $this->endDate),
+            'warehouses' => Warehouse::orderBy('name', 'asc')->get(),
         ]);
     }
 }

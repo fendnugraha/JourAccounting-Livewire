@@ -4,12 +4,21 @@
         <x-text-input wire:model="date_issued" type="datetime-local" class="mt-1 block w-full" />
         <x-input-error class="mt-1 text-xs" :messages="$errors->get('date_issued')" />
     </div>
+    <div class="flex justify-end gap-1 text-xs">
+        Pilih Type:
+        <button type="button"
+            class="px-4 py-0.5 {{ $product_type == 'Voucher & SP' ? 'bg-green-300 font-bold' : 'bg-slate-500 text-white' }} rounded-full"
+            wire:click="setProductType('Voucher & SP')">Voucher & SP</button>
+        <button type="button"
+            class="px-4 py-0.5 {{ $product_type == 'Accessories' ? 'bg-green-300 font-bold' : 'bg-slate-500 text-white' }} rounded-full"
+            wire:click="setProductType('Accessories')">Accessories</button>
+    </div>
     <div class="mb-2 grid grid-cols-1 sm:grid-cols-3 items-center">
         <x-input-label for="product_id" :value="__('Produk Voucher')" />
         <div class="sm:col-span-2">
             <select wire:model.live="product_id"
                 class="mt-1 block py-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
-                <option value="">Pilih produk</option>
+                <option value="">Pilih {{ $product_type }}</option>
                 @foreach ($products as $product) <option value="{{ $product->id }}">{{ $product->name }} -> Rp {{
                     Number::format($product->price) }}</option>
                 @endforeach

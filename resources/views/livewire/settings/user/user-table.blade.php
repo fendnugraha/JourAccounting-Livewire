@@ -23,10 +23,12 @@
                     <td class="text-center">{{ $user->roles->role ?? 'Not Set' }}</td>
                     <td class="text-center">
                         <a href="/setting/warehouse/{{ $user->id }}/edit"
-                            class="text-slate-800 font-bold text-xs bg-yellow-400 py-2 px-5 rounded-lg hover:bg-yellow-300">Edit</a>
+                            class="text-slate-800 font-bold text-xs bg-yellow-400 py-2 px-5 rounded-lg hover:bg-yellow-300"><i
+                                class="bi bi-pencil-square"></i></a>
                         <button wire:click="destroy({{ $user->id }})" wire:loading.attr="disabled"
                             wire:confirm="Are you sure?"
-                            class="text-white font-bold text-xs bg-red-400 py-2 px-5 rounded-lg hover:bg-red-300">Delete</button>
+                            class="text-white font-bold text-xs bg-red-400 py-2 px-5 rounded-lg hover:bg-red-300"><i
+                                class="bi bi-trash"></i></button>
                     </td>
                 </tr>
                 @endforeach

@@ -23,9 +23,15 @@
                     <button class="small-button" wire:click="refreshData">
                         <i class="bi bi-arrow-clockwise"></i>
                     </button>
-                    <button class="small-button">
-                        <i class="bi bi-funnel"></i>
+                    <button class="small-button" x-data
+                        x-on:click="$dispatch('open-modal','filter-journal-mutation')"><i class=" bi bi-funnel"></i>
                     </button>
+                    <x-modal name="filter-journal-mutation" :show="false" :title="'Filter'" :maxWidth="'sm'">
+                        <div class="flex flex-col gap-2">
+                            <x-input-label for="trx_type" :value="__('Tanggal')" />
+                            <x-text-input wire:model.live="endDate" type="date" class="mt-1 block w-full" />
+                        </div>
+                    </x-modal>
                 </div>
             </div>
         </div>

@@ -7,12 +7,10 @@
             </h1>
             <div class="sm:flex gap-2 w-full sm:col-span-2 h-fit">
                 @can('admin')
-                <div class="gap-2 sm:flex grid grid-cols-2 mb-2 sm:mb-0">
-                    <button x-data x-on:click="$dispatch('open-modal','create-mutation-from-hq')"
-                        class="bg-indigo-500 text-sm sm:text-xs min-w-36 hover:bg-indigo-600 text-white py-4 sm:py-2 px-2 sm:px-6 rounded-lg">
-                        Mutasi Saldo
-                    </button>
-                </div>
+                <button x-data x-on:click="$dispatch('open-modal','create-mutation-from-hq')"
+                    class="bg-indigo-500 w-full sm:w-fit text-sm sm:text-xs min-w-36 hover:bg-indigo-600 text-white py-2 px-2 sm:px-6 rounded-lg mb-2 sm:mb-0">
+                    Mutasi Saldo
+                </button>
                 @endcan
                 <div class="w-full flex justify-end gap-2 mb-2 sm:mb-0">
                     @can('admin')

@@ -1,4 +1,4 @@
-<div class="">
+<div class="sm:order-1 order-0">
     <div
         class="flex justify-center items-center mb-3 flex-col bg-sky-800 hover:bg-sky-900 p-2 rounded-2xl text-orange-300 hover:text-white">
         <h1 class="text-sm">Total Saldo Kas & Bank</h1>

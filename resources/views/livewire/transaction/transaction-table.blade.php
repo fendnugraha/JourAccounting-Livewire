@@ -1,4 +1,4 @@
-<div class="card p-4 sm:col-span-3">
+<div class="card p-4 sm:col-span-3 sm:order-0 order-1">
     <h1 class="card-title mb-4">Transaksi
         <span class="card-subtitle">Periode: {{ $startDate }} - {{ $endDate }}</span>
     </h1>
@@ -9,14 +9,6 @@
             <option value="{{ $ac->id }}">{{ $ac->acc_name }}</option>
             @endforeach
         </select>
-        @can('admin') <select wire:model.live="warehouse" class="w-1/2 text-sm border border-slate-300 rounded-lg p-2"
-            wire:change="updateLimitPage('journalPage')">
-            <option value="">-- Semua --</option>
-            @foreach ($warehouses as $c)
-            <option value="{{ $c->id }}">{{ $c->name }}</option>
-            @endforeach
-        </select>
-        @endcan
         <select wire:model.live="perPage" wire:change="updateLimitPage('journalPage')"
             class="text-sm border border-slate-300 rounded-lg p-2 w-28">
             <option value="5">5</option>
@@ -33,6 +25,16 @@
         </button>
         <x-modal name="filter-journal" :show="false" :title="'Filter'" :maxWidth="'sm'">
             <div class="flex flex-col gap-2">
+
+                @can('admin') <select wire:model.live="warehouse"
+                    class="w-full text-sm border border-slate-300 rounded-lg p-2"
+                    wire:change="updateLimitPage('journalPage')">
+                    <option value="">-- Semua --</option>
+                    @foreach ($warehouses as $c)
+                    <option value="{{ $c->id }}">{{ $c->name }}</option>
+                    @endforeach
+                </select>
+                @endcan
                 <x-input-label for="trx_type" :value="__('Dari')" />
                 <x-text-input wire:model.live="startDate" type="date" class="mt-1 block w-full" />
                 <x-input-label for="trx_type" :value="__('Sampai')" />
@@ -43,7 +45,7 @@
 
     <input type="search" wire:model.live.debounce.500ms="search" placeholder="Search .."
         class="w-full border border-slate-300 text-sm rounded-lg p-2" />
-    <div class="overflox-x-auto">
+    <div class="overflow-x-auto">
         <table class="table w-full text-sm mb-2">
             <thead class="">
                 <tr class="">
@@ -122,4 +124,5 @@
     <x-modal name="edit-journal" :show="false" :title="'Edit Jurnal'">
         @livewire('transaction.edit-journal', ['selectedId' => $selectedId])
     </x-modal>
+
 </div>

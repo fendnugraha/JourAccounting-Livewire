@@ -1,4 +1,4 @@
-<div class="mt-4 w-1/2">
+<div class="mt-4 w-full sm:w-1/2">
     <div class="my-2">
         <x-text-input wire:model.live.debounce.500ms="search" type="text" class="block w-full"
             placeholder="Search..." />
@@ -20,11 +20,13 @@
                     </td>
                     <td>{{ $contact->description }}</td>
                     <td class="text-center">
-                        <a href="/setting/warehouse/{{ $contact->id }}/edit"
-                            class="text-slate-800 font-bold text-xs bg-yellow-400 py-2 px-5 rounded-lg hover:bg-yellow-300">Edit</a>
+                        <button
+                            class="text-slate-800 font-bold text-xs bg-yellow-400 py-1 sm:py-2 px-3 sm:px-5 rounded-lg hover:bg-yellow-300"><i
+                                class="bi bi-pencil"></i></button>
                         <button wire:click="destroy({{ $contact->id }})" wire:loading.attr="disabled"
                             wire:confirm="Are you sure?"
-                            class="text-white font-bold text-xs bg-red-400 py-2 px-5 rounded-lg hover:bg-red-300">Delete</button>
+                            class="text-white font-bold text-xs bg-red-400 py-1 sm:py-2 px-3 sm:px-5 rounded-lg hover:bg-red-300"><i
+                                class="bi bi-trash"></i></button>
                     </td>
                 </tr>
                 @endforeach

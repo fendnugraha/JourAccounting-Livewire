@@ -7,7 +7,7 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="flex gap-2 mb-4">
+            <div class="hidden sm:flex gap-2 mb-4">
                 <x-button class="min-w-32" x-data x-on:click="$dispatch('open-modal','create-transfer')">
                     Transfer
                 </x-button>
@@ -82,4 +82,53 @@
     <x-modal name="create-deposit" :show="false" :title="'Penjualan Deposit'">
         @livewire('transaction.create-deposit')
     </x-modal>
+    <div x-data="{ voucherOpen: false, pengeluaranOpen: false }"
+        class="fixed left-0 bottom-0 w-screen z-[80] sm:hidden">
+        <div x-show="voucherOpen" class="bg-white w-full flex" @click.away="voucherOpen = false">
+            <button x-data x-on:click="$dispatch('open-modal', 'create-voucher')"
+                class="w-full p-3 bg-sky-800 text-white text-xs hover:bg-sky-700">
+                Voucher
+            </button>
+            <button x-data x-on:click="$dispatch('open-modal', 'create-deposit')"
+                class="w-full p-3 bg-sky-800 text-white text-xs hover:bg-sky-700">
+                Deposit
+            </button>
+        </div>
+        <div x-show="pengeluaranOpen" class="bg-white w-full flex" @click.away="pengeluaranOpen = false">
+            <button x-data x-on:click="$dispatch('open-modal', 'create-mutation-to-hq')"
+                class="w-full p-3 bg-sky-800 text-white text-xs hover:bg-sky-700">
+                Pengembalian Saldo
+            </button>
+            <button x-data x-on:click="$dispatch('open-modal', 'create-expense')"
+                class="w-full p-3 bg-sky-800 text-white text-xs hover:bg-sky-700">
+                B. Operasional
+            </button>
+            <button x-data x-on:click="$dispatch('open-modal', 'create-bank-expense')"
+                class="w-full p-3 bg-sky-800 text-white text-xs hover:bg-sky-700">
+                B. Admin Bank
+            </button>
+        </div>
+        <div class="flex justify-between text-white">
+            <button x-data x-on:click="$dispatch('open-modal', 'create-transfer')"
+                class="flex flex-col items-center justify-evenly w-full bg-sky-950 hover:bg-sky-800 p-2 transition duration-300 ease-out">
+                <h1 class="font-bold text-2xl"><i class="fa-solid fa-circle-arrow-up"></i></h1>
+                <h4 class="text-xs">Transfer</h4>
+            </button>
+            <button x-data x-on:click="$dispatch('open-modal', 'create-withdrawal')"
+                class="flex flex-col items-center justify-evenly w-full bg-sky-950 hover:bg-sky-800 p-2 transition duration-300 ease-out">
+                <h1 class="font-bold text-2xl"><i class="fa-solid fa-circle-arrow-down"></i></h1>
+                <h4 class="text-xs">Tarik Tunai</h4>
+            </button>
+            <button @click="voucherOpen = !voucherOpen"
+                class="flex flex-col items-center justify-evenly w-full bg-sky-950 hover:bg-sky-800 p-2">
+                <h1 class="font-bold text-2xl"><i class="fa-solid fa-ticket"></i></h1>
+                <h4 class="text-xs">Voucher</h4>
+            </button>
+            <button @click="pengeluaranOpen = !pengeluaranOpen"
+                class="flex flex-col items-center justify-evenly w-full bg-sky-950 hover:bg-sky-800 p-2">
+                <h1 class="font-bold text-2xl"><i class="fa-solid fa-file-invoice-dollar"></i></h1>
+                <h4 class="text-xs">Pengeluaran</h4>
+            </button>
+        </div>
+    </div>
 </x-app-layout>

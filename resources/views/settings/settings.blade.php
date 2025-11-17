@@ -7,7 +7,7 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <ul class="w-1/2 rounded-lg bg-white divide-y divide-gray-200">
+            <ul class="w-full sm:w-1/2 rounded-lg bg-white divide-y divide-gray-200">
                 <li>
                     <x-link href="{{ route('settings.user.index') }}" class="block p-4 hover:bg-yellow-50">User
                         Management</x-link>

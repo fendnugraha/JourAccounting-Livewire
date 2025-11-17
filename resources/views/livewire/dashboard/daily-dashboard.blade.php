@@ -1,4 +1,4 @@
-<div class="card h-[calc(100vh-233px)] p-2 sm:p-4 rounded-2xl sm:rounded-3xl mb-12">
+<div class="card h-fit sm:h-[calc(100vh-233px)] p-2 sm:p-4 rounded-2xl sm:rounded-3xl mb-12">
     <div class="w-full flex justify-end gap-2 mb-4">
         @can('admin')
         <select class="form-select block w-fit p-2.5" wire:model.live="warehouse">

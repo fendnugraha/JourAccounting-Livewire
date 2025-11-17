@@ -59,6 +59,12 @@ class CreateMutationFromHq extends Component
         $this->reset();
     }
 
+    public function updatedWarehouse()
+    {
+        // $this->cred_code = null;
+        $this->debt_code = '';
+    }
+
     public function render()
     {
         return view('livewire.dashboard.create-mutation-from-hq', [

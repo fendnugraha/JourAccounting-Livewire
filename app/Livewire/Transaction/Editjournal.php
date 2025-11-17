@@ -55,7 +55,7 @@ class Editjournal extends Component
 
     public function render()
     {
-        return view('livewire.transaction.editjournal', [
+        return view('livewire.transaction.edit-journal', [
             "accounts" => ChartOfAccount::whereIn('account_id', [1, 2])->where('warehouse_id', Auth::user()->roles->warehouse_id)->get()
         ]);
     }

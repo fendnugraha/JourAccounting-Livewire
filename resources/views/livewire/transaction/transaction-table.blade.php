@@ -25,7 +25,10 @@
             <option value="50">50</option>
             <option value="100">100</option>
         </select>
-        <button class="text-sm border border-slate-300 rounded-lg p-2 w-14" x-data
+        <button wire:click="$refresh" class="text-sm border border-slate-300 rounded-lg p-2 w-12">
+            <i class="bi bi-arrow-clockwise text-sm"></i>
+        </button>
+        <button class="text-sm border border-slate-300 rounded-lg p-2 w-12" x-data
             x-on:click="$dispatch('open-modal','filter-journal')"><i class=" bi bi-funnel"></i>
         </button>
         <x-modal name="filter-journal" :show="false" :title="'Filter'" :maxWidth="'sm'">
@@ -37,18 +40,14 @@
             </div>
         </x-modal>
     </div>
-    <div class="mb-2 flex items-center gap-2">
-        <button wire:click="$refresh" class="border border-slate-300 rounded-full p-2 w-11 hover:bg-slate-200">
-            <i class="bi bi-arrow-clockwise text-sm"></i>
-        </button>
-        <input type="search" wire:model.live.debounce.500ms="search" placeholder="Search .."
-            class="w-full border border-slate-300 text-sm rounded-lg p-2" />
-    </div>
+
+    <input type="search" wire:model.live.debounce.500ms="search" placeholder="Search .."
+        class="w-full border border-slate-300 text-sm rounded-lg p-2" />
     <div class="overflox-x-auto">
         <table class="table w-full text-sm mb-2">
             <thead class="">
                 <tr class="">
-                    <th class="p-4">Keterangan</th>
+                    <th class="">Keterangan</th>
                     <th>Jumlah</th>
                     <th class="text-center">Action</th>
                 </tr>
@@ -65,8 +64,8 @@
 
                 @endphp
                 <tr class="">
-                    <td class="p-2">
-                        <span class="font-bold">ID: {{ $journal->id
+                    <td class="">
+                        <span class="font-bold text-xs text-blue-600">ID: {{ $journal->id
                             }} | {{ $journal->date_issued
                             }} | {{ $journal->invoice
                             }} | {{
@@ -74,12 +73,14 @@
                             }}</span> <br>
                         {{ $journal->description }} {{ $journal->sale ? $journal->sale->product->name . ' - ' .
                         $journal->sale->quantity . ' Pcs x Rp' . number_format($journal->sale->price) . '' : '' }}<br>
-                        <span class="font-bold">{{ ($journal->cred_code == $cash && $journal->trx_type !== 'Mutasi Kas')
+                        <span class="font-bold">{!! ($journal->cred_code == $cash && $journal->trx_type !== 'Mutasi
+                            Kas')
                             ? $journal->debt->acc_name
                             : (($journal->debt_code == $cash && $journal->trx_type !== 'Mutasi Kas')
                             ? $journal->cred->acc_name
-                            : $journal->cred->acc_name . ' -> ' . $journal->debt->acc_name)
-                            }}</span>
+                            : $journal->cred->acc_name . ' <i class="bi bi-arrow-right"></i> ' .
+                            $journal->debt->acc_name)
+                            !!}</span>
                         <span class="italic font-bold text-slate-600">{{ $journal->status == 2 ? '(Belum diambil)' : ''
                             }}</span><br>
                         <span class="block sm:hidden ">ID:{{ $journal->id }} | {{

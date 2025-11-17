@@ -1,5 +1,6 @@
 <div class="card h-[calc(100vh-233px)] p-2 sm:p-4 rounded-2xl sm:rounded-3xl mb-12">
     <div class="w-full flex justify-end gap-2 mb-4">
+        @can('admin')
         <select class="form-select block w-fit p-2.5" wire:model.live="warehouse">
             <option value="all">Semua cabang</option>
             @foreach ($warehouses as $wh)
@@ -7,6 +8,7 @@
                 $wh->name }}</option>
             @endforeach
         </select>
+        @endcan
         <button class="small-button" wire:click="$refresh">
             <i class="bi bi-arrow-clockwise"></i>
         </button>

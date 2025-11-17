@@ -4,6 +4,7 @@ namespace App\Livewire\Transaction;
 
 use App\Models\Journal;
 use Livewire\Component;
+use Livewire\Attributes\On;
 use App\Models\ChartOfAccount;
 use Livewire\Attributes\Validate;
 use Illuminate\Support\Facades\Auth;
@@ -22,6 +23,7 @@ class CreateExpense extends Component
     #[Validate('required|string|max:255')]
     public $description;
 
+    #[On('journal-created')]
     public function mount()
     {
         $this->date_issued = date('Y-m-d H:i');

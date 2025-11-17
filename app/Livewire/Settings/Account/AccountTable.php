@@ -6,26 +6,42 @@ use Livewire\Component;
 use Livewire\Attributes\On;
 use Livewire\WithPagination;
 use App\Models\ChartOfAccount;
+use Illuminate\Support\Facades\Log;
 
 class AccountTable extends Component
 {
     use WithPagination;
     public $search = '';
+    public $selectedId;
 
     public function destroy($id)
     {
         $account = ChartOfAccount::find($id);
 
-        $journalExists = $account->debt()->exists() || $account->cred()->exists();
+        $journalExists = $account->debt()->exists() || $account->cred()->exists() || $account->is_locked;
 
         if ($journalExists) {
             return;
         }
 
-        $account->delete();
+        try {
+            $account->balance()->delete();
+            $account->delete();
+
+            $this->dispatch('account-deleted', $id);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+        }
     }
 
-    #[On('account-created')]
+    public function select($id)
+    {
+        $this->selectedId = $id;
+        $this->dispatch('account-selected', $id);
+        $this->dispatch('open-modal', 'edit-account');
+    }
+
+    #[On(['account-created', 'account-deleted', 'account-updated'])]
     public function render()
     {
         return view('livewire.settings.account.account-table', [

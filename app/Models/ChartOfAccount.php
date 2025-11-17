@@ -23,12 +23,12 @@ class ChartOfAccount extends Model
 
     public function debt()
     {
-        return $this->hasMany(Journal::class, 'debt_code', 'acc_code');
+        return $this->hasMany(Journal::class, 'debt_code', 'id');
     }
 
     public function cred()
     {
-        return $this->hasMany(Journal::class, 'cred_code', 'acc_code');
+        return $this->hasMany(Journal::class, 'cred_code', 'id');
     }
 
     public static function acc_code($account_id)
@@ -56,5 +56,10 @@ class ChartOfAccount extends Model
     public function warehouse()
     {
         return $this->belongsTo(Warehouse::class);
+    }
+
+    public function balance()
+    {
+        return $this->hasMany(AccountBalance::class);
     }
 }

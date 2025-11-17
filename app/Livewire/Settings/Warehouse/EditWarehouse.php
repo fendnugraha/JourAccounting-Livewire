@@ -28,6 +28,18 @@ class EditWarehouse extends Component
         $this->account_id = $warehouse->chart_of_account_id;
     }
 
+    public function editWarehouse()
+    {
+        $warehouse = Warehouse::find($this->warehouse->id);
+        $warehouse->update([
+            'name' => $this->name,
+            'address' => $this->address,
+            'chart_of_account_id' => $this->account_id
+        ]);
+
+        $this->dispatch('warehouse-updated', $warehouse->id);
+    }
+
     public function render()
     {
         return view('livewire.settings.warehouse.edit-warehouse', [

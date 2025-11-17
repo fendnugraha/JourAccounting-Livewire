@@ -3,16 +3,19 @@
         <div class="px-4 sm:px-6 pt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
             <h1 class="card-title">
                 Mutasi Saldo
-                <span class="card-subtitle text-nowrap">Periode: endDate</span>
+                <span class="card-subtitle text-nowrap">Periode: {{ $endDate }}</span>
             </h1>
             <div class="sm:flex gap-2 w-full sm:col-span-2 h-fit">
+                @can('admin')
                 <div class="gap-2 sm:flex grid grid-cols-2 mb-2 sm:mb-0">
                     <button x-data x-on:click="$dispatch('open-modal','create-mutation-from-hq')"
                         class="bg-indigo-500 text-sm sm:text-xs min-w-36 hover:bg-indigo-600 text-white py-4 sm:py-2 px-2 sm:px-6 rounded-lg">
                         Mutasi Saldo
                     </button>
                 </div>
+                @endcan
                 <div class="w-full flex justify-end gap-2 mb-2 sm:mb-0">
+                    @can('admin')
                     <select class="form-select block w-fit p-2.5" wire:model.live="warehouse">
                         <option>Pilih Cabang</option>
                         @foreach ($warehouses as $wh)
@@ -20,6 +23,7 @@
                             $wh->name }}</option>
                         @endforeach
                     </select>
+                    @endcan
                     <button class="small-button" wire:click="refreshData">
                         <i class="bi bi-arrow-clockwise"></i>
                     </button>

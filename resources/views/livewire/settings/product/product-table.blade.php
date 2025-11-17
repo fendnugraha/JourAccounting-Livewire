@@ -22,11 +22,13 @@
                     </td>
                     <td>{{ $product->category }}</td>
                     <td class="text-center">
-                        <a href="/setting/product/{{ $product->id }}/edit"
-                            class="text-slate-800 font-bold text-xs bg-yellow-400 py-2 px-5 rounded-lg hover:bg-yellow-300">Edit</a>
+                        <button wire:click="setProductId({{ $product->id }})"
+                            class="text-slate-800 font-bold text-xs bg-yellow-400 py-2 px-5 rounded-lg hover:bg-yellow-300"><i
+                                class="bi bi-pencil-square"></i></button>
                         <button wire:click="destroy({{ $product->id }})" wire:loading.attr="disabled"
                             wire:confirm="Are you sure?"
-                            class="text-white font-bold text-xs bg-red-400 py-2 px-5 rounded-lg hover:bg-red-300">Delete</button>
+                            class="text-white font-bold text-xs bg-red-400 py-2 px-5 rounded-lg hover:bg-red-300"><i
+                                class="bi bi-trash"></i></button>
                     </td>
                 </tr>
                 @endforeach
@@ -34,4 +36,7 @@
         </table>
         {{ $products->links() }}
     </div>
+    <x-modal name="edit-product" :show="false" :title="'Edit Product'">
+        @livewire('settings.product.edit-product', ['product' => $selectedId])
+    </x-modal>
 </div>

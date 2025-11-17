@@ -7,7 +7,7 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="flex gap-4 mb-4">
+            <div class="flex gap-2 mb-4">
                 <a href="{{ route('settings') }}" class="self-center" wire:navigate><i
                         class="bi bi-arrow-left w-5 h-5"></i></a>
                 <x-primary-button x-data x-on:click="$dispatch('open-modal','create-warehouse')"

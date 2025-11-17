@@ -1,6 +1,7 @@
 <div class="mt-12">
     <div class="sm:flex gap-2 w-1/2 sm:col-span-2 h-fit mb-2">
         <div class="w-full flex justify-end gap-2 mb-2 sm:mb-0">
+            @can('admin')
             <select class="form-select block w-fit p-2.5" wire:model.live="warehouse">
                 <option>Pilih Cabang</option>
                 @foreach ($warehouses as $wh)
@@ -8,6 +9,7 @@
                     $wh->name }}</option>
                 @endforeach
             </select>
+            @endcan
             <button class="small-button" wire:click="refreshData">
                 <i class="bi bi-arrow-clockwise"></i>
             </button>

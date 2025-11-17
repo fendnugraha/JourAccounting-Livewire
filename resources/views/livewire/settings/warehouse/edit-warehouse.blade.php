@@ -1,10 +1,9 @@
 <div class="bg-white rounded-lg p-4">
     <div class="flex gap-2 mb-4">
-        <a href="{{ route('settings.warehouse.index') }}" class="self-center" wire:navigate><i data-lucide="arrow-left"
-                class="w-5 h-5"></i></a>
-        <h1>ID: {{ $warehouse->id }}</h1>
+        <a href="{{ route('settings.warehouse.index') }}" class="self-center hover:underline" wire:navigate><i
+                class="bi bi-arrow-left w-5 h-5"></i> Kembali</a>
     </div>
-    <form wire:submit.prevent="update">
+    <form wire:submit.prevent="editWarehouse">
         <div class="mb-2">
             <x-input-label for="name" :value="__('Name')" />
             <x-text-input wire:model="name" type="text" class="mt-1 block w-full" />
@@ -27,7 +26,7 @@
         </div>
         <div class="flex items-center justify-end mt-4">
             <x-action-message class="me-3" on="warehouse-updated">
-                {{ __('Saved.') }}
+                {{ __('Warehouse updated.') }}
             </x-action-message>
             <x-primary-button type="submit">
                 {{ __('Update') }}

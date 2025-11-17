@@ -8,7 +8,7 @@ use Livewire\Attributes\On;
 use App\Models\ChartOfAccount;
 use Illuminate\Support\Facades\Auth;
 
-class Editjournal extends Component
+class EditJournal extends Component
 {
     public $journalId;
     public $date_issued;

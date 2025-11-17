@@ -8,7 +8,7 @@ use Livewire\Attributes\On;
 use App\Models\ChartOfAccount;
 use Illuminate\Support\Facades\Auth;
 
-class EditJournal extends Component
+class EditJournals extends Component
 {
     public $journalId;
     public $date_issued;
@@ -55,7 +55,7 @@ class EditJournal extends Component
 
     public function render()
     {
-        return view('livewire.transaction.edit-journal', [
+        return view('livewire.transaction.edit-journals', [
             "accounts" => ChartOfAccount::whereIn('account_id', [1, 2])->where('warehouse_id', Auth::user()->roles->warehouse_id)->get()
         ]);
     }

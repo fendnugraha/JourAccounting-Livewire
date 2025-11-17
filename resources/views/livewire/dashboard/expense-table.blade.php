@@ -7,7 +7,7 @@
             <div class="w-full h-fit flex justify-end gap-2 mb-2 sm:mb-0">
                 @can('admin')
                 <select class="form-select block w-full p-2.5" wire:model.live="warehouse">
-                    <option>Pilih Cabang</option>
+                    <option value="all">Semua Cabang</option>
                     @foreach ($warehouses as $wh)
                     <option value="{{ $wh->id }}" {{ $warehouse==$wh->id ? 'selected' : '' }}>{{
                         $wh->name }}</option>
@@ -17,10 +17,10 @@
                 <button class="small-button" wire:click="refreshData">
                     <i class="bi bi-arrow-clockwise"></i>
                 </button>
-                <button class="small-button" x-data x-on:click="$dispatch('open-modal','filter-voucher')"><i
+                <button class="small-button" x-data x-on:click="$dispatch('open-modal','filter-expense')"><i
                         class=" bi bi-funnel"></i>
                 </button>
-                <x-modal name="filter-voucher" :show="false" :title="'Filter'" :maxWidth="'sm'">
+                <x-modal name="filter-expense" :show="false" :title="'Filter'" :maxWidth="'sm'">
                     <div class="flex flex-col gap-2">
                         <x-input-label for="trx_type" :value="__('Dari')" />
                         <x-text-input wire:model.live="startDate" type="date" class="mt-1 block w-full" />

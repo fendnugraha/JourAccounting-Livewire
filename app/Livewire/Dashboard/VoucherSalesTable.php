@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Livewire\Component;
 use App\Models\Warehouse;
 use App\Models\Transaction;
+use Livewire\Attributes\On;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Auth;
 
@@ -77,9 +78,11 @@ class VoucherSalesTable extends Component
         if (in_array($property, ['warehouse', 'startDate', 'endDate'])) {
             $this->resetPage();
         }
+        // $this->dispatch('warehouse-changed', warehouse: $this->warehouse);
     }
 
 
+    // #[On('warehouse-changed')]
     public function render()
     {
         return view('livewire.dashboard.voucher-sales-table', [

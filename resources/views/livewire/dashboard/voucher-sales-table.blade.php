@@ -3,14 +3,14 @@
         <div class="w-full flex justify-end gap-2 mb-2 sm:mb-0">
             @can('admin')
             <select class="form-select block w-fit p-2.5" wire:model.live="warehouse">
-                <option>Pilih Cabang</option>
+                <option value="all">Semua cabang</option>
                 @foreach ($warehouses as $wh)
                 <option value="{{ $wh->id }}" {{ $warehouse==$wh->id ? 'selected' : '' }}>{{
                     $wh->name }}</option>
                 @endforeach
             </select>
             @endcan
-            <button class="small-button" wire:click="refreshData">
+            <button class="small-button" wire:click="$refresh">
                 <i class="bi bi-arrow-clockwise"></i>
             </button>
             <button class="small-button" x-data x-on:click="$dispatch('open-modal','filter-voucher')"><i
@@ -30,7 +30,8 @@
         <div class="card p-4">
             <div class="flex justify-between">
                 <h1 class="card-title mb-4">Penjualan Voucher
-                    <span class="card-subtitle">Total: {{ Number::format(-$voucher->sum('total_cost')) }}</span>
+                    <span class="card-subtitle">Periode: {{ $startDate }} sd {{ $endDate }}, Total: {{
+                        Number::format(-$voucher->sum('total_cost')) }}</span>
                 </h1>
                 <select class="form-select h-fit !w-20 p-2.5" wire:model.live="voucherPerPage">
                     <option value="5">5</option>
@@ -69,7 +70,7 @@
         <div class="card p-4">
             <div class="flex justify-between">
                 <h1 class="card-title mb-4">Penjualan Accessory
-                    <span class="card-subtitle">Total: {{ Number::format(-$voucher->sum('total_cost')) }}</span>
+                    <span class="card-subtitle">Total: {{ Number::format(-$accessory->sum('total_cost')) }}</span>
                 </h1>
                 <select class="form-select h-fit !w-20 p-2.5" wire:model.live="accessoryPerPage">
                     <option value="5">5</option>

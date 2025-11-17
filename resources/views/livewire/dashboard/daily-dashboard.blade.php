@@ -1,28 +1,32 @@
 <div class="card h-fit sm:h-[calc(100vh-233px)] p-2 sm:p-4 rounded-2xl sm:rounded-3xl mb-12">
-    <div class="w-full flex justify-end gap-2 mb-4">
-        @can('admin')
-        <select class="form-select block w-fit p-2.5" wire:model.live="warehouse">
-            <option value="all">Semua cabang</option>
-            @foreach ($warehouses as $wh)
-            <option value="{{ $wh->id }}" {{ $warehouse==$wh->id ? 'selected' : '' }}>{{
-                $wh->name }}</option>
-            @endforeach
-        </select>
-        @endcan
-        <button class="small-button" wire:click="$refresh">
-            <i class="bi bi-arrow-clockwise"></i>
-        </button>
-        <button class="small-button" x-data x-on:click="$dispatch('open-modal','filter-journal')"><i
-                class=" bi bi-funnel"></i>
-        </button>
-        <x-modal name="filter-journal" :show="false" :title="'Filter'" :maxWidth="'sm'">
-            <div class="flex flex-col gap-2">
-                <x-input-label for="trx_type" :value="__('Dari')" />
-                <x-text-input wire:model.live="startDate" type="date" class="mt-1 block w-full" />
-                <x-input-label for="trx_type" :value="__('Sampai')" />
-                <x-text-input wire:model.live="endDate" type="date" class="mt-1 block w-full" />
-            </div>
-        </x-modal>
+    <div class="grid grid-cols-2 gap-2">
+        <h1 class="card-title mb-4">Periode: {{ $startDate }} sd {{ $endDate }}
+        </h1>
+        <div class="w-full flex justify-end gap-2 mb-4">
+            @can('admin')
+            <select class="form-select block w-fit p-3" wire:model.live="warehouse">
+                <option value="all">Semua cabang</option>
+                @foreach ($warehouses as $wh)
+                <option value="{{ $wh->id }}" {{ $warehouse==$wh->id ? 'selected' : '' }}>{{
+                    $wh->name }}</option>
+                @endforeach
+            </select>
+            @endcan
+            <button class="small-button" wire:click="$refresh">
+                <i class="bi bi-arrow-clockwise"></i>
+            </button>
+            <button class="small-button" x-data x-on:click="$dispatch('open-modal','filter-journal')"><i
+                    class=" bi bi-funnel"></i>
+            </button>
+            <x-modal name="filter-journal" :show="false" :title="'Filter'" :maxWidth="'sm'">
+                <div class="flex flex-col gap-2">
+                    <x-input-label for="trx_type" :value="__('Dari')" />
+                    <x-text-input wire:model.live="startDate" type="date" class="mt-1 block w-full" />
+                    <x-input-label for="trx_type" :value="__('Sampai')" />
+                    <x-text-input wire:model.live="endDate" type="date" class="mt-1 block w-full" />
+                </div>
+            </x-modal>
+        </div>
     </div>
     <div class="grid grid-cols-1 sm:grid-cols-5 grid-row-1 sm:grid-rows-4 gap-4 grow h-fit">
         <div

@@ -8,7 +8,12 @@ use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\ChartOfAccountController;
 use App\Http\Controllers\JournalController;
 
-Route::view('/', 'welcome');
+Route::get('/', function () {
+    return auth()->check()
+        ? redirect()->route('transaction')
+        : redirect()->route('login');
+});
+
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
@@ -40,7 +45,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('settings/contact', [ContactController::class, 'index'])->name('settings.contact.index');
 
     //Journal
-    Route::get('settings/transaction', [JournalController::class, 'index'])->name('transaction');
+    Route::get('/transaction', [JournalController::class, 'index'])->name('transaction');
     Route::get('/journal/{id}/edit', [JournalController::class, 'edit'])->name('journal.edit');
     Route::put('/journal/{id}/edit', [JournalController::class, 'update'])->name('journal.update');
 });

@@ -11,8 +11,8 @@ use Illuminate\Support\Facades\Auth;
 class DailyDashboard extends Component
 {
     public $warehouse = 'all';
-    public $startDate = null;
-    public $endDate = null;
+    public $startDate;
+    public $endDate;
 
     public function mount()
     {
@@ -35,8 +35,8 @@ class DailyDashboard extends Component
     public function getDailyReport()
     {
         $warehouse = $this->warehouse;
-        $startDate = $this->startDate;
-        $endDate = $this->endDate;
+        $startDate = Carbon::parse($this->startDate)->startOfDay();;
+        $endDate = Carbon::parse($this->endDate)->endOfDay();
 
         $diffDays = Carbon::parse($endDate)->startOfDay()->diffInDays(Carbon::parse($startDate)->startOfDay());
 

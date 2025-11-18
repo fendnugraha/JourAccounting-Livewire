@@ -1,4 +1,5 @@
 <div class="card p-4 sm:col-span-3 sm:order-0 order-1">
+    <x-loading />
     <h1 class="card-title mb-4">Transaksi
         <span class="card-subtitle">Periode: {{ $startDate }} - {{ $endDate }}</span>
     </h1>

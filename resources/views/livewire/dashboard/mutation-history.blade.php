@@ -1,4 +1,5 @@
 <div class="card p-4">
+    <x-loading />
     <div class="mb-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
         <h1 class="card-title">History Mutasi Saldo</h1>
         <div class="flex justify-end gap-2">

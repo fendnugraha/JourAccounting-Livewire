@@ -1,4 +1,5 @@
 <div class="mt-12">
+    <x-loading />
     <div class="sm:flex gap-2 w-1/2 sm:col-span-2 h-fit mb-2">
         <div class="w-full flex justify-end gap-2 mb-2 sm:mb-0">
             @can('admin')

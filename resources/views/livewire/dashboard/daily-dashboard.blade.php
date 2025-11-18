@@ -1,4 +1,5 @@
 <div class="card h-fit sm:h-[calc(100vh-233px)] p-2 sm:p-4 rounded-2xl sm:rounded-3xl mb-12">
+    <x-loading />
     <div class="grid grid-cols-2 gap-2">
         <h1 class="card-title mb-4">Periode: {{ $startDate }} sd {{ $endDate }}
         </h1>

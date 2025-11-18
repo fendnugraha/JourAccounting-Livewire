@@ -1,4 +1,5 @@
 <div class="card mt-12 p-4">
+    <x-loading />
     <div class="flex justify-between">
         <h1 class="card-title mb-4">Pendapatan
             <span class="card-subtitle">Periode: {{ $startDate }} sd {{ $endDate }}</span>

@@ -1,4 +1,5 @@
 <div class="card p-4">
+    <x-loading />
     <div class="flex justify-between">
         <h1 class="card-title mb-4">Saldo Cabang
             <span class="card-subtitle">Periode: {{ $endDate }}</span>

@@ -1,4 +1,5 @@
 <div class="sm:order-1 order-0">
+    <x-loading />
     <div
         class="flex justify-center items-center mb-1 flex-col bg-gray-700 hover:bg-gray-800 p-2 rounded-2xl text-orange-300 hover:text-white">
         <h1 class="text-sm">Total Saldo Kas & Bank</h1>

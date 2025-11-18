@@ -111,22 +111,22 @@
         <div class="flex justify-between text-white">
             <button x-data x-on:click="$dispatch('open-modal', 'create-transfer')"
                 class="flex flex-col items-center justify-evenly w-full bg-sky-950 hover:bg-sky-800 p-2 transition duration-300 ease-out">
-                <h1 class="font-bold text-2xl"><i class="fa-solid fa-circle-arrow-up"></i></h1>
+                <h1 class="font-bold text-2xl"><i class="bi bi-arrow-up-circle-fill"></i></h1>
                 <h4 class="text-xs">Transfer</h4>
             </button>
             <button x-data x-on:click="$dispatch('open-modal', 'create-withdrawal')"
                 class="flex flex-col items-center justify-evenly w-full bg-sky-950 hover:bg-sky-800 p-2 transition duration-300 ease-out">
-                <h1 class="font-bold text-2xl"><i class="fa-solid fa-circle-arrow-down"></i></h1>
+                <h1 class="font-bold text-2xl"><i class="bi bi-arrow-down-circle-fill"></i></h1>
                 <h4 class="text-xs">Tarik Tunai</h4>
             </button>
             <button @click="voucherOpen = !voucherOpen"
                 class="flex flex-col items-center justify-evenly w-full bg-sky-950 hover:bg-sky-800 p-2">
-                <h1 class="font-bold text-2xl"><i class="fa-solid fa-ticket"></i></h1>
+                <h1 class="font-bold text-2xl"><i class="bi bi-ticket-detailed-fill"></i></h1>
                 <h4 class="text-xs">Voucher</h4>
             </button>
             <button @click="pengeluaranOpen = !pengeluaranOpen"
                 class="flex flex-col items-center justify-evenly w-full bg-sky-950 hover:bg-sky-800 p-2">
-                <h1 class="font-bold text-2xl"><i class="fa-solid fa-file-invoice-dollar"></i></h1>
+                <h1 class="font-bold text-2xl"><i class="bi bi-receipt"></i></h1>
                 <h4 class="text-xs">Pengeluaran</h4>
             </button>
         </div>

@@ -3,12 +3,8 @@
         <span class="card-subtitle">Periode: {{ $startDate }} - {{ $endDate }}</span>
     </h1>
     <div class="flex justify-start items-center mb-2 gap-2">
-        <select wire:model.live="account" class="w-full text-sm border border-slate-300 rounded-lg p-2">
-            <option value="">-- Semua --</option>
-            @foreach ($accounts as $ac)
-            <option value="{{ $ac->id }}">{{ $ac->acc_name }}</option>
-            @endforeach
-        </select>
+        <input type="search" wire:model.live.debounce.500ms="search" placeholder="Search .."
+            class="w-full border border-slate-300 text-sm rounded-lg p-2" />
         <select wire:model.live="perPage" wire:change="updateLimitPage('journalPage')"
             class="text-sm border border-slate-300 rounded-lg p-2 w-28">
             <option value="5">5</option>
@@ -42,9 +38,12 @@
             </div>
         </x-modal>
     </div>
-
-    <input type="search" wire:model.live.debounce.500ms="search" placeholder="Search .."
-        class="w-full border border-slate-300 text-sm rounded-lg p-2" />
+    <select wire:model.live="account" class="w-full text-sm border border-slate-300 rounded-lg p-2">
+        <option value="">-- Semua --</option>
+        @foreach ($accounts as $ac)
+        <option value="{{ $ac->id }}">{{ $ac->acc_name }}</option>
+        @endforeach
+    </select>
     <div class="overflow-x-auto">
         <table class="table w-full text-sm mb-2">
             <thead class="">

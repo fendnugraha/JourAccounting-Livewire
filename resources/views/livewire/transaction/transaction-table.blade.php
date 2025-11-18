@@ -67,15 +67,15 @@
                 @endphp
                 <tr class="">
                     <td class="">
-                        <span class="font-bold text-xs text-blue-600">ID: {{ $journal->id
-                            }} | {{ $journal->date_issued
-                            }} | {{ $journal->invoice
-                            }} | {{
+                        <span class="font-bold text-xs text-sky-700 block">ID: {{ $journal->id
+                            }}, {{ $journal->date_issued
+                            }}, {{ $journal->invoice
+                            }}, {{
                             $journal->trx_type
-                            }}</span> <br>
-                        {{ $journal->description }} {{ $journal->sale ? $journal->sale->product->name . ' - ' .
-                        $journal->sale->quantity . ' Pcs x Rp' . number_format($journal->sale->price) . '' : '' }}<br>
-                        <span class="font-bold">{!! ($journal->cred_code == $cash && $journal->trx_type !== 'Mutasi
+                            }}</span>
+                        <span class="font-bold text-xs text-green-600">{!! ($journal->cred_code == $cash &&
+                            $journal->trx_type !==
+                            'Mutasi
                             Kas')
                             ? $journal->debt->acc_name
                             : (($journal->debt_code == $cash && $journal->trx_type !== 'Mutasi Kas')
@@ -83,8 +83,9 @@
                             : $journal->cred->acc_name . ' <i class="bi bi-arrow-right"></i> ' .
                             $journal->debt->acc_name)
                             !!}</span>
-                        <span class="italic font-bold text-slate-600">{{ $journal->status == 2 ? '(Belum diambil)' : ''
-                            }}</span><br>
+                        {{ $journal->description }} {{ $journal->sale ? $journal->sale->product->name . ' - ' .
+                        $journal->sale->quantity . ' Pcs x Rp' . number_format($journal->sale->price) . '' : '' }}<br>
+
                         <span class="block sm:hidden ">ID:{{ $journal->id }} | {{
                             $journal->date_issued
                             }}</span>

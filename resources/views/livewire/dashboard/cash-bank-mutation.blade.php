@@ -56,7 +56,8 @@
                                 {{ Number::format($account->balance ?? 0) }}
                             </span>
                         </td>
-                        <td class="text-end font-bold hidden sm:table-cell">{{ Number::format($account->balance ?? 0) }}
+                        <td class="text-end font-bold text-blue-600 hidden sm:table-cell">{{
+                            Number::format($account->balance ?? 0) }}
                         </td>
                         <td class="text-end">{{ Number::format($debitMutasi[$account->id] ?? 0) }}</td>
                         <td class="text-end">{{ Number::format($creditMutasi[$account->id] ?? 0) }}</td>

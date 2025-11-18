@@ -11,6 +11,7 @@ class FinanceTable extends Component
 {
     public $finance_type = 'Payable';
     public $contact = 'All';
+    public $selectedContactId;
 
     #[Computed]
     public function finances()
@@ -24,6 +25,13 @@ class FinanceTable extends Component
     {
         $this->dispatch('contact-changed', $contact);
         $this->contact = $contact;
+    }
+
+    public function selectContact($contact)
+    {
+        $this->selectedContactId = $contact;
+        $this->dispatch('contact-selected', $contact);
+        $this->dispatch('open-modal', 'create-payment');
     }
 
     #[On(['finance-created', 'finance-deleted'])]

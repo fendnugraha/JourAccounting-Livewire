@@ -1,6 +1,6 @@
 <form wire:submit="updateJournal">
     <h1>ID: {{ $journalId }}</h1>
-    <div class="mb-2 grid grid-cols-1 sm:grid-cols-3">
+    <div class="mb-2 grid grid-cols-1 sm:grid-cols-3 items-center">
         <x-input-label for="date_issued" :value="__('Tanggal')" />
         <x-text-input wire:model="date_issued" type="datetime-local" class="mt-1 block w-full" />
         <x-input-error class="mt-1 text-xs" :messages="$errors->get('date_issued')" />

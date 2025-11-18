@@ -13,7 +13,22 @@ class ContactTable extends Component
 
     public $search = '';
 
-    #[On('contact-created')]
+    public function destroy($id)
+    {
+        $contact = Contact::findOrFail($id);
+        $transactionsExist = $contact->transactions()->exists();
+        $financesExist = $contact->finances()->exists();
+
+        if ($transactionsExist || $financesExist || $contact->id === 1) {
+            return;
+        }
+
+        $contact->delete();
+
+        $this->dispatch('contact-deleted', $id);
+    }
+
+    #[On(['contact-created', 'contact-deleted', 'contact-updated'])]
     public function render()
     {
         return view('livewire.settings.contact.contact-table', [

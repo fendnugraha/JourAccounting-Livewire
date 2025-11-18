@@ -9,18 +9,19 @@
                 <tr class="border-b">
                     <th>Name</th>
                     <th>Email</th>
-                    <th>Cabang</th>
                     <th class="text-center">Action</th>
                 </tr>
             </thead>
             <tbody class="bg-white">
                 @foreach($users as $user)
                 <tr class="">
-                    <td>ID: {{ $user->id }} {{ $user->name }}
-                        <span class="block">{{ $user->roles->role ?? 'Not Set' }}</span>
+                    <td class="p-3 font-bold">ID: {{ $user->id }} {{ $user->name }}
+                        <span class="block font-normal">{{ $user->roles->role ?? 'Not Set' }}, <i
+                                class="bi bi-building"></i> {{
+                            $user->roles->warehouse->name ??
+                            'Not Set' }}</span>
                     </td>
                     <td>{{ $user->email }}</td>
-                    <td class="text-center">{{ $user->roles->warehouse->name ?? 'Not Set' }}</td>
                     <td class="text-center">
                         <button
                             class="text-white font-bold text-xs bg-yellow-400 py-2 px-5 rounded-lg hover:bg-yellow-300"

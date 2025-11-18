@@ -22,7 +22,9 @@
                         </td>
                         <td class="text-right text-sm">{{ Number::format($finance->sisa) }}</td>
                         <td class="text-center">
-                            <button>Bayar</button>
+                            <button wire:click="selectContact({{ $finance->contact_id }})" {{ $finance->sisa == 0 ?
+                                'disabled' : '' }}
+                                class="hover:underline">{{ $finance->sisa == 0 ? 'Lunas' : 'Bayar' }}</button>
                         </td>
                     </tr>
                     @empty
@@ -33,6 +35,9 @@
                 </tbody>
             </table>
         </div>
+        <x-modal name="create-payment" :show="false" :title="'Tambah Pembayaran'">
+            @livewire('finance.create-payment', ['contact' => $selectedContactId])
+        </x-modal>
     </div>
     @livewire('finance.finance-detail', ['contact' => $contact, 'finance_type' => $finance_type])
 </div>

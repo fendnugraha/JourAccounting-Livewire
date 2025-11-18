@@ -21,6 +21,7 @@ class FinanceDetail extends Component
     public $startDate;
     public $endDate;
 
+
     public function mount()
     {
         $this->contactName = Contact::find($this->contact)->name ?? 'All';
@@ -60,11 +61,13 @@ class FinanceDetail extends Component
 
         if ($finance->payment_status == 1) {
             session()->flash('error', 'Invoice ini telah dibayar, tidak dapat dihapus');
+            return;
         }
 
 
         if ($finance->payment_status == 0 && $finance->payment_nth == 0 && $checkData->count() > 1) {
             session()->flash('error', 'Invoice ini memiliki pembayaran sebelumnya, tidak dapat dihapus');
+            return;
         }
 
         $log = new LogActivity();
@@ -94,6 +97,7 @@ class FinanceDetail extends Component
         }
     }
 
+    #[On(['finance-created', 'finance-deleted'])]
     public function render()
     {
         return view('livewire.finance.finance-detail');

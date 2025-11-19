@@ -74,7 +74,7 @@
                             }}, {{
                             $journal->trx_type
                             }}</span>
-                        <span @class(['font-bold text-xs text-green-600', $journal->cred_code == 9 ||
+                        <span @class(['font-bold text-xs text-green-600 block', $journal->cred_code == 9 ||
                             $journal->debt_code == 9 ? 'hidden' : ''])> {!! ($journal->cred_code == $cash &&
                             $journal->trx_type !==
                             'Mutasi

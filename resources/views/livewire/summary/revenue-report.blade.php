@@ -44,7 +44,7 @@
                     <td class="text-right">{{ Number::format($r['accessory']) }}</td>
                     <td class="text-right">{{ Number::format($r['deposit']) }}</td>
                     <td class="text-right">{{ Number::format($r['expense']) }}</td>
-                    <td class="text-right">{{ Number::format($r['profit']) }}</td>
+                    <td class="text-right font-bold text-green-600">{{ Number::format($r['profit']) }}</td>
                 </tr>
                 @empty
                 <tr>

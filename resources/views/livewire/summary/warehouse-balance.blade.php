@@ -19,7 +19,7 @@
             <tbody>
                 @forelse ($warehouses as $warehouse)
                 <tr>
-                    <td class="">{{ $warehouse['name'] }}</td>
+                    <td class="">{{ strtoupper($warehouse['name']) }}</td>
                     <td class="text-right">{{ Number::format($warehouse['cash']) }}</td>
                     <td class="text-right">{{ Number::format($warehouse['bank']) }}</td>
                     <td class="text-right">{{ Number::format($warehouse['bank'] + $warehouse['cash']) }}</td>

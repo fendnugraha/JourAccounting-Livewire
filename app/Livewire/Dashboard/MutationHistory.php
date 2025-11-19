@@ -125,6 +125,8 @@ class MutationHistory extends Component
     #[On('journal-created')]
     public function render()
     {
-        return view('livewire.dashboard.mutation-history');
+        return view('livewire.dashboard.mutation-history', [
+            'accounts' => ChartOfAccount::whereIn('account_id', [1, 2])->where('warehouse_id', $this->warehouse)->get()
+        ]);
     }
 }

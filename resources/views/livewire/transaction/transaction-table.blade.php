@@ -63,7 +63,8 @@
                 $journal->trx_type == 'Voucher & SP' || $journal->trx_type == 'Deposit') || ($journal->trx_type == null)
                 ? 'hidden' : '';
                 $is_present = $accounts->contains('id', $journal->cred_code);
-                $hide_pay = ($journal->trx_type == null) || !$is_present ? 'hidden' : '';
+                $hide_pay = (($journal->trx_type == null) || !$is_present) && ($journal->debt_code != 9) ? 'hidden' :
+                '';
                 @endphp
                 <tr class="">
                     <td class="text-xs">
@@ -84,6 +85,7 @@
                             $journal->debt->acc_name)
                             !!}</span>
                         Note: {{ $journal->description }}
+                        <span class="block">{{ $journal->transaction->first()->product->name ?? '' }}</span>
 
                         <span class="block sm:hidden ">ID:{{ $journal->id }} | {{
                             $journal->date_issued

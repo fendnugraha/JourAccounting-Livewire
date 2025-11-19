@@ -22,6 +22,7 @@
                 <tr>
                     <th>Deskripsi</th>
                     <th>Jumlah</th>
+                    <th class="text-center">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -43,10 +44,14 @@
                         <!-- Anda bisa menggunakan helper Number::format(..), atau number_format(..) standar PHP -->
                         {{ Number::format($journal->amount) }}
                     </td>
+                    <td class="text-center">
+                        <button wire:confirm="Apakah anda yakin menghapus data ini?"
+                            wire:click="destroy({{ $journal->id }})"><i class="bi bi-trash"></i></button>
+                    </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="2" class="text-center">Tidak ada data</td>
+                    <td colspan="3" class="text-center">Tidak ada data</td>
                 </tr>
                 @endforelse
             </tbody>

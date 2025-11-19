@@ -66,7 +66,7 @@
                 $hide_pay = ($journal->trx_type == null) || !$is_present ? 'hidden' : '';
                 @endphp
                 <tr class="">
-                    <td class="">
+                    <td class="text-xs">
                         <span class="font-bold text-xs text-sky-700 block">ID: {{ $journal->id
                             }}, {{ $journal->date_issued
                             }}, {{ $journal->invoice
@@ -83,8 +83,7 @@
                             : $journal->cred->acc_name . ' <i class="bi bi-arrow-right"></i> ' .
                             $journal->debt->acc_name)
                             !!}</span>
-                        {{ $journal->description }} {{ $journal->sale ? $journal->sale->product->name . ' - ' .
-                        $journal->sale->quantity . ' Pcs x Rp' . number_format($journal->sale->price) . '' : '' }}<br>
+                        Note: {{ $journal->description }}
 
                         <span class="block sm:hidden ">ID:{{ $journal->id }} | {{
                             $journal->date_issued

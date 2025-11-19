@@ -5,12 +5,14 @@ namespace App\Livewire\Dashboard;
 use Carbon\Carbon;
 use App\Models\Journal;
 use Livewire\Component;
+use App\Models\LogActivity;
 use Livewire\Attributes\On;
 use Livewire\WithPagination;
 use App\Models\ChartOfAccount;
-use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class MutationHistory extends Component
 {
@@ -64,6 +66,60 @@ class MutationHistory extends Component
             ->paginate($this->perPage, ['*'], 'journalPage');
 
         return $journals;
+    }
+
+    public function destroy($id)
+    {
+        $journal = Journal::find($id);
+        $transactionsExist = $journal->transaction()->exists();
+        // if ($transactionsExist) {
+        //     return response()->json([
+        //         'success' => false,
+        //         'message' => 'Journal cannot be deleted because it has transactions'
+        //     ]);
+        // }
+        if (Carbon::parse($journal->date_issued)->lt(Carbon::now()->startOfDay()) && auth()->user()->role->role !== 'Super Admin') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menghapus journal. Tanggal journal tidak boleh lebih kecil dari tanggal sekarang.'
+            ], 400);
+        }
+
+
+        $log = new LogActivity();
+        DB::beginTransaction();
+        try {
+            $journal->delete();
+            if ($transactionsExist) {
+                $journal->transaction()->delete();
+            }
+
+            $log->create([
+                'user_id' => auth()->user()->id,
+                'warehouse_id' => $journal->warehouse_id,
+                'activity' => 'Deleted Journal',
+                'description' => 'Deleted Journal with ID: ' . $journal->id . ' (' . $journal->description . ' from ' . $journal->cred->acc_name . ' to ' . $journal->debt->acc_name . ' with amount: ' . number_format($journal->amount, 0, ',', '.') . ' and fee amount: ' . number_format($journal->fee_amount, 0, ',', '.') . ')',
+            ]);
+
+            if ($journal->date_issued) {
+                try {
+                    $dateIssued = Carbon::parse($journal->date_issued);
+
+                    if ($dateIssued->lt(Carbon::now()->startOfDay())) {
+                        $this->_updateBalancesDirectly($dateIssued);
+                    }
+                } catch (\Exception $e) {
+                    Log::warning("Invalid date_issued format: {$journal->date_issued}");
+                }
+            }
+
+            DB::commit();
+            $this->dispatch('journal-deleted', $journal);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            // Flash an error message
+            Log::error($e->getMessage());
+        }
     }
 
     #[On('journal-created')]

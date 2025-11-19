@@ -13,7 +13,7 @@
                 @endforeach
             </select>
             @endcan
-            <button class="small-button" wire:click="$refresh">
+            <button class="small-button" wire:click="$refresh" wire:loading.attr="disabled">
                 <i class="bi bi-arrow-clockwise"></i>
             </button>
             <button class="small-button" x-data x-on:click="$dispatch('open-modal','filter-journal')"><i

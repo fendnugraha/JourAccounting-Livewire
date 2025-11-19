@@ -8,8 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class ChartOfAccount extends Model
 {
     const SAVING_ACCOUNT = 160;
-    const INVENTORY = 10;
-    const BANK_FEE = 49;
+    const INVENTORY = 9;
+    const BANK_FEE = 46;
 
     protected $guarded = ['id'];
 

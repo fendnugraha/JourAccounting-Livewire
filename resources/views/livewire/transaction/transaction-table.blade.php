@@ -62,8 +62,8 @@
                 $journal->trx_type == 'Mutasi Kas' ||
                 $journal->trx_type == 'Voucher & SP' || $journal->trx_type == 'Deposit') || ($journal->trx_type == null)
                 ? 'hidden' : '';
-                $hide_pay = ($journal->trx_type == null) ? 'disabled' : '';
-
+                $is_present = $accounts->contains('id', $journal->cred_code);
+                $hide_pay = ($journal->trx_type == null) || !$is_present ? 'hidden' : '';
                 @endphp
                 <tr class="">
                     <td class="">

@@ -74,7 +74,8 @@
                             }}, {{
                             $journal->trx_type
                             }}</span>
-                        <span class="font-bold text-xs text-green-600">{!! ($journal->cred_code == $cash &&
+                        <span @class(['font-bold text-xs text-green-600', $journal->cred_code == 9 ||
+                            $journal->debt_code == 9 ? 'hidden' : ''])> {!! ($journal->cred_code == $cash &&
                             $journal->trx_type !==
                             'Mutasi
                             Kas')
@@ -85,7 +86,7 @@
                             $journal->debt->acc_name)
                             !!}</span>
                         Note: {{ $journal->description }}
-                        <span class="block">{{ $journal->transaction->first()->product->name ?? '' }}</span>
+                        <span class="font-bold block">{{ $journal->transaction->first()->product->name ?? '' }}</span>
 
                         <span class="block sm:hidden ">ID:{{ $journal->id }} | {{
                             $journal->date_issued

@@ -32,7 +32,7 @@
             <div class="flex justify-between">
                 <h1 class="card-title mb-4">Penjualan Voucher
                     <span class="card-subtitle">Periode: {{ $startDate }} sd {{ $endDate }}, Total: {{
-                        Number::format(-$voucher->sum('total_cost')) }}</span>
+                        Number::format(-$total_cost) }}</span>
                 </h1>
                 <select class="form-select h-fit !w-20 p-2.5" wire:model.live="voucherPerPage">
                     <option value="5">5</option>
@@ -71,7 +71,7 @@
         <div class="card p-4">
             <div class="flex justify-between">
                 <h1 class="card-title mb-4">Penjualan Accessory
-                    <span class="card-subtitle">Total: {{ Number::format(-$accessory->sum('total_cost')) }}</span>
+                    <span class="card-subtitle">Total: {{ Number::format(-$total_cost_acc) }}</span>
                 </h1>
                 <select class="form-select h-fit !w-20 p-2.5" wire:model.live="accessoryPerPage">
                     <option value="5">5</option>

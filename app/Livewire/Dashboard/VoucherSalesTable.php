@@ -73,6 +73,36 @@ class VoucherSalesTable extends Component
         return $transactions;
     }
 
+    public function getTotal($startDate, $endDate, $is_vcr = true)
+    {
+        $startDate = $startDate
+            ? Carbon::parse($startDate)->startOfDay()
+            : Carbon::now()->startOfDay();
+
+        $endDate = $endDate
+            ? Carbon::parse($endDate)->endOfDay()
+            : Carbon::now()->endOfDay();
+
+        return Transaction::with('product')
+            ->selectRaw('
+            SUM(quantity * cost) as total_cost,
+            SUM(quantity * price) as total_price,
+            SUM(quantity * price - quantity * cost) as total_fee
+        ')
+            ->where('invoice', 'like', 'JR.BK%')
+            ->where('transaction_type', 'Sales')
+            ->whereBetween('date_issued', [$startDate, $endDate])
+            ->when($is_vcr, function ($query) {
+                $query->whereHas('product', fn($q) => $q->where('category', 'Voucher & SP'));
+            }, function ($query) {
+                $query->whereHas('product', fn($q) => $q->where('category', '!=', 'Voucher & SP'));
+            })
+            ->when($this->warehouse !== 'all', function ($query) {
+                $query->where('warehouse_id', $this->warehouse);
+            })
+            ->first();
+    }
+
     public function updated($property)
     {
         if (in_array($property, ['warehouse', 'startDate', 'endDate'])) {
@@ -89,6 +119,8 @@ class VoucherSalesTable extends Component
             'voucher' => $this->getTransactionByWarehouse($this->warehouse, $this->startDate, $this->endDate, 'voucherPage', $this->voucherPerPage, true),
             'accessory' => $this->getTransactionByWarehouse($this->warehouse, $this->startDate, $this->endDate, 'accessoryPage', $this->accessoryPerPage, false),
             'warehouses' => Warehouse::all(),
+            'total_cost' => $this->getTotal($this->startDate, $this->endDate)->total_cost,
+            'total_cost_acc' => $this->getTotal($this->startDate, $this->endDate, false)->total_cost,
         ]);
     }
 }

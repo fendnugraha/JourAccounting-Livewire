@@ -167,7 +167,8 @@ class TransactionTable extends Component
             'journals' => $this->getJournalByWarehouse($this->warehouse, $this->startDate, $this->endDate),
             'accounts' => $accounts,
             'warehouses' => Warehouse::all(),
-            'warehouse_name' => Warehouse::find($this->warehouse)->name
+            'warehouse_name' => Warehouse::find($this->warehouse)->name,
+            'role' => auth()->user()->roles->role
         ]);
     }
 }

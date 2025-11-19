@@ -63,7 +63,8 @@
                 $journal->trx_type == 'Voucher & SP' || $journal->trx_type == 'Deposit') || ($journal->trx_type == null)
                 ? 'hidden' : '';
                 $is_present = $accounts->contains('id', $journal->cred_code);
-                $hide_pay = (($journal->trx_type == null) || !$is_present) && ($journal->debt_code != 9) ? 'hidden' :
+                $hide_pay = (($journal->trx_type == null) || !$is_present) && ($journal->debt_code != 9) && ($role !=
+                'Administrator') ? 'hidden' :
                 '';
                 @endphp
                 <tr class="">
@@ -110,17 +111,10 @@
                             </button>
 
                             <button wire:click="destroy({{ $journal->id }})"
-                                wire:confirm="Apakah anda yakin menghapus data ini?" wire:loading.attr="disabled">
-                                <i class="bi bi-trash text-lg"></i>
-                            </button>
-
-                            @can('admin')
-                            <button wire:click="destroy({{ $journal->id }})"
                                 wire:confirm="Apakah anda yakin menghapus data ini?" wire:loading.attr="disabled"
                                 @class(['text-red-500 font-bold disabled:text-slate-300', $hide_pay])>
                                 <i class="bi bi-trash text-lg"></i>
                             </button>
-                            @endcan
 
                         </div>
                     </td>

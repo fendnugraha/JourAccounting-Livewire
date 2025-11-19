@@ -45,9 +45,14 @@
                         {{ Number::format($journal->amount) }}
                     </td>
                     <td class="text-center">
-                        <button wire:confirm="Apakah anda yakin menghapus data ini?" @class(['text-red-500 font-bold
-                            disabled:text-slate-300', !$accounts->contains('id', $journal->cred_code) ? 'hidden' : ''])
-                            wire:click="destroy({{ $journal->id }})"><i class="bi bi-trash"></i>
+                        <button wire:confirm="Apakah anda yakin menghapus data ini?" @class([ 'text-red-500'
+                            , 'font-bold' , 'disabled:text-slate-300' ,'hidden'=> !$accounts->contains('id',
+                            $journal->cred_code) && ($role
+                            != 'Administrator'),
+                            ])
+                            wire:click="destroy({{ $journal->id }})"
+                            >
+                            <i class="bi bi-trash"></i>
                         </button>
                     </td>
                 </tr>

@@ -126,7 +126,8 @@ class MutationHistory extends Component
     public function render()
     {
         return view('livewire.dashboard.mutation-history', [
-            'accounts' => ChartOfAccount::whereIn('account_id', [1, 2])->where('warehouse_id', $this->warehouse)->get()
+            'accounts' => ChartOfAccount::whereIn('account_id', [1, 2])->where('warehouse_id', $this->warehouse)->get(),
+            'role' => auth()->user()->roles->role
         ]);
     }
 }

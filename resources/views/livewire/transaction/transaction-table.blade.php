@@ -110,8 +110,7 @@
                             </button>
 
                             <button wire:click="destroy({{ $journal->id }})"
-                                wire:confirm="Apakah anda yakin menghapus data ini?" wire:loading.attr="disabled"
-                                @class(['text-red-500 font-bold disabled:text-slate-300', $hide_pay])>
+                                wire:confirm="Apakah anda yakin menghapus data ini?" wire:loading.attr="disabled">
                                 <i class="bi bi-trash text-lg"></i>
                             </button>
 

@@ -1,7 +1,7 @@
 <div class="card p-4 sm:col-span-3 sm:order-0 order-1">
     <x-loading />
     <h1 class="card-title mb-4">Transaksi
-        <span class="card-subtitle">Periode: {{ $startDate }} - {{ $endDate }}</span>
+        <span class="card-subtitle">{{ $warehouse_name }}, Periode: {{ $startDate }} - {{ $endDate }}</span>
     </h1>
     <div class="flex justify-start items-center mb-2 gap-2">
         <input type="search" wire:model.live.debounce.500ms="search" placeholder="Search .."

@@ -1,7 +1,7 @@
 <div class="card p-4">
     <x-loading />
     <div class="mb-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <h1 class="card-title">History Mutasi Saldo {{ $warehouse }}</h1>
+        <h1 class="card-title">History Mutasi Saldo</h1>
         <div class="flex justify-end gap-2">
             <!-- $search dan $perPage sudah benar menggunakan wire:model.live -->
             <input type="search" class="form-select block w-full p-2.5" wire:model.debounce.500ms.live="search"

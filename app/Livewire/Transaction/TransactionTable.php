@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 
+use function Pest\Laravel\session;
+
 class TransactionTable extends Component
 {
     use WithPagination;
@@ -110,12 +112,8 @@ class TransactionTable extends Component
         //     ]);
         // }
         if (Carbon::parse($journal->date_issued)->lt(Carbon::now()->startOfDay()) && auth()->user()->roles->role !== 'Super Admin') {
-            return response()->json([
-                'success' => false,
-                'message' => 'Gagal menghapus journal. Tanggal journal tidak boleh lebih kecil dari tanggal sekarang.'
-            ], 400);
+            return;
         }
-
 
         $log = new LogActivity();
         DB::beginTransaction();

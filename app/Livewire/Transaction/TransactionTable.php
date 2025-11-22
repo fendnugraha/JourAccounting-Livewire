@@ -109,7 +109,7 @@ class TransactionTable extends Component
         //         'message' => 'Journal cannot be deleted because it has transactions'
         //     ]);
         // }
-        if (Carbon::parse($journal->date_issued)->lt(Carbon::now()->startOfDay()) && auth()->user()->role->role !== 'Super Admin') {
+        if (Carbon::parse($journal->date_issued)->lt(Carbon::now()->startOfDay()) && auth()->user()->roles->role !== 'Super Admin') {
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal menghapus journal. Tanggal journal tidak boleh lebih kecil dari tanggal sekarang.'

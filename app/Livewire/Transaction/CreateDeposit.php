@@ -15,8 +15,8 @@ class CreateDeposit extends Component
     public $price, $cost, $description, $date_issued;
 
     protected $rules = [
-        'price' => 'required',
         'cost' => 'required',
+        'price' => 'required|numeric|gte:cost',
     ];
 
     #[On('journal-created')]
@@ -30,9 +30,16 @@ class CreateDeposit extends Component
         $price = $this->price;
         $cost = $this->cost;
 
+        $this->validate();
+
         $description = $this->description ?? "Penjualan Pulsa Dll";
         $fee = $price - $cost;
         $invoice = Journal::invoice_journal();
+
+        if ($price < $cost) {
+            session()->flash('error', 'Harga modal tidak boleh lebih besar dari harga jual');
+            return;
+        }
 
         DB::beginTransaction();
         try {

@@ -14,8 +14,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 
-use function Pest\Laravel\session;
-
 class TransactionTable extends Component
 {
     use WithPagination;
@@ -111,8 +109,11 @@ class TransactionTable extends Component
         //         'message' => 'Journal cannot be deleted because it has transactions'
         //     ]);
         // }
-        if (Carbon::parse($journal->date_issued)->lt(Carbon::now()->startOfDay()) && auth()->user()->roles->role !== 'Super Admin') {
-            return;
+        $issued = Carbon::parse($journal->date_issued);
+
+        if (!$issued->isToday() && auth()->user()->roles->role !== 'Super Admin') {
+            session()->flash('error', 'Journal tidak boleh dihapus karena bukan transaksi hari ini');
+            return redirect()->back();
         }
 
         $log = new LogActivity();

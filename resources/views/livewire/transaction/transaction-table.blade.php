@@ -128,5 +128,4 @@
     <x-modal name="edit-journal" :show="false" :title="'Edit Jurnal'">
         @livewire('transaction.edit-journals', ['journal' => $selectedId])
     </x-modal>
-
 </div>

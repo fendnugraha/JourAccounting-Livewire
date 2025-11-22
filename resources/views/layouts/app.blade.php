@@ -40,6 +40,8 @@
         </main>
         <x-notification :message="session('success')" type="success" on="account-created" />
         <x-notification :message="session('error')" type="error" />
+
+
     </div>
 </body>
 

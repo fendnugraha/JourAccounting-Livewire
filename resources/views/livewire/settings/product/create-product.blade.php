@@ -5,7 +5,7 @@
         <x-input-error class="mt-1 text-xs" :messages="$errors->get('name')" />
     </div>
     <div class="mb-2">
-        <x-input-label for="category" :value="__('Akun Kas')" />
+        <x-input-label for="category" :value="__('Kategori')" />
         <select wire:model="category"
             class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
             <option value="">Pilih kategori</option>

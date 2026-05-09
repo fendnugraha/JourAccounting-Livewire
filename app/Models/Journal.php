@@ -308,10 +308,18 @@ class Journal extends Model
         }
     }
 
-    public static function balancesByWarehouse($warehouseId, $endDate)
+    /**
+     * Get balances by warehouse.
+     *
+     * @param int|string $warehouseId
+     * @param string|\Carbon\Carbon|null $endDate
+     * @return array
+     */
+    public static function balancesByWarehouse(int|string $warehouseId, string|Carbon|null $endDate = null)
     {
         $endDate = $endDate ? Carbon::parse($endDate)->endOfDay() : Carbon::now()->endOfDay();
         $previousDate = $endDate->copy()->subDay()->toDateString();
+        Log::info('Previous Date: ' . $previousDate);
 
         $chartOfAccounts = ChartOfAccount::with('account')
             ->when($warehouseId !== 'all', function ($query) use ($warehouseId) {
@@ -343,7 +351,7 @@ class Journal extends Model
         $debitMutasi = Journal::selectRaw('debt_code as account_id, SUM(amount) as total_amount')
             ->where('trx_type', 'Mutasi Kas')
             ->whereIn('debt_code', $allAccountIds)
-            ->whereBetween('date_issued', [$previousDate, $endDate])
+            ->whereDate('date_issued', $endDate)
             ->groupBy('debt_code')
             ->pluck('total_amount', 'account_id')
             ->toArray();
@@ -351,7 +359,7 @@ class Journal extends Model
         $creditMutasi = Journal::selectRaw('cred_code as account_id, SUM(amount) as total_amount')
             ->where('trx_type', 'Mutasi Kas')
             ->whereIn('cred_code', $allAccountIds)
-            ->whereBetween('date_issued', [$previousDate, $endDate])
+            ->whereDate('date_issued', $endDate)
             ->groupBy('cred_code')
             ->pluck('total_amount', 'account_id')
             ->toArray();
@@ -396,6 +404,9 @@ class Journal extends Model
         $sumtotalBank = $chartOfAccounts->filter(function ($coa) {
             return ($coa->account && $coa->account->id === 2); // Asumsi acc_id 2 untuk Bank
         });
+
+        Log::info('debit Mutasi: ' . json_encode($debitMutasi));
+        Log::info('credit Mutasi: ' . json_encode($creditMutasi));
 
         return [
             'chartOfAccounts' => $chartOfAccounts,

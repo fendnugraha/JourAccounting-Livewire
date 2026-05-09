@@ -12,8 +12,8 @@ use Livewire\Attributes\On;
 
 class CashBankMutation extends Component
 {
-    public $warehouse;
-    public $endDate;
+    public ?int $warehouse = null;
+    public string $endDate;
     public $chartOfAccounts = [];
 
     public function mount()
